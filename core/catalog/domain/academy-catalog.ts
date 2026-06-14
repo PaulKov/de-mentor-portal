@@ -12,6 +12,33 @@ export interface CatalogReadinessItem {
   detail: string
 }
 
+export interface CatalogLaunchRoute {
+  code: string
+  title: string
+  description: string
+  timebox: string
+  session_route: string
+  mentor_command: string
+  student_command: string
+  check_command: string
+}
+
+export interface CatalogPlatformProfile {
+  code: string
+  title: string
+  checks: string[]
+  notes: string[]
+}
+
+export interface CatalogLessonLauncher {
+  lab: string
+  default_route: string
+  default_platform: string
+  default_output_dir: string
+  routes: CatalogLaunchRoute[]
+  platforms: CatalogPlatformProfile[]
+}
+
 export interface CatalogLesson {
   code: string
   title: string
@@ -24,6 +51,7 @@ export interface CatalogLesson {
   mentor_commands: string[]
   student_commands: string[]
   next_lesson_code?: string | null
+  launcher?: CatalogLessonLauncher
 }
 
 export interface CatalogTrack {

@@ -53,7 +53,77 @@
             "python3 mentor-lab.py doctor",
             "python3 mentor-lab.py runbook greenplum homework"
           ],
-          "next_lesson_code": "02-greenplum-partitioning"
+          "next_lesson_code": "02-greenplum-partitioning",
+          "launcher": {
+            "lab": "greenplum",
+            "default_route": "simple",
+            "default_platform": "macos",
+            "default_output_dir": "artifacts/sessions/lesson01-greenplum",
+            "routes": [
+              {
+                "code": "simple",
+                "title": "Simple path",
+                "description": "60-minute route for first lesson delivery.",
+                "timebox": "60 min",
+                "session_route": "simple",
+                "mentor_command": "python3 mentor-lab.py runbook greenplum simple",
+                "student_command": "python3 mentor-lab.py runbook greenplum homework",
+                "check_command": "python3 mentor-lab.py check greenplum"
+              },
+              {
+                "code": "deep",
+                "title": "Deep-dive path",
+                "description": "90-120 minute route with QD/QE, storage and explain internals.",
+                "timebox": "90-120 min",
+                "session_route": "deep",
+                "mentor_command": "python3 mentor-lab.py runbook greenplum deep",
+                "student_command": "python3 mentor-lab.py runbook greenplum homework",
+                "check_command": "python3 mentor-lab.py check greenplum"
+              }
+            ],
+            "platforms": [
+              {
+                "code": "macos",
+                "title": "macOS",
+                "checks": [
+                  "docker --version",
+                  "docker compose version",
+                  "python3 --version",
+                  "git --version"
+                ],
+                "notes": [
+                  "Run commands in Terminal from the cloned repository."
+                ]
+              },
+              {
+                "code": "windows-wsl2",
+                "title": "Windows + WSL2",
+                "checks": [
+                  "wsl --status",
+                  "docker --version",
+                  "docker compose version",
+                  "python3 --version",
+                  "git --version"
+                ],
+                "notes": [
+                  "Use a WSL distro shell and enable Docker Desktop WSL integration."
+                ]
+              },
+              {
+                "code": "linux",
+                "title": "Linux",
+                "checks": [
+                  "docker --version",
+                  "docker compose version",
+                  "python3 --version",
+                  "git --version"
+                ],
+                "notes": [
+                  "Ensure the current user can run Docker commands."
+                ]
+              }
+            ]
+          }
         },
         {
           "code": "02-greenplum-partitioning",
@@ -89,7 +159,77 @@
             "python3 mentor-lab.py doctor",
             "python3 mentor-lab.py lesson-release greenplum-partitioning verify"
           ],
-          "next_lesson_code": null
+          "next_lesson_code": null,
+          "launcher": {
+            "lab": "greenplum-partitioning",
+            "default_route": "simple",
+            "default_platform": "macos",
+            "default_output_dir": "artifacts/sessions/lesson02-greenplum-partitioning",
+            "routes": [
+              {
+                "code": "simple",
+                "title": "Simple path",
+                "description": "90-minute route for pruning, statistics and incremental load practice.",
+                "timebox": "90 min",
+                "session_route": "simple",
+                "mentor_command": "python3 mentor-lab.py runbook greenplum-partitioning simple",
+                "student_command": "python3 mentor-lab.py lesson-release greenplum-partitioning verify",
+                "check_command": "python3 mentor-lab.py lesson-release greenplum-partitioning verify"
+              },
+              {
+                "code": "deep",
+                "title": "Deep-dive path",
+                "description": "120-minute route with partition internals, operational caveats and evidence review.",
+                "timebox": "120 min",
+                "session_route": "deep",
+                "mentor_command": "python3 mentor-lab.py runbook greenplum-partitioning deep",
+                "student_command": "python3 mentor-lab.py lesson-release greenplum-partitioning verify",
+                "check_command": "python3 mentor-lab.py lesson-release greenplum-partitioning verify"
+              }
+            ],
+            "platforms": [
+              {
+                "code": "macos",
+                "title": "macOS",
+                "checks": [
+                  "docker --version",
+                  "docker compose version",
+                  "python3 --version",
+                  "git --version"
+                ],
+                "notes": [
+                  "Run commands in Terminal from the cloned repository."
+                ]
+              },
+              {
+                "code": "windows-wsl2",
+                "title": "Windows + WSL2",
+                "checks": [
+                  "wsl --status",
+                  "docker --version",
+                  "docker compose version",
+                  "python3 --version",
+                  "git --version"
+                ],
+                "notes": [
+                  "Use a WSL distro shell and enable Docker Desktop WSL integration."
+                ]
+              },
+              {
+                "code": "linux",
+                "title": "Linux",
+                "checks": [
+                  "docker --version",
+                  "docker compose version",
+                  "python3 --version",
+                  "git --version"
+                ],
+                "notes": [
+                  "Ensure the current user can run Docker commands."
+                ]
+              }
+            ]
+          }
         }
       ]
     },

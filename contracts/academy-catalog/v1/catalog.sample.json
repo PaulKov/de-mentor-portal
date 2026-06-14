@@ -36,7 +36,49 @@
           "student_commands": [
             "python3 mentor-lab.py doctor"
           ],
-          "next_lesson_code": "02-greenplum-partitioning"
+          "next_lesson_code": "02-greenplum-partitioning",
+          "launcher": {
+            "lab": "greenplum",
+            "default_route": "simple",
+            "default_platform": "macos",
+            "default_output_dir": "artifacts/sessions/lesson01-greenplum",
+            "routes": [
+              {
+                "code": "simple",
+                "title": "Simple path",
+                "description": "60-minute route for first lesson delivery.",
+                "timebox": "60 min",
+                "session_route": "simple",
+                "mentor_command": "python3 mentor-lab.py runbook greenplum simple",
+                "student_command": "python3 mentor-lab.py runbook greenplum homework",
+                "check_command": "python3 mentor-lab.py check greenplum"
+              }
+            ],
+            "platforms": [
+              {
+                "code": "macos",
+                "title": "macOS",
+                "checks": [
+                  "docker --version",
+                  "docker compose version"
+                ],
+                "notes": [
+                  "Run commands in Terminal from the cloned repository."
+                ]
+              },
+              {
+                "code": "windows-wsl2",
+                "title": "Windows + WSL2",
+                "checks": [
+                  "wsl --status",
+                  "docker --version"
+                ],
+                "notes": [
+                  "Use a WSL distro shell and enable Docker Desktop WSL integration."
+                ]
+              }
+            ]
+          }
         }
       ]
     }

@@ -103,6 +103,10 @@ export class AcademyCatalogContractValidator {
     this.validateStringArray(value.mentor_commands, `${path}.mentor_commands`, issues)
     this.validateStringArray(value.student_commands, `${path}.student_commands`, issues)
     this.validateNullableString(value.next_lesson_code, `${path}.next_lesson_code`, issues)
+
+    if (value.launcher !== undefined) {
+      this.validateLauncher(value.launcher, `${path}.launcher`, issues)
+    }
   }
 
   private validateReadiness(value: unknown, path: string, issues: CatalogValidationIssue[]) {
@@ -138,6 +142,76 @@ export class AcademyCatalogContractValidator {
       for (const field of ['kind', 'label', 'path']) {
         this.requireString(item[field], `${path}[${index}].${field}`, issues)
       }
+    })
+  }
+
+  private validateLauncher(value: unknown, path: string, issues: CatalogValidationIssue[]) {
+    if (!isRecord(value)) {
+      issues.push({ path, message: `${path} should be an object` })
+      return
+    }
+
+    for (const field of ['lab', 'default_route', 'default_platform', 'default_output_dir']) {
+      this.requireString(value[field], `${path}.${field}`, issues)
+    }
+
+    this.validateLauncherRoutes(value.routes, `${path}.routes`, issues)
+    this.validateLauncherPlatforms(value.platforms, `${path}.platforms`, issues)
+  }
+
+  private validateLauncherRoutes(
+    value: unknown,
+    path: string,
+    issues: CatalogValidationIssue[]
+  ) {
+    if (!Array.isArray(value) || value.length === 0) {
+      issues.push({ path, message: `${path} should contain at least one route` })
+      return
+    }
+
+    value.forEach((route, index) => {
+      if (!isRecord(route)) {
+        issues.push({ path: `${path}[${index}]`, message: 'launcher route should be an object' })
+        return
+      }
+
+      for (const field of [
+        'code',
+        'title',
+        'description',
+        'timebox',
+        'session_route',
+        'mentor_command',
+        'student_command',
+        'check_command'
+      ]) {
+        this.requireString(route[field], `${path}[${index}].${field}`, issues)
+      }
+    })
+  }
+
+  private validateLauncherPlatforms(
+    value: unknown,
+    path: string,
+    issues: CatalogValidationIssue[]
+  ) {
+    if (!Array.isArray(value) || value.length === 0) {
+      issues.push({ path, message: `${path} should contain at least one platform` })
+      return
+    }
+
+    value.forEach((platform, index) => {
+      if (!isRecord(platform)) {
+        issues.push({ path: `${path}[${index}]`, message: 'launcher platform should be an object' })
+        return
+      }
+
+      for (const field of ['code', 'title']) {
+        this.requireString(platform[field], `${path}[${index}].${field}`, issues)
+      }
+
+      this.validateStringArray(platform.checks, `${path}[${index}].checks`, issues)
+      this.validateStringArray(platform.notes, `${path}[${index}].notes`, issues)
     })
   }
 
