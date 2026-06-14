@@ -88,8 +88,8 @@ const openSelectedEntry = () => {
         <p class="muted">import</p>
         <h2>Добавить session.json</h2>
         <p>
-          Файл читается локально в браузере, проходит `academy-session/v1`
-          validation и попадает в recent runs.
+          Файл читается локально в браузере, проходит валидацию
+          academy-session/v1 и сохраняется в recent runs.
         </p>
       </div>
       <label class="workspace-file-picker">
@@ -166,8 +166,8 @@ const openSelectedEntry = () => {
         </article>
 
         <div v-if="workspaceState.entries.length === 0" class="workspace-empty-state">
-          <strong>Recent runs пуст</strong>
-          <p>Импортируйте session-файл из `artifacts/sessions/.../session.json`.</p>
+          <strong>Recent runs пока пуст</strong>
+          <p>Импортируйте session-файл из artifacts/sessions/.../session.json.</p>
         </div>
       </section>
 
