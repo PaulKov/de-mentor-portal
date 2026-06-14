@@ -1,11 +1,18 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { AcademySession } from '~/core/session/domain/academy-session'
 import type { MentorCockpitState } from './mentor-cockpit-state'
 
-defineProps<{
-  session: AcademySession
+interface EvidenceSession extends AcademySession {
+  intervention_flags?: string[]
+}
+
+const props = defineProps<{
+  session: EvidenceSession
   state: MentorCockpitState
 }>()
+
+const interventionFlags = computed(() => props.session.intervention_flags ?? [])
 </script>
 
 <template>
@@ -24,7 +31,7 @@ defineProps<{
 
     <div class="intervention-box">
       <span>Сигнал вмешательства</span>
-      <strong>{{ session.intervention_flags.length ? session.intervention_flags.join(', ') : 'нет' }}</strong>
+      <strong>{{ interventionFlags.length ? interventionFlags.join(', ') : 'нет' }}</strong>
     </div>
   </section>
 </template>

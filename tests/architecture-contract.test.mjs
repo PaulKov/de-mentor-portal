@@ -57,6 +57,21 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
   assert.ok(composable.includes('SessionLoader'), 'session composable should depend on the application loader')
   assert.ok(composable.includes('HttpSessionSource'), 'session composable should inject HTTP session sources')
   assert.ok(lineCount(composable) <= 85, 'useSessionState should stay a thin state facade')
+
+  for (const path of [
+    'features/mentor-cockpit/MentorCockpit.vue',
+    'features/mentor-cockpit/StagePlayer.vue',
+    'features/mentor-cockpit/SlideCommandRail.vue',
+    'features/mentor-cockpit/EvidencePanel.vue',
+    'features/mentor-cockpit/ReleaseStatusStrip.vue',
+    'features/mentor-cockpit/useMentorCockpitState.ts',
+    'features/mentor-cockpit/mentor-cockpit-state.ts',
+    'assets/css/main.css',
+    'assets/css/cockpit.css'
+  ]) {
+    const source = await readText(path)
+    assert.ok(lineCount(source) <= 400, `${path} should stay below the module SLOC guard`)
+  }
 })
 
 test('session core exposes typed contracts, validation and DI seams', async () => {
