@@ -94,6 +94,12 @@ npx playwright install chromium
 npm run check
 ```
 
+Quality guard входит в `npm run test`:
+
+- любой модуль Vue/TypeScript/JavaScript должен быть не больше `400` SLOC;
+- средний clustering coefficient внутреннего import-графа должен быть не больше `0.180`;
+- `app.vue` и `composables/useSessionState.ts` остаются тонкими фасадами, а доменная логика живет в `core/session`.
+
 ## Граница ответственности
 
 - `de-mentor`: lesson contracts, CLI, Docker labs, SQL examples, autograder, docs.

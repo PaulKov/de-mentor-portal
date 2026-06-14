@@ -1,3 +1,5 @@
+import type { AcademyControlPlane } from './control-plane'
+
 export const CONTRACT_VERSION = 'academy-session/v1'
 export const PORTAL_FRAMEWORK = 'Vue 3 + Nuxt 3 + Vite'
 export const PORTAL_REPOSITORY = 'https://github.com/PaulKov/de-mentor-portal'
@@ -45,5 +47,6 @@ export interface AcademySession {
   skill_graph: SkillNode[]
   commands: string[]
   events: SessionEvent[]
+  control_plane?: AcademyControlPlane
   portal: PortalMetadata
 }

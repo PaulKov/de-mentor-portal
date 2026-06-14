@@ -6,6 +6,7 @@ import {
   PORTAL_SESSION_ENV,
   type AcademySession
 } from '../domain/academy-session'
+import { CONTROL_PLANE_VERSION } from '../domain/control-plane'
 
 export interface ValidationIssue {
   path: string
@@ -59,6 +60,7 @@ export class AcademySessionContractValidator {
     this.validateSkills(payload, issues)
     this.validateCommands(payload, issues)
     this.validateEvents(payload, issues)
+    this.validateControlPlane(payload, issues)
     this.validatePortal(payload, issues)
 
     return {
@@ -180,6 +182,125 @@ export class AcademySessionContractValidator {
     this.requireConst(payload.portal.app_path, PORTAL_APP_PATH, 'portal.app_path', issues)
     this.requireConst(payload.portal.session_env, PORTAL_SESSION_ENV, 'portal.session_env', issues)
     this.requireString(payload.portal.dev_command, 'portal.dev_command', issues)
+  }
+
+  private validateControlPlane(payload: UnknownRecord, issues: ValidationIssue[]) {
+    if (payload.control_plane === undefined) {
+      return
+    }
+
+    if (!isRecord(payload.control_plane)) {
+      issues.push({ path: 'control_plane', message: 'control_plane should be an object' })
+      return
+    }
+
+    const controlPlane = payload.control_plane
+    this.requireConst(
+      controlPlane.version,
+      CONTROL_PLANE_VERSION,
+      'control_plane.version',
+      issues
+    )
+    this.validateMentorMode(controlPlane.mentor_mode, issues)
+    this.validateStudentMode(controlPlane.student_mode, issues)
+    this.validatePortalActions(controlPlane.portal_actions, issues)
+    this.validateArtifacts(controlPlane.artifacts, issues)
+    this.validateNextLesson(controlPlane.next_lesson, issues)
+  }
+
+  private validateMentorMode(value: unknown, issues: ValidationIssue[]) {
+    if (!isRecord(value)) {
+      issues.push({ path: 'control_plane.mentor_mode', message: 'mentor_mode should be an object' })
+      return
+    }
+
+    this.requireString(value.default_route, 'control_plane.mentor_mode.default_route', issues)
+    this.requireString(value.slide_deck, 'control_plane.mentor_mode.slide_deck', issues)
+    this.validateStringArray(value.runbook_commands, 'control_plane.mentor_mode.runbook_commands', issues)
+
+    if (!Array.isArray(value.stage_guides) || value.stage_guides.length === 0) {
+      issues.push({
+        path: 'control_plane.mentor_mode.stage_guides',
+        message: 'stage_guides should contain at least one guide'
+      })
+      return
+    }
+
+    value.stage_guides.forEach((guide, index) => {
+      this.validateStageGuide(guide, `control_plane.mentor_mode.stage_guides[${index}]`, issues)
+    })
+  }
+
+  private validateStageGuide(value: unknown, path: string, issues: ValidationIssue[]) {
+    if (!isRecord(value)) {
+      issues.push({ path, message: `${path} should be an object` })
+      return
+    }
+
+    for (const field of [
+      'stage_code',
+      'slides',
+      'mentor_script',
+      'question',
+      'expected_answer',
+      'verification',
+      'workbook_ref',
+      'homework_ref'
+    ]) {
+      this.requireString(value[field], `${path}.${field}`, issues)
+    }
+    this.validateStringArray(value.show_commands, `${path}.show_commands`, issues)
+  }
+
+  private validateStudentMode(value: unknown, issues: ValidationIssue[]) {
+    if (!isRecord(value)) {
+      issues.push({ path: 'control_plane.student_mode', message: 'student_mode should be an object' })
+      return
+    }
+
+    for (const field of ['prep_runbook', 'workbook', 'homework']) {
+      this.requireString(value[field], `control_plane.student_mode.${field}`, issues)
+    }
+    this.validateStringArray(value.self_check_commands, 'control_plane.student_mode.self_check_commands', issues)
+  }
+
+  private validatePortalActions(value: unknown, issues: ValidationIssue[]) {
+    if (!isRecord(value)) {
+      issues.push({ path: 'control_plane.portal_actions', message: 'portal_actions should be an object' })
+      return
+    }
+
+    for (const field of ['start_command', 'export_command', 'open_command']) {
+      this.requireString(value[field], `control_plane.portal_actions.${field}`, issues)
+    }
+  }
+
+  private validateArtifacts(value: unknown, issues: ValidationIssue[]) {
+    if (!Array.isArray(value)) {
+      issues.push({ path: 'control_plane.artifacts', message: 'artifacts should be an array' })
+    }
+  }
+
+  private validateNextLesson(value: unknown, issues: ValidationIssue[]) {
+    if (!isRecord(value)) {
+      issues.push({ path: 'control_plane.next_lesson', message: 'next_lesson should be an object' })
+      return
+    }
+
+    for (const field of ['code', 'title', 'path']) {
+      this.requireString(value[field], `control_plane.next_lesson.${field}`, issues)
+    }
+  }
+
+  private validateStringArray(value: unknown, path: string, issues: ValidationIssue[]) {
+    if (!Array.isArray(value)) {
+      issues.push({ path, message: `${path} should be an array` })
+      return
+    }
+
+    value.forEach((item, index) => {
+      this.requireString(item, `${path}[${index}]`, issues)
+    })
   }
 
   private requireString(value: unknown, path: string, issues: ValidationIssue[]) {
