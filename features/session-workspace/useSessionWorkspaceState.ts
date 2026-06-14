@@ -8,7 +8,7 @@ import {
   createSafeLocalStoragePort,
   type BrowserStorageLike,
   type JsonStoragePort
-} from '../../shared/utils/local-storage.ts'
+} from '~/shared/utils/local-storage'
 import {
   buildSessionWorkspaceState,
   createSessionWorkspaceEntry,

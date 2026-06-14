@@ -1,0 +1,195 @@
+.release-topbar,
+.release-metrics,
+.release-track-bar,
+.release-grid {
+  margin-bottom: 18px;
+}
+
+.release-topbar-actions,
+.release-track-bar,
+.release-detail-heading,
+.release-panel-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.release-metrics,
+.release-grid,
+.release-check-grid,
+.release-lower-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.release-detail,
+.release-panel,
+.release-check-card,
+.release-lesson-button {
+  min-width: 0;
+}
+
+.release-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.release-grid {
+  grid-template-columns: minmax(260px, 0.35fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+.release-check-grid,
+.release-lower-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.release-metrics article,
+.release-track-bar,
+.release-lesson-button,
+.release-detail,
+.release-check-card,
+.release-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.release-metrics article,
+.release-track-bar,
+.release-detail,
+.release-check-card,
+.release-panel {
+  padding: 16px;
+}
+
+.release-metrics span {
+  display: block;
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 760;
+  letter-spacing: 0;
+  line-height: 1.15;
+}
+
+.release-metrics p,
+.release-check-card p,
+.release-check-card small,
+.release-panel li,
+.release-lesson-button span {
+  color: var(--muted);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.release-track-bar {
+  justify-content: flex-start;
+  padding: 10px;
+}
+
+.release-track-bar .active {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 720;
+}
+
+.release-lesson-list {
+  display: grid;
+  gap: 10px;
+}
+
+.release-lesson-button {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  padding: 14px;
+  text-align: left;
+}
+
+.release-lesson-button[aria-pressed="true"] {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+
+.release-lesson-button span,
+.release-detail-heading h2,
+.release-panel h2 {
+  color: var(--text);
+  font-weight: 740;
+  letter-spacing: 0;
+}
+
+.release-lesson-button small {
+  color: var(--muted);
+}
+
+.release-detail-heading {
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.release-detail-heading h2,
+.release-panel h2 {
+  margin: 0;
+}
+
+.release-check-card {
+  display: grid;
+  gap: 8px;
+  background: #fbfbfa;
+}
+
+.release-check-card div,
+.release-panel-heading {
+  align-items: center;
+}
+
+.release-check-card div {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.release-panel {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.release-panel code {
+  display: block;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+  padding: 10px;
+  color: var(--text);
+}
+
+.release-panel ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.release-export textarea {
+  width: 100%;
+  min-height: 260px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+  color: var(--text);
+  font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  padding: 12px;
+}
+
+@media (max-width: 1080px) {
+  .release-metrics,
+  .release-grid,
+  .release-check-grid,
+  .release-lower-grid {
+    grid-template-columns: 1fr;
+  }
+}

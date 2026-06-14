@@ -18,6 +18,7 @@ const emit = defineEmits<{
   'open-session': []
   'open-workspace': []
   'open-cohort': []
+  'open-release': []
 }>()
 
 const catalogRef = toRef(props, 'catalog')
@@ -61,6 +62,9 @@ const { hubState, selectLesson, selectRole, selectTrack } = useLessonHubState(ca
             @click="emit('open-cohort')"
           >
             Открыть cohort
+          </button>
+          <button class="quiet-button" type="button" @click="emit('open-release')">
+            Release Console
           </button>
         </div>
       </header>

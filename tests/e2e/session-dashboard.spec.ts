@@ -155,6 +155,33 @@ test('summarizes learner progress in the cohort dashboard', async ({ page }) => 
   await expect(page.getByText('ready-for-review')).toBeVisible()
 })
 
+test('opens lesson release console and shows go no-go checks', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Release Console' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Lesson Release Console' })).toBeVisible()
+  await expect(page.getByText('go/no-go')).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'Partitioning, Statistics and Incremental Loads' })
+  ).toBeVisible()
+  await expect(page.getByText('Google Slides / deck')).toBeVisible()
+  await expect(page.getByText('SQL lab', { exact: true })).toBeVisible()
+  await expect(page.getByText('python3 mentor-lab.py lesson-release greenplum-partitioning verify')).toBeVisible()
+  await expect(page.getByLabel('Release markdown')).toHaveValue(/Go\/no-go: go/)
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1
+      )
+    )
+    .toBe(true)
+
+  await page.getByRole('button', { name: 'ClickHouse' }).click()
+  await expect(page.getByLabel('Selected release detail').getByText('blocked')).toBeVisible()
+  await expect(page.getByLabel('Release risks').getByText('Lesson status is planned.')).toBeVisible()
+})
+
 test('selects Spark track and student commands in the lesson hub', async ({ page }) => {
   await page.goto('/')
 

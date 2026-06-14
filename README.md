@@ -1,6 +1,6 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Submission Inbox**, **Mentor Live Cockpit**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, сдача домашки и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Submission Inbox**, **Mentor Live Cockpit**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, сдача домашки и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs, `catalog.json` и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 3 + Vite.
 
@@ -10,6 +10,7 @@
 - [Academy Lesson Hub](#academy-lesson-hub)
 - [Lesson Launcher](#lesson-launcher)
 - [Session Workspace](#session-workspace)
+- [Lesson Release Console](#lesson-release-console)
 - [Cohort Progress Dashboard](#cohort-progress-dashboard)
 - [Mentor Review Center](#mentor-review-center)
 - [Submission Inbox](#submission-inbox)
@@ -147,6 +148,29 @@ workspace:<student_name>:<lab_name>
 ```
 
 Кнопка `Открыть текущую live-сессию` возвращает к session-файлу, который сервер Nuxt отдал через `MENTOR_LAB_SESSION`, `public/session.json` или `public/session.sample.json`.
+
+## Lesson Release Console
+
+`Lesson Release Console` — pre-flight экран перед занятием. Он берет `academy-catalog/v1`, текущую `session.json` и `control_plane`, затем показывает go/no-go статус по каждому уроку.
+
+Console проверяет:
+
+- статус урока и readiness markers из каталога;
+- deck / Google Slides;
+- workbook и homework;
+- SQL-lab artifacts;
+- mentor/student runbook и self-check команды;
+- наличие `Lesson Launcher` для выбранного урока.
+
+Экран не запускает команды в браузере. Он показывает точные copyable-команды проверки (`mentor-lab.py`, `npm run check`, `npm run build`) и Markdown release-report, который можно положить в рабочий журнал или PR description.
+
+Рекомендуемый workflow:
+
+1. Открыть `Academy Lesson Hub`.
+2. Нажать `Release Console`.
+3. Проверить текущий урок и соседние planned lessons.
+4. Если статус `blocked`, закрыть missing artifacts в core-репозитории.
+5. Скопировать Markdown release-report перед занятием.
 
 ## Cohort Progress Dashboard
 
@@ -338,6 +362,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `features/lesson-hub` — витрина направлений, уроков, role-aware команд и readiness.
 - `features/lesson-launcher` — генерация launch-пакета, route/platform preferences и copyable команды запуска.
 - `features/session-workspace` — browser-local импорт `session.json`, validation, recent runs и выбор session для cockpit.
+- `features/release-console` — pre-flight go/no-go, release checks, risks и copyable release report.
 - `features/cohort-dashboard` — browser-local cohort aggregation, learner cards, skill heatmap и mentor ops handoff.
 - `features/review-center` — evidence score, stage review, risks, recommendations и copyable handoff report.
 - `features/submission-inbox` — student homework submission, completeness scoring, mentor inbox и copyable submission report.

@@ -5,6 +5,7 @@ import type { ValidationIssue } from '~/core/session/application/session-contrac
 import type { AcademySession } from '~/core/session/domain/academy-session'
 import CohortDashboard from '~/features/cohort-dashboard/CohortDashboard.vue'
 import LessonHub from '~/features/lesson-hub/LessonHub.vue'
+import ReleaseConsole from '~/features/release-console/ReleaseConsole.vue'
 import ReviewCenter from '~/features/review-center/ReviewCenter.vue'
 import SessionDashboard from '~/features/session-dashboard/SessionDashboard.vue'
 import SessionWorkspace from '~/features/session-workspace/SessionWorkspace.vue'
@@ -25,7 +26,7 @@ const emit = defineEmits<{
   'reload-session': []
 }>()
 
-type PortalSurface = 'hub' | 'workspace' | 'session' | 'review' | 'submission' | 'cohort'
+type PortalSurface = 'hub' | 'workspace' | 'session' | 'review' | 'submission' | 'cohort' | 'release'
 
 const surface = ref<PortalSurface>('hub')
 const surfaceStorageKey = 'academy-portal-surface'
@@ -76,7 +77,8 @@ onMounted(() => {
     savedSurface === 'session' ||
     savedSurface === 'review' ||
     savedSurface === 'submission' ||
-    savedSurface === 'cohort'
+    savedSurface === 'cohort' ||
+    savedSurface === 'release'
   ) {
     surface.value = savedSurface
   }
@@ -103,6 +105,18 @@ watch(
     @open-session="openLiveSession"
     @open-workspace="selectSurface('workspace')"
     @open-cohort="selectSurface('cohort')"
+    @open-release="selectSurface('release')"
+  />
+
+  <ReleaseConsole
+    v-else-if="catalog && catalogIsValid && surface === 'release'"
+    :catalog="catalog"
+    :session="activeSession"
+    :source="catalogSource"
+    :can-open-hub="true"
+    :can-open-session="Boolean(activeSession && activeIsValid)"
+    @open-hub="selectSurface('hub')"
+    @open-session="selectSurface('session')"
   />
 
   <SessionWorkspace

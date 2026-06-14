@@ -10,7 +10,8 @@ export default defineNuxtConfig({
     '~/assets/css/session-workspace.css',
     '~/assets/css/review-center.css',
     '~/assets/css/submission-inbox.css',
-    '~/assets/css/cohort-dashboard.css'
+    '~/assets/css/cohort-dashboard.css',
+    '~/assets/css/release-console.css'
   ],
   app: {
     head: {
