@@ -17,6 +17,7 @@ const emit = defineEmits<{
   'reload-catalog': []
   'open-session': []
   'open-workspace': []
+  'open-cohort': []
 }>()
 
 const catalogRef = toRef(props, 'catalog')
@@ -52,6 +53,14 @@ const { hubState, selectLesson, selectRole, selectTrack } = useLessonHubState(ca
           </button>
           <button class="quiet-button" type="button" @click="emit('open-workspace')">
             Открыть сессии
+          </button>
+          <button
+            class="quiet-button"
+            type="button"
+            :disabled="!sessionIsValid"
+            @click="emit('open-cohort')"
+          >
+            Открыть cohort
           </button>
         </div>
       </header>

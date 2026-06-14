@@ -16,6 +16,7 @@ const emit = defineEmits<{
   'open-session': [payload: { session: AcademySession; source: string }]
   'open-review': [payload: { session: AcademySession; source: string }]
   'open-submission': [payload: { session: AcademySession; source: string }]
+  'open-cohort': []
 }>()
 
 const {
@@ -115,6 +116,14 @@ const openSelectedSubmission = () => {
           @click="emit('open-current-session')"
         >
           Открыть текущую live-сессию
+        </button>
+        <button
+          class="quiet-button"
+          type="button"
+          :disabled="!currentIsValid"
+          @click="emit('open-cohort')"
+        >
+          Открыть cohort
         </button>
       </div>
     </header>

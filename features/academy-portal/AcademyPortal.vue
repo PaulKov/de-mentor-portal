@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import type { AcademyCatalog } from '~/core/catalog/domain/academy-catalog'
 import type { ValidationIssue } from '~/core/session/application/session-contract'
 import type { AcademySession } from '~/core/session/domain/academy-session'
+import CohortDashboard from '~/features/cohort-dashboard/CohortDashboard.vue'
 import LessonHub from '~/features/lesson-hub/LessonHub.vue'
 import ReviewCenter from '~/features/review-center/ReviewCenter.vue'
 import SessionDashboard from '~/features/session-dashboard/SessionDashboard.vue'
@@ -24,7 +25,7 @@ const emit = defineEmits<{
   'reload-session': []
 }>()
 
-type PortalSurface = 'hub' | 'workspace' | 'session' | 'review' | 'submission'
+type PortalSurface = 'hub' | 'workspace' | 'session' | 'review' | 'submission' | 'cohort'
 
 const surface = ref<PortalSurface>('hub')
 const surfaceStorageKey = 'academy-portal-surface'
@@ -74,7 +75,8 @@ onMounted(() => {
     savedSurface === 'workspace' ||
     savedSurface === 'session' ||
     savedSurface === 'review' ||
-    savedSurface === 'submission'
+    savedSurface === 'submission' ||
+    savedSurface === 'cohort'
   ) {
     surface.value = savedSurface
   }
@@ -100,6 +102,7 @@ watch(
     @reload-catalog="emit('reload-catalog')"
     @open-session="openLiveSession"
     @open-workspace="selectSurface('workspace')"
+    @open-cohort="selectSurface('cohort')"
   />
 
   <SessionWorkspace
@@ -112,6 +115,7 @@ watch(
     @open-session="openWorkspaceSession"
     @open-review="openWorkspaceReview"
     @open-submission="openWorkspaceSubmission"
+    @open-cohort="selectSurface('cohort')"
   />
 
   <ReviewCenter
@@ -121,10 +125,12 @@ watch(
     :can-open-hub="catalogIsValid"
     :can-open-workspace="true"
     :can-open-submission="true"
+    :can-open-cohort="true"
     @open-hub="selectSurface('hub')"
     @open-workspace="selectSurface('workspace')"
     @open-session="selectSurface('session')"
     @open-submission="selectSurface('submission')"
+    @open-cohort="selectSurface('cohort')"
   />
 
   <SubmissionInbox
@@ -135,10 +141,28 @@ watch(
     :can-open-workspace="true"
     :can-open-review="true"
     :can-open-session="true"
+    :can-open-cohort="true"
     @open-hub="selectSurface('hub')"
     @open-workspace="selectSurface('workspace')"
     @open-review="selectSurface('review')"
     @open-session="selectSurface('session')"
+    @open-cohort="selectSurface('cohort')"
+  />
+
+  <CohortDashboard
+    v-else-if="activeSession && activeIsValid && surface === 'cohort'"
+    :session="activeSession"
+    :source="activeSource"
+    :can-open-hub="catalogIsValid"
+    :can-open-workspace="true"
+    :can-open-session="true"
+    :can-open-review="true"
+    :can-open-submission="true"
+    @open-hub="selectSurface('hub')"
+    @open-workspace="selectSurface('workspace')"
+    @open-session="selectSurface('session')"
+    @open-review="selectSurface('review')"
+    @open-submission="selectSurface('submission')"
   />
 
   <SessionDashboard
@@ -151,10 +175,12 @@ watch(
     :can-open-workspace="true"
     :can-open-review="true"
     :can-open-submission="true"
+    :can-open-cohort="true"
     @reload="emit('reload-session')"
     @open-hub="selectSurface('hub')"
     @open-workspace="selectSurface('workspace')"
     @open-review="selectSurface('review')"
     @open-submission="selectSurface('submission')"
+    @open-cohort="selectSurface('cohort')"
   />
 </template>

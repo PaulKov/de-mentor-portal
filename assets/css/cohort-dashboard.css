@@ -1,0 +1,181 @@
+.cohort-topbar,
+.cohort-metrics,
+.cohort-filter-panel,
+.cohort-grid {
+  margin-bottom: 18px;
+}
+
+.cohort-topbar-actions,
+.cohort-filter-panel,
+.cohort-export-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.cohort-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cohort-metrics article,
+.cohort-filter-panel,
+.cohort-learner-card,
+.cohort-panel,
+.cohort-empty-state {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.cohort-metrics article {
+  padding: 16px;
+}
+
+.cohort-metrics span {
+  display: block;
+  color: var(--text);
+  font-size: 23px;
+  font-weight: 760;
+  letter-spacing: 0;
+  line-height: 1.15;
+}
+
+.cohort-metrics p,
+.cohort-card-metrics dt,
+.cohort-card-metrics dd,
+.cohort-risk-list,
+.cohort-skill-list span,
+.cohort-empty-state p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.cohort-filter-panel {
+  justify-content: flex-start;
+  padding: 10px;
+}
+
+.cohort-filter-panel .active {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 720;
+}
+
+.cohort-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.9fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.cohort-card-list,
+.cohort-side-rail,
+.cohort-skill-list {
+  display: grid;
+  gap: 12px;
+}
+
+.cohort-learner-card,
+.cohort-panel,
+.cohort-empty-state {
+  padding: 16px;
+}
+
+.cohort-card-heading,
+.cohort-export-heading {
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.cohort-card-heading {
+  display: flex;
+  gap: 14px;
+}
+
+.cohort-card-heading h2,
+.cohort-panel h2,
+.cohort-export-heading h2 {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.cohort-card-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.cohort-card-metrics div,
+.cohort-skill-list article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+  padding: 10px;
+}
+
+.cohort-card-metrics dt {
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.cohort-card-metrics dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.cohort-risk-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.cohort-skill-list {
+  margin-top: 12px;
+}
+
+.cohort-skill-list article {
+  display: grid;
+  gap: 4px;
+}
+
+.cohort-export textarea {
+  width: 100%;
+  min-height: 310px;
+  margin-top: 14px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+  color: var(--text);
+  font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  padding: 12px;
+}
+
+@media (max-width: 1080px) {
+  .cohort-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cohort-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .cohort-metrics,
+  .cohort-card-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .cohort-topbar-actions,
+  .cohort-export-heading {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+  }
+}

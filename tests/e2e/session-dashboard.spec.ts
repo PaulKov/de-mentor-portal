@@ -130,6 +130,31 @@ test('lets a student submit homework evidence and opens it in the mentor inbox',
   await expect(page.getByLabel('Mentor submission inbox').getByText('ready-for-review')).toBeVisible()
 })
 
+test('summarizes learner progress in the cohort dashboard', async ({ page }) => {
+  await openCurrentSession(page)
+
+  await page.getByRole('checkbox', { name: /Partition pruning/ }).check()
+  await page.getByRole('button', { name: 'Открыть submissions' }).click()
+  await page.getByLabel('Evidence for Self-check commands').fill('doctor ok; release verify ok')
+  await page.getByLabel('Evidence for Partition pruning').fill('EXPLAIN shows selected partitions only')
+  await page.getByLabel('Evidence for Statistics after load').fill('ANALYZE executed; last_analyze is fresh')
+  await page.getByLabel('Evidence for Next lesson readiness').fill('Prepared questions for Lesson 02')
+  await page.getByRole('button', { name: 'Отправить submission' }).click()
+  await page.getByRole('button', { name: 'Открыть cohort' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Cohort Progress Dashboard' })).toBeVisible()
+  await expect(page.getByText('1 learner')).toBeVisible()
+  await expect(page.getByText('50% avg evidence')).toBeVisible()
+  await expect(page.getByText('ready-for-review')).toBeVisible()
+  await expect(page.getByText('Evidence gap: Statistics after load')).toBeVisible()
+  await expect(page.getByLabel('Skill heatmap').getByText('Partition pruning')).toBeVisible()
+  await expect(page.getByLabel('Cohort markdown')).toHaveValue(/Demo Student · greenplum-partitioning/)
+
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Cohort Progress Dashboard' })).toBeVisible()
+  await expect(page.getByText('ready-for-review')).toBeVisible()
+})
+
 test('selects Spark track and student commands in the lesson hub', async ({ page }) => {
   await page.goto('/')
 

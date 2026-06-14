@@ -12,6 +12,7 @@ const props = defineProps<{
   canOpenHub?: boolean
   canOpenWorkspace?: boolean
   canOpenSubmission?: boolean
+  canOpenCohort?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -19,6 +20,7 @@ const emit = defineEmits<{
   'open-workspace': []
   'open-session': []
   'open-submission': []
+  'open-cohort': []
 }>()
 
 const sessionRef = toRef(props, 'session')
@@ -61,6 +63,14 @@ const scoreTone = () => reviewState.value.evidenceScore.percent >= 80 ? 'success
         @click="emit('open-submission')"
       >
         Открыть submissions
+      </button>
+      <button
+        v-if="canOpenCohort"
+        class="quiet-button portal-action-button"
+        type="button"
+        @click="emit('open-cohort')"
+      >
+        Открыть cohort
       </button>
     </template>
 

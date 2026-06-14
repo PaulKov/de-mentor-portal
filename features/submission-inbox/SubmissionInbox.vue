@@ -13,6 +13,7 @@ const props = defineProps<{
   canOpenWorkspace?: boolean
   canOpenReview?: boolean
   canOpenSession?: boolean
+  canOpenCohort?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -20,6 +21,7 @@ const emit = defineEmits<{
   'open-workspace': []
   'open-review': []
   'open-session': []
+  'open-cohort': []
 }>()
 
 const sessionRef = toRef(props, 'session')
@@ -83,6 +85,14 @@ const formatDate = (value?: string) => value ? new Date(value).toLocaleString('r
         @click="emit('open-review')"
       >
         Открыть review
+      </button>
+      <button
+        v-if="canOpenCohort"
+        class="quiet-button portal-action-button"
+        type="button"
+        @click="emit('open-cohort')"
+      >
+        Открыть cohort
       </button>
     </template>
 

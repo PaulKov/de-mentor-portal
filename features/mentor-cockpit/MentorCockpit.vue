@@ -22,6 +22,7 @@ const props = defineProps<{
   canOpenWorkspace?: boolean
   canOpenReview?: boolean
   canOpenSubmission?: boolean
+  canOpenCohort?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -31,6 +32,7 @@ const emit = defineEmits<{
   'open-workspace': []
   'open-review': []
   'open-submission': []
+  'open-cohort': []
 }>()
 
 const sessionRef = toRef(props, 'session')
@@ -78,6 +80,14 @@ const {
         @click="emit('open-submission')"
       >
         Открыть submissions
+      </button>
+      <button
+        v-if="canOpenCohort"
+        class="quiet-button portal-action-button"
+        type="button"
+        @click="emit('open-cohort')"
+      >
+        Открыть cohort
       </button>
     </template>
 

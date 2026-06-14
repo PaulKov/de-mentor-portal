@@ -1,6 +1,6 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Mentor Review Center**, **Submission Inbox**, **Mentor Live Cockpit**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, сдача домашки и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Submission Inbox**, **Mentor Live Cockpit**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, сдача домашки и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs, `catalog.json` и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 3 + Vite.
 
@@ -10,6 +10,7 @@
 - [Academy Lesson Hub](#academy-lesson-hub)
 - [Lesson Launcher](#lesson-launcher)
 - [Session Workspace](#session-workspace)
+- [Cohort Progress Dashboard](#cohort-progress-dashboard)
 - [Mentor Review Center](#mentor-review-center)
 - [Submission Inbox](#submission-inbox)
 - [Mentor Live Cockpit](#mentor-live-cockpit)
@@ -146,6 +147,35 @@ workspace:<student_name>:<lab_name>
 ```
 
 Кнопка `Открыть текущую live-сессию` возвращает к session-файлу, который сервер Nuxt отдал через `MENTOR_LAB_SESSION`, `public/session.json` или `public/session.sample.json`.
+
+## Cohort Progress Dashboard
+
+`Cohort Progress Dashboard` — операционный экран ментора по ученикам и recent runs. Он агрегирует current live session, imported sessions из `Session Workspace`, browser-local evidence из `Mentor Live Cockpit` и homework submissions из `Submission Inbox`.
+
+Dashboard показывает:
+
+- количество learners и средний evidence score;
+- сколько submissions готовы к review;
+- учеников с открытыми risks/gaps;
+- learner cards с текущим stage, next lesson, submission status и evidence gaps;
+- skill heatmap по `skill_graph`;
+- copyable Markdown для next actions.
+
+Первый релиз намеренно остается browser-local: портал не отправляет данные на backend и не требует отдельной базы. Источники берутся из существующих ключей:
+
+```text
+session-workspace:academy-session/v1
+mentor-cockpit:<contract_version>:<lab_name>:<student_name>:<created_at>
+submission-inbox:<contract_version>:<lab_name>:<student_name>:<created_at>
+```
+
+Рекомендуемый workflow:
+
+1. Импортировать несколько `session.json` в `Session Workspace` или открыть текущую live-сессию.
+2. В cockpit отметить evidence и stage notes.
+3. В `Submission Inbox` принять homework evidence ученика.
+4. Открыть `Cohort Progress Dashboard` и отфильтровать learners с risks или ready submissions.
+5. Скопировать Markdown summary в рабочий журнал или план следующей встречи.
 
 ## Mentor Review Center
 
@@ -308,6 +338,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `features/lesson-hub` — витрина направлений, уроков, role-aware команд и readiness.
 - `features/lesson-launcher` — генерация launch-пакета, route/platform preferences и copyable команды запуска.
 - `features/session-workspace` — browser-local импорт `session.json`, validation, recent runs и выбор session для cockpit.
+- `features/cohort-dashboard` — browser-local cohort aggregation, learner cards, skill heatmap и mentor ops handoff.
 - `features/review-center` — evidence score, stage review, risks, recommendations и copyable handoff report.
 - `features/submission-inbox` — student homework submission, completeness scoring, mentor inbox и copyable submission report.
 - `features/session-dashboard` — композиция основного экрана.
