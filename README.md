@@ -1,12 +1,13 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: текущий этап занятия, timeline, skill graph, быстрые команды, evidence checklist и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Mentor Live Cockpit**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 3 + Vite.
 
 ## Оглавление
 
 - [Быстрый старт](#быстрый-старт)
+- [Mentor Live Cockpit](#mentor-live-cockpit)
 - [Контракт сессии](#контракт-сессии)
 - [Архитектура](#архитектура)
 - [Проверки](#проверки)
@@ -30,6 +31,24 @@ MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev
 ```
 
 Можно создать локальный `.env` из `.env.example` и прописать путь там.
+
+## Mentor Live Cockpit
+
+`Mentor Live Cockpit` — первый экран для проведения урока. Ментор открывает портал и сразу видит:
+
+- выбранный stage, timebox, краткий скрипт, вопрос ученику, ожидаемый ответ и способ проверки;
+- ссылку на Google Slides или локальный deck artifact из `control_plane`;
+- runnable-команды из stage guide и session contract с кнопкой копирования;
+- evidence checklist по ключевым навыкам;
+- локальные заметки по текущему stage и отмеченные evidence items.
+
+Чекбоксы evidence и заметки сохраняются в браузерный `localStorage` по ключу session identity:
+
+```text
+mentor-cockpit:<contract_version>:<lab_name>:<student_name>:<created_at>
+```
+
+Это удобно для живого занятия: перезагрузка страницы не сбрасывает ход урока, но данные не уходят на backend и не смешиваются между разными учениками или сессиями.
 
 ## Контракт сессии
 
@@ -63,6 +82,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `core/session/infrastructure` — адаптеры источников данных, например `HttpSessionSource`.
 - `composables/useSessionState.ts` — тонкий Nuxt-фасад для состояния.
 - `features/session-dashboard` — композиция основного экрана.
+- `features/mentor-cockpit` — live cockpit: stage player, slides/commands rail, evidence panel и local persistence facade.
 - `features/timeline`, `features/commands`, `features/evidence`, `features/skill-graph`, `features/session-status` — независимые UI-фичи.
 - `components/shared/ui` — переиспользуемые Vue-компоненты без знания предметной области.
 - `shared/utils` — framework-agnostic утилиты, например clipboard adapter.
