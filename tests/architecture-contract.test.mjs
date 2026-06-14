@@ -27,6 +27,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'assets/css/student-launchpad.css',
     'assets/css/lesson-hub.css',
     'assets/css/session-workspace.css',
+    'assets/css/review-center.css',
     'features/academy-portal/AcademyPortal.vue',
     'features/lesson-hub/LessonHub.vue',
     'features/lesson-hub/TrackNavigation.vue',
@@ -40,6 +41,9 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'features/session-workspace/SessionWorkspace.vue',
     'features/session-workspace/useSessionWorkspaceState.ts',
     'features/session-workspace/session-workspace-state.ts',
+    'features/review-center/ReviewCenter.vue',
+    'features/review-center/useReviewCenterState.ts',
+    'features/review-center/review-center-state.ts',
     'features/session-dashboard/SessionDashboard.vue',
     'features/session-dashboard/DashboardModeSwitch.vue',
     'features/session-dashboard/session-dashboard-mode.ts',
@@ -78,6 +82,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
 
   const app = await readText('app.vue')
   const dashboard = await readText('features/session-dashboard/SessionDashboard.vue')
+  const portal = await readText('features/academy-portal/AcademyPortal.vue')
   const nuxtConfig = await readText('nuxt.config.ts')
   assert.ok(app.includes('<AcademyPortal'), 'app.vue should delegate rendering to AcademyPortal')
   assert.ok(app.includes('useCatalogState'), 'app.vue should load the academy catalog through a composable')
@@ -90,7 +95,10 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
   assert.ok(nuxtConfig.includes('~/assets/css/student-launchpad.css'), 'Nuxt should load student launchpad styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/lesson-hub.css'), 'Nuxt should load lesson hub styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/session-workspace.css'), 'Nuxt should load session workspace styles explicitly')
+  assert.ok(nuxtConfig.includes('~/assets/css/review-center.css'), 'Nuxt should load review center styles explicitly')
   assert.ok(dashboard.includes('@open-workspace'), 'SessionDashboard should keep workspace navigation reachable')
+  assert.ok(dashboard.includes('@open-review'), 'SessionDashboard should keep review navigation reachable')
+  assert.ok(portal.includes('<ReviewCenter'), 'AcademyPortal should render Review Center as a portal surface')
   assert.ok(app.includes(':session-issues'), 'app.vue should pass live session validation issues through the portal facade')
   assert.ok(lineCount(app) <= 35, 'app.vue should stay a thin Nuxt facade')
 
@@ -134,12 +142,16 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'features/session-workspace/SessionWorkspace.vue',
     'features/session-workspace/useSessionWorkspaceState.ts',
     'features/session-workspace/session-workspace-state.ts',
+    'features/review-center/ReviewCenter.vue',
+    'features/review-center/useReviewCenterState.ts',
+    'features/review-center/review-center-state.ts',
     'assets/css/main.css',
     'assets/css/control-plane.css',
     'assets/css/cockpit.css',
     'assets/css/student-launchpad.css',
     'assets/css/lesson-hub.css',
-    'assets/css/session-workspace.css'
+    'assets/css/session-workspace.css',
+    'assets/css/review-center.css'
   ]) {
     const source = await readText(path)
     assert.ok(lineCount(source) <= 400, `${path} should stay below the module SLOC guard`)
@@ -215,6 +227,7 @@ test('developer experience documents validation and local sample workflow', asyn
   assert.ok(readme.includes('Academy Lesson Hub'))
   assert.ok(readme.includes('Lesson Launcher'))
   assert.ok(readme.includes('Session Workspace'))
+  assert.ok(readme.includes('Mentor Review Center'))
   assert.ok(readme.includes('browser-local'))
   assert.ok(readme.includes('academy-catalog/v1'))
   assert.ok(readme.includes('launcher'))
@@ -228,6 +241,7 @@ test('developer experience documents validation and local sample workflow', asyn
   assert.ok(readme.includes('core/catalog/domain'))
   assert.ok(readme.includes('features/academy-portal'))
   assert.ok(readme.includes('features/lesson-hub'))
+  assert.ok(readme.includes('features/review-center'))
   assert.ok(readme.includes('features/session-dashboard'))
   assert.ok(readme.includes('components/shared/ui'))
 

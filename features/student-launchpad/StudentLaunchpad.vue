@@ -20,6 +20,7 @@ const props = defineProps<{
   activeMode: DashboardMode
   canOpenHub?: boolean
   canOpenWorkspace?: boolean
+  canOpenReview?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -27,6 +28,7 @@ const emit = defineEmits<{
   'select-mode': [mode: DashboardMode]
   'open-hub': []
   'open-workspace': []
+  'open-review': []
 }>()
 
 const sessionRef = toRef(props, 'session')
@@ -51,6 +53,14 @@ const { launchpadState, selectPlatform } = useStudentLaunchpadState(sessionRef)
         @click="emit('open-workspace')"
       >
         Открыть сессии
+      </button>
+      <button
+        v-if="canOpenReview"
+        class="quiet-button portal-action-button"
+        type="button"
+        @click="emit('open-review')"
+      >
+        Открыть review
       </button>
     </template>
 

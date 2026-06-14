@@ -1,6 +1,6 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Mentor Live Cockpit**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Mentor Review Center**, **Mentor Live Cockpit**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs, `catalog.json` и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 3 + Vite.
 
@@ -10,6 +10,7 @@
 - [Academy Lesson Hub](#academy-lesson-hub)
 - [Lesson Launcher](#lesson-launcher)
 - [Session Workspace](#session-workspace)
+- [Mentor Review Center](#mentor-review-center)
 - [Mentor Live Cockpit](#mentor-live-cockpit)
 - [Student Launchpad](#student-launchpad)
 - [Контракт каталога](#контракт-каталога)
@@ -145,6 +146,32 @@ workspace:<student_name>:<lab_name>
 
 Кнопка `Открыть текущую live-сессию` возвращает к session-файлу, который сервер Nuxt отдал через `MENTOR_LAB_SESSION`, `public/session.json` или `public/session.sample.json`.
 
+## Mentor Review Center
+
+`Mentor Review Center` — экран закрытия урока. Он берет выбранную session, читает browser-local заметки и отмеченные evidence items из `Mentor Live Cockpit`, затем собирает понятный handoff:
+
+- evidence score по `skill_graph`;
+- stage review с вопросами, проверками и заметками ментора;
+- сильные сигналы;
+- открытые риски;
+- рекомендации ученику;
+- следующий урок из `control_plane.next_lesson`;
+- copyable Markdown и JSON export.
+
+Данные review не уходят на backend. Портал читает тот же ключ, который использует cockpit:
+
+```text
+mentor-cockpit:<contract_version>:<lab_name>:<student_name>:<created_at>
+```
+
+Рекомендуемый workflow после занятия:
+
+1. В cockpit отметить evidence и записать короткие stage notes.
+2. Нажать `Открыть review`.
+3. Проверить score, risks и recommendations.
+4. Скопировать Markdown-отчет ученику или в рабочий журнал.
+5. Скопировать JSON, если нужен машинно-читаемый handoff для будущей автоматизации.
+
 ## Mentor Live Cockpit
 
 `Mentor Live Cockpit` — экран для проведения конкретной live-сессии. Ментор открывает текущую сессию из хаба и сразу видит:
@@ -254,6 +281,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `features/lesson-hub` — витрина направлений, уроков, role-aware команд и readiness.
 - `features/lesson-launcher` — генерация launch-пакета, route/platform preferences и copyable команды запуска.
 - `features/session-workspace` — browser-local импорт `session.json`, validation, recent runs и выбор session для cockpit.
+- `features/review-center` — evidence score, stage review, risks, recommendations и copyable handoff report.
 - `features/session-dashboard` — композиция основного экрана.
 - `features/mentor-cockpit` — live cockpit: stage player, slides/commands rail, evidence panel и local persistence facade.
 - `features/student-launchpad` — student self-service: readiness по платформам, материалы, команды запуска, self-check и handoff.

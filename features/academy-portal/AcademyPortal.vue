@@ -4,6 +4,7 @@ import type { AcademyCatalog } from '~/core/catalog/domain/academy-catalog'
 import type { ValidationIssue } from '~/core/session/application/session-contract'
 import type { AcademySession } from '~/core/session/domain/academy-session'
 import LessonHub from '~/features/lesson-hub/LessonHub.vue'
+import ReviewCenter from '~/features/review-center/ReviewCenter.vue'
 import SessionDashboard from '~/features/session-dashboard/SessionDashboard.vue'
 import SessionWorkspace from '~/features/session-workspace/SessionWorkspace.vue'
 
@@ -22,7 +23,7 @@ const emit = defineEmits<{
   'reload-session': []
 }>()
 
-type PortalSurface = 'hub' | 'workspace' | 'session'
+type PortalSurface = 'hub' | 'workspace' | 'session' | 'review'
 
 const surface = ref<PortalSurface>('hub')
 const surfaceStorageKey = 'academy-portal-surface'
@@ -48,6 +49,12 @@ const openWorkspaceSession = (payload: { session: AcademySession; source: string
   selectSurface('session')
 }
 
+const openWorkspaceReview = (payload: { session: AcademySession; source: string }) => {
+  workspaceSession.value = payload.session
+  workspaceSource.value = payload.source
+  selectSurface('review')
+}
+
 const activeSession = computed(() => workspaceSession.value ?? props.session)
 const activeSource = computed(() => workspaceSession.value ? workspaceSource.value : props.sessionSource)
 const activeIssues = computed(() => workspaceSession.value ? [] : props.sessionIssues)
@@ -55,7 +62,12 @@ const activeIsValid = computed(() => workspaceSession.value ? true : props.sessi
 
 onMounted(() => {
   const savedSurface = window.localStorage.getItem(surfaceStorageKey)
-  if (savedSurface === 'hub' || savedSurface === 'workspace' || savedSurface === 'session') {
+  if (
+    savedSurface === 'hub' ||
+    savedSurface === 'workspace' ||
+    savedSurface === 'session' ||
+    savedSurface === 'review'
+  ) {
     surface.value = savedSurface
   }
 })
@@ -90,6 +102,18 @@ watch(
     @open-hub="selectSurface('hub')"
     @open-current-session="openLiveSession"
     @open-session="openWorkspaceSession"
+    @open-review="openWorkspaceReview"
+  />
+
+  <ReviewCenter
+    v-else-if="activeSession && activeIsValid && surface === 'review'"
+    :session="activeSession"
+    :source="activeSource"
+    :can-open-hub="catalogIsValid"
+    :can-open-workspace="true"
+    @open-hub="selectSurface('hub')"
+    @open-workspace="selectSurface('workspace')"
+    @open-session="selectSurface('session')"
   />
 
   <SessionDashboard
@@ -100,8 +124,10 @@ watch(
     :is-valid="activeIsValid"
     :can-open-hub="catalogIsValid"
     :can-open-workspace="true"
+    :can-open-review="true"
     @reload="emit('reload-session')"
     @open-hub="selectSurface('hub')"
     @open-workspace="selectSurface('workspace')"
+    @open-review="selectSurface('review')"
   />
 </template>

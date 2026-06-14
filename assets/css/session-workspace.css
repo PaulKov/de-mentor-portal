@@ -175,6 +175,10 @@
   min-width: 150px;
 }
 
+.workspace-details .quiet-button + .quiet-button {
+  margin-top: 8px;
+}
+
 .workspace-details {
   position: sticky;
   top: 28px;

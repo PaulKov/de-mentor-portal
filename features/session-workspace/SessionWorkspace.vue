@@ -14,6 +14,7 @@ const emit = defineEmits<{
   'open-hub': []
   'open-current-session': []
   'open-session': [payload: { session: AcademySession; source: string }]
+  'open-review': [payload: { session: AcademySession; source: string }]
 }>()
 
 const {
@@ -53,9 +54,26 @@ const openEntry = (entryId: string) => {
   }
 }
 
+const openReview = (entryId: string) => {
+  const entry = workspaceState.value.entries.find(candidate => candidate.id === entryId)
+  if (entry) {
+    selectEntry(entry.id)
+    emit('open-review', {
+      session: entry.session,
+      source: sourceForEntry(entry)
+    })
+  }
+}
+
 const openSelectedEntry = () => {
   if (selectedEntry.value) {
     openEntry(selectedEntry.value.id)
+  }
+}
+
+const openSelectedReview = () => {
+  if (selectedEntry.value) {
+    openReview(selectedEntry.value.id)
   }
 }
 </script>
@@ -159,6 +177,9 @@ const openSelectedEntry = () => {
             <button class="quiet-button" type="button" @click="openEntry(summary.id)">
               Открыть cockpit
             </button>
+            <button class="quiet-button" type="button" @click="openReview(summary.id)">
+              Открыть review
+            </button>
             <button class="quiet-button" type="button" @click="removeEntry(summary.id)">
               Удалить
             </button>
@@ -195,6 +216,9 @@ const openSelectedEntry = () => {
           </dl>
           <button class="quiet-button workspace-primary-action" type="button" @click="openSelectedEntry">
             Открыть cockpit
+          </button>
+          <button class="quiet-button" type="button" @click="openSelectedReview">
+            Открыть review
           </button>
         </template>
 
