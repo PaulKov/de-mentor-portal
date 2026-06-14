@@ -6,7 +6,8 @@ export default defineNuxtConfig({
     '~/assets/css/control-plane.css',
     '~/assets/css/cockpit.css',
     '~/assets/css/student-launchpad.css',
-    '~/assets/css/lesson-hub.css'
+    '~/assets/css/lesson-hub.css',
+    '~/assets/css/session-workspace.css'
   ],
   app: {
     head: {

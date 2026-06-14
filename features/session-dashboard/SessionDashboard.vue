@@ -21,11 +21,13 @@ const props = defineProps<{
   issues: ValidationIssue[]
   isValid: boolean
   canOpenHub?: boolean
+  canOpenWorkspace?: boolean
 }>()
 
 defineEmits<{
   reload: []
   'open-hub': []
+  'open-workspace': []
 }>()
 
 const stages = computed(() => props.session?.stages ?? [])
@@ -53,9 +55,11 @@ const nextStage = computed(() => {
     :is-valid="isValid"
     :active-mode="mode"
     :can-open-hub="canOpenHub"
+    :can-open-workspace="canOpenWorkspace"
     @select-mode="selectMode"
     @reload="$emit('reload')"
     @open-hub="$emit('open-hub')"
+    @open-workspace="$emit('open-workspace')"
   />
 
   <StudentLaunchpad
@@ -66,9 +70,11 @@ const nextStage = computed(() => {
     :is-valid="isValid"
     :active-mode="mode"
     :can-open-hub="canOpenHub"
+    :can-open-workspace="canOpenWorkspace"
     @select-mode="selectMode"
     @reload="$emit('reload')"
     @open-hub="$emit('open-hub')"
+    @open-workspace="$emit('open-workspace')"
   />
 
   <AppShell
@@ -81,6 +87,14 @@ const nextStage = computed(() => {
     <template v-if="canOpenHub" #portal-actions>
       <button class="quiet-button portal-action-button" type="button" @click="$emit('open-hub')">
         Вернуться в каталог
+      </button>
+      <button
+        v-if="canOpenWorkspace"
+        class="quiet-button portal-action-button"
+        type="button"
+        @click="$emit('open-workspace')"
+      >
+        Открыть сессии
       </button>
     </template>
 

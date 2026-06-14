@@ -26,6 +26,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'assets/css/cockpit.css',
     'assets/css/student-launchpad.css',
     'assets/css/lesson-hub.css',
+    'assets/css/session-workspace.css',
     'features/academy-portal/AcademyPortal.vue',
     'features/lesson-hub/LessonHub.vue',
     'features/lesson-hub/TrackNavigation.vue',
@@ -36,6 +37,9 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'features/lesson-launcher/LessonLauncher.vue',
     'features/lesson-launcher/useLessonLauncherState.ts',
     'features/lesson-launcher/lesson-launcher-state.ts',
+    'features/session-workspace/SessionWorkspace.vue',
+    'features/session-workspace/useSessionWorkspaceState.ts',
+    'features/session-workspace/session-workspace-state.ts',
     'features/session-dashboard/SessionDashboard.vue',
     'features/session-dashboard/DashboardModeSwitch.vue',
     'features/session-dashboard/session-dashboard-mode.ts',
@@ -85,6 +89,9 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
   assert.ok(nuxtConfig.includes('~/assets/css/cockpit.css'), 'Nuxt should load cockpit styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/student-launchpad.css'), 'Nuxt should load student launchpad styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/lesson-hub.css'), 'Nuxt should load lesson hub styles explicitly')
+  assert.ok(nuxtConfig.includes('~/assets/css/session-workspace.css'), 'Nuxt should load session workspace styles explicitly')
+  assert.ok(dashboard.includes('@open-workspace'), 'SessionDashboard should keep workspace navigation reachable')
+  assert.ok(app.includes(':session-issues'), 'app.vue should pass live session validation issues through the portal facade')
   assert.ok(lineCount(app) <= 35, 'app.vue should stay a thin Nuxt facade')
 
   const composable = await readText('composables/useSessionState.ts')
@@ -124,11 +131,15 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'features/lesson-launcher/LessonLauncher.vue',
     'features/lesson-launcher/useLessonLauncherState.ts',
     'features/lesson-launcher/lesson-launcher-state.ts',
+    'features/session-workspace/SessionWorkspace.vue',
+    'features/session-workspace/useSessionWorkspaceState.ts',
+    'features/session-workspace/session-workspace-state.ts',
     'assets/css/main.css',
     'assets/css/control-plane.css',
     'assets/css/cockpit.css',
     'assets/css/student-launchpad.css',
-    'assets/css/lesson-hub.css'
+    'assets/css/lesson-hub.css',
+    'assets/css/session-workspace.css'
   ]) {
     const source = await readText(path)
     assert.ok(lineCount(source) <= 400, `${path} should stay below the module SLOC guard`)
@@ -203,6 +214,8 @@ test('developer experience documents validation and local sample workflow', asyn
   assert.ok(readme.includes('npm run dev:sample'))
   assert.ok(readme.includes('Academy Lesson Hub'))
   assert.ok(readme.includes('Lesson Launcher'))
+  assert.ok(readme.includes('Session Workspace'))
+  assert.ok(readme.includes('browser-local'))
   assert.ok(readme.includes('academy-catalog/v1'))
   assert.ok(readme.includes('launcher'))
   assert.ok(readme.includes('ACADEMY_CATALOG=/absolute/path/to/catalog.json npm run dev'))

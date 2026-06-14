@@ -1,6 +1,6 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: **Academy Lesson Hub**, **Mentor Live Cockpit**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Mentor Live Cockpit**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs, `catalog.json` и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 3 + Vite.
 
@@ -9,6 +9,7 @@
 - [Быстрый старт](#быстрый-старт)
 - [Academy Lesson Hub](#academy-lesson-hub)
 - [Lesson Launcher](#lesson-launcher)
+- [Session Workspace](#session-workspace)
 - [Mentor Live Cockpit](#mentor-live-cockpit)
 - [Student Launchpad](#student-launchpad)
 - [Контракт каталога](#контракт-каталога)
@@ -116,6 +117,33 @@ academy-lesson-hub:<contract_version>:<generated_at>
 ```text
 lesson-launcher:<generated_at>:<track_code>:<lesson_code>
 ```
+
+## Session Workspace
+
+`Session Workspace` — реестр recent runs для ментора. Он нужен, когда за день есть несколько учеников, несколько маршрутов или несколько локальных `session.json`, а переключать `MENTOR_LAB_SESSION` ради каждого просмотра неудобно.
+
+Рабочий поток:
+
+- открыть `Academy Lesson Hub`;
+- нажать `Открыть сессии`;
+- импортировать файл `artifacts/sessions/<student>/session.json`;
+- выбрать run и открыть его в `Mentor Live Cockpit`.
+
+Импорт является browser-local: файл читается JavaScript-кодом в текущем браузере, валидируется через `AcademySessionContractValidator`, сохраняется в `localStorage` и не отправляется на backend. Это удобно для локальных занятий и не требует отдельного сервера хранения.
+
+Recent runs сохраняются по ключу:
+
+```text
+session-workspace:academy-session/v1
+```
+
+Когда workspace-сессия открывается в cockpit, источник состояния выглядит так:
+
+```text
+workspace:<student_name>:<lab_name>
+```
+
+Кнопка `Открыть текущую live-сессию` возвращает к session-файлу, который сервер Nuxt отдал через `MENTOR_LAB_SESSION`, `public/session.json` или `public/session.sample.json`.
 
 ## Mentor Live Cockpit
 
@@ -225,6 +253,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `features/academy-portal` — переключение между catalog-first поверхностью и текущей live-сессией.
 - `features/lesson-hub` — витрина направлений, уроков, role-aware команд и readiness.
 - `features/lesson-launcher` — генерация launch-пакета, route/platform preferences и copyable команды запуска.
+- `features/session-workspace` — browser-local импорт `session.json`, validation, recent runs и выбор session для cockpit.
 - `features/session-dashboard` — композиция основного экрана.
 - `features/mentor-cockpit` — live cockpit: stage player, slides/commands rail, evidence panel и local persistence facade.
 - `features/student-launchpad` — student self-service: readiness по платформам, материалы, команды запуска, self-check и handoff.

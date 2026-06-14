@@ -19,12 +19,14 @@ const props = defineProps<{
   isValid: boolean
   activeMode: DashboardMode
   canOpenHub?: boolean
+  canOpenWorkspace?: boolean
 }>()
 
 const emit = defineEmits<{
   reload: []
   'select-mode': [mode: DashboardMode]
   'open-hub': []
+  'open-workspace': []
 }>()
 
 const sessionRef = toRef(props, 'session')
@@ -48,6 +50,14 @@ const {
     <template v-if="canOpenHub" #portal-actions>
       <button class="quiet-button portal-action-button" type="button" @click="emit('open-hub')">
         Вернуться в каталог
+      </button>
+      <button
+        v-if="canOpenWorkspace"
+        class="quiet-button portal-action-button"
+        type="button"
+        @click="emit('open-workspace')"
+      >
+        Открыть сессии
       </button>
     </template>
 

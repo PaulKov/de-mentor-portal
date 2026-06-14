@@ -16,6 +16,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   'reload-catalog': []
   'open-session': []
+  'open-workspace': []
 }>()
 
 const catalogRef = toRef(props, 'catalog')
@@ -48,6 +49,9 @@ const { hubState, selectLesson, selectRole, selectTrack } = useLessonHubState(ca
             @click="emit('open-session')"
           >
             Открыть текущую сессию
+          </button>
+          <button class="quiet-button" type="button" @click="emit('open-workspace')">
+            Открыть сессии
           </button>
         </div>
       </header>
