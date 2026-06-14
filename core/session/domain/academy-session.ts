@@ -49,4 +49,5 @@ export interface AcademySession {
   events: SessionEvent[]
   control_plane?: AcademyControlPlane
   portal: PortalMetadata
+  control_plane?: AcademyControlPlane
 }

@@ -29,9 +29,19 @@ test('sample session follows academy-session/v1 contract markers', async () => {
 
   assert.equal(runtimeSample.control_plane.version, 'academy-control-plane/v1')
   assert.equal(runtimeSample.control_plane.mentor_mode.default_route, 'simple')
-  assert.equal(runtimeSample.control_plane.mentor_mode.stage_guides[0].stage_code, 'environment')
+  assert.equal(
+    runtimeSample.control_plane.mentor_mode.google_slides,
+    'https://docs.google.com/presentation/d/17Ae88PoniaFU34egsFPwC0PndAOoXMze4qV1pIKQkaI/edit?usp=sharing'
+  )
   assert.ok(runtimeSample.control_plane.portal_actions.export_command.includes('mentor-lab.py portal greenplum export'))
   assert.equal(runtimeSample.control_plane.next_lesson.code, '02-greenplum-partitioning')
+
+  const currentGuide = runtimeSample.control_plane.mentor_mode.stage_guides.find(
+    guide => guide.stage_code === runtimeSample.current_stage.code
+  )
+  assert.ok(currentGuide)
+  assert.ok(currentGuide.mentor_script)
+  assert.ok(currentGuide.expected_answer)
 })
 
 test('validation CLI accepts the sample and rejects broken payloads', async () => {
@@ -85,6 +95,38 @@ test('validation CLI accepts the sample and rejects broken payloads', async () =
       assert.match(error.stderr, /stages should contain at least one stage/)
       assert.match(error.stderr, /current_stage should be present in stages/)
       assert.match(error.stderr, /control_plane.version should be academy-control-plane\/v1/)
+      return true
+    }
+  )
+})
+
+test('validation CLI rejects malformed optional control plane payloads', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'academy-control-plane-'))
+  const brokenControlPlanePath = join(tempDir, 'broken-control-plane-session.json')
+  const sample = await readJson('public/session.sample.json')
+  const broken = {
+    ...sample,
+    control_plane: {
+      ...sample.control_plane,
+      mentor_mode: {
+        ...sample.control_plane.mentor_mode,
+        stage_guides: [
+          {
+            stage_code: sample.current_stage.code,
+            slides: '1-2'
+          }
+        ]
+      }
+    }
+  }
+
+  await writeFile(brokenControlPlanePath, JSON.stringify(broken, null, 2))
+
+  await assert.rejects(
+    execFileAsync('node', ['scripts/validate-session-contract.mjs', brokenControlPlanePath]),
+    error => {
+      assert.match(error.stderr, /control_plane\.mentor_mode\.stage_guides\[0\]\.mentor_script/)
+      assert.match(error.stderr, /control_plane\.mentor_mode\.stage_guides\[0\]\.expected_answer/)
       return true
     }
   )

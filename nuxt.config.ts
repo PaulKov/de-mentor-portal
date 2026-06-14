@@ -1,7 +1,11 @@
 export default defineNuxtConfig({
   compatibilityDate: '2026-06-14',
   devtools: { enabled: false },
-  css: ['~/assets/css/main.css'],
+  css: [
+    '~/assets/css/main.css',
+    '~/assets/css/control-plane.css',
+    '~/assets/css/cockpit.css'
+  ],
   app: {
     head: {
       title: 'Greenplum Academy Portal',

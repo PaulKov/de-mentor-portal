@@ -27,6 +27,16 @@ const stageStringFields = [
 
 const skillStringFields = ['code', 'title', 'level', 'evidence']
 const eventStringFields = ['event_type', 'note', 'created_at']
+const stageGuideStringFields = [
+  'stage_code',
+  'slides',
+  'mentor_script',
+  'question',
+  'expected_answer',
+  'verification',
+  'workbook_ref',
+  'homework_ref'
+]
 
 const isRecord = value =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -43,6 +53,25 @@ const requireConst = (value, expected, path, issues) => {
   }
 }
 
+const validateStringArray = (value, path, issues) => {
+  if (!Array.isArray(value)) {
+    issues.push({ path, message: `${path} should be an array` })
+    return
+  }
+
+  value.forEach((item, index) => {
+    requireString(item, `${path}[${index}]`, issues)
+  })
+}
+
+const validateNullableString = (value, path, issues) => {
+  if (value === undefined || value === null) {
+    return
+  }
+
+  requireString(value, path, issues)
+}
+
 const validateStage = (value, path, issues) => {
   if (!isRecord(value)) {
     issues.push({ path, message: `${path} should be an object` })
@@ -52,6 +81,96 @@ const validateStage = (value, path, issues) => {
   for (const field of stageStringFields) {
     requireString(value[field], `${path}.${field}`, issues)
   }
+}
+
+const validateStageGuide = (value, path, issues) => {
+  if (!isRecord(value)) {
+    issues.push({ path, message: `${path} should be an object` })
+    return
+  }
+
+  for (const field of stageGuideStringFields) {
+    requireString(value[field], `${path}.${field}`, issues)
+  }
+  validateStringArray(value.show_commands, `${path}.show_commands`, issues)
+}
+
+const validateMentorMode = (value, issues) => {
+  if (!isRecord(value)) {
+    issues.push({ path: 'control_plane.mentor_mode', message: 'mentor_mode should be an object' })
+    return
+  }
+
+  requireString(value.default_route, 'control_plane.mentor_mode.default_route', issues)
+  requireString(value.slide_deck, 'control_plane.mentor_mode.slide_deck', issues)
+  validateNullableString(value.google_slides, 'control_plane.mentor_mode.google_slides', issues)
+  validateStringArray(value.runbook_commands, 'control_plane.mentor_mode.runbook_commands', issues)
+
+  if (!Array.isArray(value.stage_guides) || value.stage_guides.length === 0) {
+    issues.push({
+      path: 'control_plane.mentor_mode.stage_guides',
+      message: 'stage_guides should contain at least one guide'
+    })
+    return
+  }
+
+  value.stage_guides.forEach((guide, index) => {
+    validateStageGuide(guide, `control_plane.mentor_mode.stage_guides[${index}]`, issues)
+  })
+}
+
+const validateStudentMode = (value, issues) => {
+  if (!isRecord(value)) {
+    issues.push({ path: 'control_plane.student_mode', message: 'student_mode should be an object' })
+    return
+  }
+
+  for (const field of ['prep_runbook', 'workbook', 'homework']) {
+    requireString(value[field], `control_plane.student_mode.${field}`, issues)
+  }
+  validateStringArray(value.self_check_commands, 'control_plane.student_mode.self_check_commands', issues)
+}
+
+const validatePortalActions = (value, issues) => {
+  if (!isRecord(value)) {
+    issues.push({ path: 'control_plane.portal_actions', message: 'portal_actions should be an object' })
+    return
+  }
+
+  for (const field of ['start_command', 'export_command', 'open_command']) {
+    requireString(value[field], `control_plane.portal_actions.${field}`, issues)
+  }
+}
+
+const validateNextLesson = (value, issues) => {
+  if (!isRecord(value)) {
+    issues.push({ path: 'control_plane.next_lesson', message: 'next_lesson should be an object' })
+    return
+  }
+
+  for (const field of ['code', 'title', 'path']) {
+    requireString(value[field], `control_plane.next_lesson.${field}`, issues)
+  }
+}
+
+const validateControlPlane = (value, issues) => {
+  if (value === undefined) {
+    return
+  }
+
+  if (!isRecord(value)) {
+    issues.push({ path: 'control_plane', message: 'control_plane should be an object' })
+    return
+  }
+
+  requireConst(value.version, CONTROL_PLANE_VERSION, 'control_plane.version', issues)
+  validateMentorMode(value.mentor_mode, issues)
+  validateStudentMode(value.student_mode, issues)
+  validatePortalActions(value.portal_actions, issues)
+  if (!Array.isArray(value.artifacts)) {
+    issues.push({ path: 'control_plane.artifacts', message: 'artifacts should be an array' })
+  }
+  validateNextLesson(value.next_lesson, issues)
 }
 
 const validateSession = payload => {
@@ -130,9 +249,7 @@ const validateSession = payload => {
     })
   }
 
-  if (payload.control_plane !== undefined) {
-    validateControlPlane(payload.control_plane, issues)
-  }
+  validateControlPlane(payload.control_plane, issues)
 
   if (!isRecord(payload.portal)) {
     issues.push({ path: 'portal', message: 'portal should be an object' })
@@ -145,111 +262,6 @@ const validateSession = payload => {
   }
 
   return issues
-}
-
-const validateControlPlane = (value, issues) => {
-  if (!isRecord(value)) {
-    issues.push({ path: 'control_plane', message: 'control_plane should be an object' })
-    return
-  }
-
-  requireConst(value.version, CONTROL_PLANE_VERSION, 'control_plane.version', issues)
-  validateMentorMode(value.mentor_mode, issues)
-  validateStudentMode(value.student_mode, issues)
-  validatePortalActions(value.portal_actions, issues)
-  if (!Array.isArray(value.artifacts)) {
-    issues.push({ path: 'control_plane.artifacts', message: 'artifacts should be an array' })
-  }
-  validateNextLesson(value.next_lesson, issues)
-}
-
-const validateMentorMode = (value, issues) => {
-  if (!isRecord(value)) {
-    issues.push({ path: 'control_plane.mentor_mode', message: 'mentor_mode should be an object' })
-    return
-  }
-
-  requireString(value.default_route, 'control_plane.mentor_mode.default_route', issues)
-  requireString(value.slide_deck, 'control_plane.mentor_mode.slide_deck', issues)
-  validateStringArray(value.runbook_commands, 'control_plane.mentor_mode.runbook_commands', issues)
-
-  if (!Array.isArray(value.stage_guides) || value.stage_guides.length === 0) {
-    issues.push({
-      path: 'control_plane.mentor_mode.stage_guides',
-      message: 'stage_guides should contain at least one guide'
-    })
-    return
-  }
-
-  value.stage_guides.forEach((guide, index) => {
-    validateStageGuide(guide, `control_plane.mentor_mode.stage_guides[${index}]`, issues)
-  })
-}
-
-const validateStageGuide = (value, path, issues) => {
-  if (!isRecord(value)) {
-    issues.push({ path, message: `${path} should be an object` })
-    return
-  }
-
-  for (const field of [
-    'stage_code',
-    'slides',
-    'mentor_script',
-    'question',
-    'expected_answer',
-    'verification',
-    'workbook_ref',
-    'homework_ref'
-  ]) {
-    requireString(value[field], `${path}.${field}`, issues)
-  }
-  validateStringArray(value.show_commands, `${path}.show_commands`, issues)
-}
-
-const validateStudentMode = (value, issues) => {
-  if (!isRecord(value)) {
-    issues.push({ path: 'control_plane.student_mode', message: 'student_mode should be an object' })
-    return
-  }
-
-  for (const field of ['prep_runbook', 'workbook', 'homework']) {
-    requireString(value[field], `control_plane.student_mode.${field}`, issues)
-  }
-  validateStringArray(value.self_check_commands, 'control_plane.student_mode.self_check_commands', issues)
-}
-
-const validatePortalActions = (value, issues) => {
-  if (!isRecord(value)) {
-    issues.push({ path: 'control_plane.portal_actions', message: 'portal_actions should be an object' })
-    return
-  }
-
-  for (const field of ['start_command', 'export_command', 'open_command']) {
-    requireString(value[field], `control_plane.portal_actions.${field}`, issues)
-  }
-}
-
-const validateNextLesson = (value, issues) => {
-  if (!isRecord(value)) {
-    issues.push({ path: 'control_plane.next_lesson', message: 'next_lesson should be an object' })
-    return
-  }
-
-  for (const field of ['code', 'title', 'path']) {
-    requireString(value[field], `control_plane.next_lesson.${field}`, issues)
-  }
-}
-
-const validateStringArray = (value, path, issues) => {
-  if (!Array.isArray(value)) {
-    issues.push({ path, message: `${path} should be an array` })
-    return
-  }
-
-  value.forEach((item, index) => {
-    requireString(item, `${path}[${index}]`, issues)
-  })
 }
 
 const sessionPath = process.argv[2] || 'public/session.sample.json'

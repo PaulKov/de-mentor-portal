@@ -216,6 +216,7 @@ export class AcademySessionContractValidator {
 
     this.requireString(value.default_route, 'control_plane.mentor_mode.default_route', issues)
     this.requireString(value.slide_deck, 'control_plane.mentor_mode.slide_deck', issues)
+    this.validateNullableString(value.google_slides, 'control_plane.mentor_mode.google_slides', issues)
     this.validateStringArray(value.runbook_commands, 'control_plane.mentor_mode.runbook_commands', issues)
 
     if (!Array.isArray(value.stage_guides) || value.stage_guides.length === 0) {
@@ -301,6 +302,14 @@ export class AcademySessionContractValidator {
     value.forEach((item, index) => {
       this.requireString(item, `${path}[${index}]`, issues)
     })
+  }
+
+  private validateNullableString(value: unknown, path: string, issues: ValidationIssue[]) {
+    if (value === undefined || value === null) {
+      return
+    }
+
+    this.requireString(value, path, issues)
   }
 
   private requireString(value: unknown, path: string, issues: ValidationIssue[]) {
