@@ -1,76 +1,45 @@
-export interface AcademyStage {
-  code: string
-  title: string
-  timebox: string
-  mentor_focus: string
-  student_action: string
-  command: string
-}
+import { SessionLoader } from '~/core/session/application/session-loader'
+import type { ValidationIssue } from '~/core/session/application/session-contract'
+import type { AcademySession } from '~/core/session/domain/academy-session'
+import { HttpSessionSource } from '~/core/session/infrastructure/http-session-source'
 
-export interface SkillNode {
-  code: string
-  title: string
-  level: string
-  evidence: string
-}
+const SESSION_ENDPOINTS = ['/api/session', '/session.json', '/session.sample.json']
 
-export interface SessionEvent {
-  event_type: string
-  note: string
-  created_at: string
-}
-
-export interface AcademySession {
-  academy_version: string
-  lab_name: string
-  student_name: string
-  created_at: string
-  current_stage: AcademyStage
-  stages: AcademyStage[]
-  skill_graph: SkillNode[]
-  commands: string[]
-  events: SessionEvent[]
-  portal: {
-    framework: string
-    app_path: string
-    session_env: string
-    dev_command: string
-  }
-}
+const createSessionLoader = () =>
+  new SessionLoader(
+    SESSION_ENDPOINTS.map(endpoint => new HttpSessionSource(endpoint, $fetch))
+  )
 
 export async function useSessionState() {
   const session = useState<AcademySession | null>('academy-session', () => null)
   const source = useState<string>('academy-session-source', () => 'not-loaded')
-
-  const loadFrom = async (endpoint: string) => {
-    const payload = await $fetch<AcademySession>(endpoint)
-    session.value = payload
-    source.value = endpoint
-  }
+  const issues = useState<ValidationIssue[]>('academy-session-issues', () => [])
 
   const reload = async () => {
-    const endpoints = ['/api/session', '/session.json', '/session.sample.json']
-    let lastError: unknown
+    const result = await createSessionLoader().load()
 
-    for (const endpoint of endpoints) {
-      try {
-        await loadFrom(endpoint)
-        return
-      } catch (error) {
-        lastError = error
-      }
+    if (result.ok) {
+      session.value = result.session
+      source.value = result.source
+      issues.value = []
+      return
     }
 
-    throw lastError
+    session.value = null
+    source.value = result.source
+    issues.value = result.issues
   }
 
-  if (!session.value) {
+  if (!session.value && issues.value.length === 0) {
     await reload()
   }
 
   return {
     session,
     source,
-    reload
+    issues,
+    reload,
+    isValid: computed(() => session.value !== null && issues.value.length === 0),
+    errorMessage: computed(() => issues.value.map(issue => issue.message).join('; '))
   }
 }
