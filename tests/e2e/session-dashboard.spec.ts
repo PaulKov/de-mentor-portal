@@ -35,3 +35,22 @@ test('persists mentor evidence checks and stage notes locally', async ({ page })
   await expect(page.getByRole('checkbox', { name: /Partition pruning/ })).toBeChecked()
   await expect(page.getByLabel('Заметка по этапу')).toHaveValue('Ученик сам объяснил pruning и retention.')
 })
+
+test('renders student launchpad with platform readiness and resources', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Ученик' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Student Launchpad' })).toBeVisible()
+  await expect(page.getByLabel('Подготовка окружения ученика')).toBeVisible()
+  await expect(page.getByText('docs/lessons/02-greenplum-partitioning/student-workbook.md')).toBeVisible()
+  await expect(page.getByText('docs/lessons/02-greenplum-partitioning/homework.md')).toBeVisible()
+  await expect(page.getByText('python3 mentor-lab.py doctor')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Windows + WSL2' }).click()
+  await expect(page.getByText('wsl --status')).toBeVisible()
+
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Student Launchpad' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Windows + WSL2' })).toHaveAttribute('aria-pressed', 'true')
+})

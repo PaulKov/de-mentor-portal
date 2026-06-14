@@ -12,6 +12,7 @@ export interface MentorLocalState {
 export const useMentorCockpitState = (session: Ref<AcademySession>) => {
   const selectedStageCode = ref(session.value.current_stage.code)
   const storageLoaded = ref(false)
+  const localStateChangedBeforeLoad = ref(false)
   const localState = ref<MentorLocalState>(createEmptyLocalState())
 
   watch(
@@ -46,6 +47,9 @@ export const useMentorCockpitState = (session: Ref<AcademySession>) => {
       ...localState.value,
       checkedEvidence: Array.from(evidence)
     }
+    if (!storageLoaded.value) {
+      localStateChangedBeforeLoad.value = true
+    }
   }
 
   const updateCurrentStageNote = (note: string) => {
@@ -56,12 +60,21 @@ export const useMentorCockpitState = (session: Ref<AcademySession>) => {
         [cockpitState.value.selectedStage.code]: note
       }
     }
+    if (!storageLoaded.value) {
+      localStateChangedBeforeLoad.value = true
+    }
   }
 
   const loadLocalState = () => {
-    const savedState = createBrowserStoragePort().get<Partial<MentorLocalState>>(storageKey.value)
-    localState.value = normalizeLocalState(savedState)
+    const storagePort = createBrowserStoragePort()
+    const savedState = storagePort.get<Partial<MentorLocalState>>(storageKey.value)
+    if (localStateChangedBeforeLoad.value) {
+      storagePort.set(storageKey.value, localState.value)
+    } else {
+      localState.value = normalizeLocalState(savedState)
+    }
     storageLoaded.value = true
+    localStateChangedBeforeLoad.value = false
   }
 
   onMounted(loadLocalState)
