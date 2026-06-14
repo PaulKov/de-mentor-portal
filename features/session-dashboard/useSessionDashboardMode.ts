@@ -7,30 +7,46 @@ import {
   type DashboardMode
 } from './session-dashboard-mode'
 
-export const useSessionDashboardMode = (session: Ref<AcademySession>) => {
+export const useSessionDashboardMode = (session: Ref<AcademySession | null>) => {
   const mode = ref<DashboardMode>('mentor')
+  const modeChangedBeforeLoad = ref(false)
   const storageLoaded = ref(false)
-  const storageKey = computed(() => createDashboardModeStorageKey(session.value))
+  const storageKey = computed(() =>
+    session.value ? createDashboardModeStorageKey(session.value) : undefined
+  )
 
   const selectMode = (nextMode: DashboardMode) => {
     mode.value = nextMode
+    if (!storageLoaded.value) {
+      modeChangedBeforeLoad.value = true
+    }
   }
 
   const loadMode = () => {
-    mode.value = normalizeDashboardMode(createBrowserStoragePort().get(storageKey.value))
+    if (!storageKey.value) {
+      return
+    }
+
+    const storagePort = createBrowserStoragePort()
+    if (modeChangedBeforeLoad.value) {
+      storagePort.set(storageKey.value, mode.value)
+    } else {
+      mode.value = normalizeDashboardMode(storagePort.get(storageKey.value))
+    }
     storageLoaded.value = true
+    modeChangedBeforeLoad.value = false
   }
 
   onMounted(loadMode)
 
-  watch(storageKey, () => {
-    if (storageLoaded.value) {
+  watch(storageKey, value => {
+    if (value) {
       loadMode()
     }
   })
 
   watch(mode, value => {
-    if (storageLoaded.value) {
+    if (storageLoaded.value && storageKey.value) {
       createBrowserStoragePort().set(storageKey.value, value)
     }
   })

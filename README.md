@@ -8,6 +8,7 @@
 
 - [Быстрый старт](#быстрый-старт)
 - [Mentor Live Cockpit](#mentor-live-cockpit)
+- [Student Launchpad](#student-launchpad)
 - [Контракт сессии](#контракт-сессии)
 - [Архитектура](#архитектура)
 - [Проверки](#проверки)
@@ -50,6 +51,39 @@ mentor-cockpit:<contract_version>:<lab_name>:<student_name>:<created_at>
 
 Это удобно для живого занятия: перезагрузка страницы не сбрасывает ход урока, но данные не уходят на backend и не смешиваются между разными учениками или сессиями.
 
+## Student Launchpad
+
+`Student Launchpad` — режим самообслуживания ученика в том же портале. Переключатель `Ментор` / `Ученик` находится в верхней части валидной сессии; выбранный режим сохраняется локально по ключу:
+
+```text
+session-dashboard-mode:<contract_version>:<lab_name>:<student_name>:<created_at>
+```
+
+В режиме ученика портал показывает:
+
+- подготовку окружения для `macOS`, `Windows + WSL2` и `Linux`;
+- пути на `student-prep`, `student-workbook`, `homework`, SQL/deck artifacts и следующий урок из `control_plane`;
+- команды запуска портала и self-check с копированием в один клик;
+- список evidence items, которые ученик должен принести на занятие или после домашки.
+
+Выбранная платформа readiness сохраняется отдельно:
+
+```text
+student-launchpad:<contract_version>:<lab_name>:<student_name>:<created_at>
+```
+
+Минимальная подготовка ученика:
+
+```bash
+docker --version
+docker compose version
+git --version
+python3 --version
+node --version
+```
+
+Для Windows портал явно ведет по маршруту `Windows + WSL2`: проверить `wsl --status`, включить Docker Desktop WSL integration и выполнять команды урока внутри WSL-дистрибутива.
+
 ## Контракт сессии
 
 Портал читает `academy-session/v1`.
@@ -83,6 +117,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `composables/useSessionState.ts` — тонкий Nuxt-фасад для состояния.
 - `features/session-dashboard` — композиция основного экрана.
 - `features/mentor-cockpit` — live cockpit: stage player, slides/commands rail, evidence panel и local persistence facade.
+- `features/student-launchpad` — student self-service: readiness по платформам, материалы, команды запуска, self-check и handoff.
 - `features/timeline`, `features/commands`, `features/evidence`, `features/skill-graph`, `features/session-status` — независимые UI-фичи.
 - `components/shared/ui` — переиспользуемые Vue-компоненты без знания предметной области.
 - `shared/utils` — framework-agnostic утилиты, например clipboard adapter.

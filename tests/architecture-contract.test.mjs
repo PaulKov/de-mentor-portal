@@ -20,7 +20,11 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'assets/css/main.css',
     'assets/css/control-plane.css',
     'assets/css/cockpit.css',
+    'assets/css/student-launchpad.css',
     'features/session-dashboard/SessionDashboard.vue',
+    'features/session-dashboard/DashboardModeSwitch.vue',
+    'features/session-dashboard/session-dashboard-mode.ts',
+    'features/session-dashboard/useSessionDashboardMode.ts',
     'features/session-status/SessionStatusBanner.vue',
     'features/timeline/SessionTimeline.vue',
     'features/commands/CommandList.vue',
@@ -33,9 +37,16 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'features/mentor-cockpit/ReleaseStatusStrip.vue',
     'features/mentor-cockpit/useMentorCockpitState.ts',
     'features/mentor-cockpit/mentor-cockpit-state.ts',
+    'features/student-launchpad/StudentLaunchpad.vue',
+    'features/student-launchpad/PlatformReadinessPanel.vue',
+    'features/student-launchpad/StudentCommandChecklist.vue',
+    'features/student-launchpad/StudentResourceRail.vue',
+    'features/student-launchpad/useStudentLaunchpadState.ts',
+    'features/student-launchpad/student-launchpad-state.ts',
     'features/skill-graph/SkillGraphPanel.vue',
     'components/shared/ui/AppShell.vue',
     'components/shared/ui/Panel.vue',
+    'components/shared/ui/CopyButton.vue',
     'components/shared/ui/CopyCommand.vue',
     'components/shared/ui/StatusBadge.vue',
     'shared/utils/clipboard.ts',
@@ -51,8 +62,11 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
   const nuxtConfig = await readText('nuxt.config.ts')
   assert.ok(app.includes('<SessionDashboard'), 'app.vue should delegate rendering to SessionDashboard')
   assert.ok(dashboard.includes('<MentorCockpit'), 'SessionDashboard should delegate valid sessions to MentorCockpit')
+  assert.ok(dashboard.includes('<StudentLaunchpad'), 'SessionDashboard should delegate student mode to StudentLaunchpad')
+  assert.ok(dashboard.includes('useSessionDashboardMode'), 'SessionDashboard should keep mode persistence in a composable')
   assert.ok(nuxtConfig.includes('~/assets/css/control-plane.css'), 'Nuxt should load control plane styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/cockpit.css'), 'Nuxt should load cockpit styles explicitly')
+  assert.ok(nuxtConfig.includes('~/assets/css/student-launchpad.css'), 'Nuxt should load student launchpad styles explicitly')
   assert.ok(lineCount(app) <= 35, 'app.vue should stay a thin Nuxt facade')
 
   const composable = await readText('composables/useSessionState.ts')
@@ -68,9 +82,19 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'features/mentor-cockpit/ReleaseStatusStrip.vue',
     'features/mentor-cockpit/useMentorCockpitState.ts',
     'features/mentor-cockpit/mentor-cockpit-state.ts',
+    'features/student-launchpad/StudentLaunchpad.vue',
+    'features/student-launchpad/PlatformReadinessPanel.vue',
+    'features/student-launchpad/StudentCommandChecklist.vue',
+    'features/student-launchpad/StudentResourceRail.vue',
+    'features/student-launchpad/useStudentLaunchpadState.ts',
+    'features/student-launchpad/student-launchpad-state.ts',
+    'features/session-dashboard/DashboardModeSwitch.vue',
+    'features/session-dashboard/useSessionDashboardMode.ts',
+    'features/session-dashboard/session-dashboard-mode.ts',
     'assets/css/main.css',
     'assets/css/control-plane.css',
-    'assets/css/cockpit.css'
+    'assets/css/cockpit.css',
+    'assets/css/student-launchpad.css'
   ]) {
     const source = await readText(path)
     assert.ok(lineCount(source) <= 400, `${path} should stay below the module SLOC guard`)
@@ -141,6 +165,8 @@ test('developer experience documents validation and local sample workflow', asyn
   assert.ok(readme.includes('npm run validate:session -- public/session.sample.json'))
   assert.ok(readme.includes('npm run dev:sample'))
   assert.ok(readme.includes('Mentor Live Cockpit'))
+  assert.ok(readme.includes('Student Launchpad'))
+  assert.ok(readme.includes('Windows + WSL2'))
   assert.ok(readme.includes('MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev'))
   assert.ok(readme.includes('Архитектура'))
   assert.ok(readme.includes('core/session/domain'))

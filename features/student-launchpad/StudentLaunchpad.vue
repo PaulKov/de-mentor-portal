@@ -3,14 +3,14 @@ import { toRef } from 'vue'
 import type { ValidationIssue } from '~/core/session/application/session-contract'
 import type { AcademySession } from '~/core/session/domain/academy-session'
 import AppShell from '~/components/shared/ui/AppShell.vue'
+import Panel from '~/components/shared/ui/Panel.vue'
 import DashboardModeSwitch from '~/features/session-dashboard/DashboardModeSwitch.vue'
 import type { DashboardMode } from '~/features/session-dashboard/session-dashboard-mode'
 import SessionStatusBanner from '~/features/session-status/SessionStatusBanner.vue'
-import EvidencePanel from './EvidencePanel.vue'
-import ReleaseStatusStrip from './ReleaseStatusStrip.vue'
-import SlideCommandRail from './SlideCommandRail.vue'
-import StagePlayer from './StagePlayer.vue'
-import { useMentorCockpitState } from './useMentorCockpitState'
+import PlatformReadinessPanel from './PlatformReadinessPanel.vue'
+import StudentCommandChecklist from './StudentCommandChecklist.vue'
+import StudentResourceRail from './StudentResourceRail.vue'
+import { useStudentLaunchpadState } from './useStudentLaunchpadState'
 
 const props = defineProps<{
   session: AcademySession
@@ -26,27 +26,20 @@ const emit = defineEmits<{
 }>()
 
 const sessionRef = toRef(props, 'session')
-const {
-  checkedEvidence,
-  cockpitState,
-  currentStageNote,
-  selectStage,
-  toggleEvidence,
-  updateCurrentStageNote
-} = useMentorCockpitState(sessionRef)
+const { launchpadState, selectPlatform } = useStudentLaunchpadState(sessionRef)
 </script>
 
 <template>
   <AppShell
-    :stages="cockpitState.stages"
-    :current-stage-code="cockpitState.selectedStage.code"
+    :stages="session.stages"
+    :current-stage-code="session.current_stage.code"
     :framework="session.portal.framework"
     :source="source"
   >
-    <header class="topbar cockpit-topbar">
+    <header class="topbar student-topbar">
       <div>
-        <p class="muted">Greenplum mentor cockpit</p>
-        <h1>Mentor Live Cockpit</h1>
+        <p class="muted">student self-service</p>
+        <h1>Student Launchpad</h1>
         <p>{{ session.student_name }} · {{ session.lab_name }}</p>
       </div>
       <div class="topbar-actions">
@@ -64,25 +57,22 @@ const {
       </div>
     </header>
 
-    <ReleaseStatusStrip :status="cockpitState.releaseStatus" />
-
-    <div class="cockpit-layout">
-      <div class="cockpit-main">
-        <StagePlayer
-          :state="cockpitState"
-          @select-stage="selectStage"
-        />
-      </div>
-
-      <SlideCommandRail :state="cockpitState" />
-      <EvidencePanel
-        :session="session"
-        :state="cockpitState"
-        :checked-evidence="checkedEvidence"
-        :stage-note="currentStageNote"
-        @toggle-evidence="toggleEvidence"
-        @update-stage-note="updateCurrentStageNote"
+    <div class="student-launchpad-grid">
+      <PlatformReadinessPanel
+        :state="launchpadState"
+        @select-platform="selectPlatform"
       />
+      <StudentResourceRail :state="launchpadState" />
     </div>
+
+    <StudentCommandChecklist :state="launchpadState" />
+
+    <Panel class="student-handoff" eyebrow="handoff" title="Что принести на урок">
+      <ul>
+        <li v-for="item in launchpadState.handoffItems" :key="item">
+          {{ item }}
+        </li>
+      </ul>
+    </Panel>
   </AppShell>
 </template>

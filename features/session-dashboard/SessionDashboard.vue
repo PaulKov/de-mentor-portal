@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, toRef } from 'vue'
 import type { ValidationIssue } from '~/core/session/application/session-contract'
 import type { AcademySession } from '~/core/session/domain/academy-session'
 import CommandList from '~/features/commands/CommandList.vue'
@@ -8,10 +8,12 @@ import EvidenceChecklist from '~/features/evidence/EvidenceChecklist.vue'
 import MentorCockpit from '~/features/mentor-cockpit/MentorCockpit.vue'
 import SessionStatusBanner from '~/features/session-status/SessionStatusBanner.vue'
 import SkillGraphPanel from '~/features/skill-graph/SkillGraphPanel.vue'
+import StudentLaunchpad from '~/features/student-launchpad/StudentLaunchpad.vue'
 import SessionTimeline from '~/features/timeline/SessionTimeline.vue'
 import AppShell from '~/components/shared/ui/AppShell.vue'
 import CopyCommand from '~/components/shared/ui/CopyCommand.vue'
 import Panel from '~/components/shared/ui/Panel.vue'
+import { useSessionDashboardMode } from './useSessionDashboardMode'
 
 const props = defineProps<{
   session: AcademySession | null
@@ -26,6 +28,8 @@ defineEmits<{
 
 const stages = computed(() => props.session?.stages ?? [])
 const currentStage = computed(() => props.session?.current_stage)
+const sessionRef = toRef(props, 'session')
+const { mode, selectMode } = useSessionDashboardMode(sessionRef)
 const nextStage = computed(() => {
   if (!props.session || !currentStage.value) {
     return undefined
@@ -40,11 +44,24 @@ const nextStage = computed(() => {
 
 <template>
   <MentorCockpit
-    v-if="session && isValid"
+    v-if="session && isValid && mode === 'mentor'"
     :session="session"
     :source="source"
     :issues="issues"
     :is-valid="isValid"
+    :active-mode="mode"
+    @select-mode="selectMode"
+    @reload="$emit('reload')"
+  />
+
+  <StudentLaunchpad
+    v-else-if="session && isValid"
+    :session="session"
+    :source="source"
+    :issues="issues"
+    :is-valid="isValid"
+    :active-mode="mode"
+    @select-mode="selectMode"
     @reload="$emit('reload')"
   />
 

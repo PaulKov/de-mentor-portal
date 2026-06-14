@@ -10,6 +10,7 @@ import {
 
 export const useStudentLaunchpadState = (session: Ref<AcademySession>) => {
   const selectedPlatformCode = ref<StudentPlatformCode>('macos')
+  const platformChangedBeforeLoad = ref(false)
   const storageLoaded = ref(false)
   const storageKey = computed(() => createStudentLaunchpadStorageKey(session.value))
   const launchpadState = computed(() =>
@@ -18,13 +19,20 @@ export const useStudentLaunchpadState = (session: Ref<AcademySession>) => {
 
   const selectPlatform = (platformCode: StudentPlatformCode) => {
     selectedPlatformCode.value = platformCode
+    if (!storageLoaded.value) {
+      platformChangedBeforeLoad.value = true
+    }
   }
 
   const loadPlatform = () => {
-    selectedPlatformCode.value = normalizeStudentPlatform(
-      createBrowserStoragePort().get(storageKey.value)
-    )
+    const storagePort = createBrowserStoragePort()
+    if (platformChangedBeforeLoad.value) {
+      storagePort.set(storageKey.value, selectedPlatformCode.value)
+    } else {
+      selectedPlatformCode.value = normalizeStudentPlatform(storagePort.get(storageKey.value))
+    }
     storageLoaded.value = true
+    platformChangedBeforeLoad.value = false
   }
 
   onMounted(loadPlatform)
