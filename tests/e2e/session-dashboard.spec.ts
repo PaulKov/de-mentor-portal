@@ -67,6 +67,24 @@ test('persists mentor evidence checks and stage notes locally', async ({ page })
   await expect(page.getByLabel('Заметка по этапу')).toHaveValue('Ученик сам объяснил pruning и retention.')
 })
 
+test('builds mentor review from cockpit evidence and notes', async ({ page }) => {
+  await openCurrentSession(page)
+
+  await page.getByRole('checkbox', { name: /Partition pruning/ }).check()
+  await page.getByLabel('Заметка по этапу').fill('Ученик сам объяснил pruning и retention.')
+  await page.getByRole('button', { name: 'Открыть review' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Mentor Review Center' })).toBeVisible()
+  await expect(page.getByText('50% evidence')).toBeVisible()
+  await expect(page.getByText('1/2')).toBeVisible()
+  await expect(page.getByText('Ученик сам объяснил pruning и retention.')).toBeVisible()
+  await expect(page.getByText('Evidence gap: Statistics after load')).toBeVisible()
+  await expect(page.getByText('Показать команду: ANALYZE lesson02.fact_sales_partitioned;')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Копировать Markdown' })).toBeVisible()
+  await expect(page.getByLabel('Markdown report')).toHaveValue(/Evidence score: 1\/2 \(50%\)/)
+  await expect(page.getByLabel('Markdown report')).toHaveValue(/Next lesson: Partitioning, statistics and incremental loads in MPP/)
+})
+
 test('renders student launchpad with platform readiness and resources', async ({ page }) => {
   await openCurrentSession(page)
 
