@@ -1,6 +1,6 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Mentor Review Center**, **Mentor Live Cockpit**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Mentor Review Center**, **Submission Inbox**, **Mentor Live Cockpit**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, сдача домашки и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs, `catalog.json` и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 3 + Vite.
 
@@ -11,6 +11,7 @@
 - [Lesson Launcher](#lesson-launcher)
 - [Session Workspace](#session-workspace)
 - [Mentor Review Center](#mentor-review-center)
+- [Submission Inbox](#submission-inbox)
 - [Mentor Live Cockpit](#mentor-live-cockpit)
 - [Student Launchpad](#student-launchpad)
 - [Контракт каталога](#контракт-каталога)
@@ -172,6 +173,32 @@ mentor-cockpit:<contract_version>:<lab_name>:<student_name>:<created_at>
 4. Скопировать Markdown-отчет ученику или в рабочий журнал.
 5. Скопировать JSON, если нужен машинно-читаемый handoff для будущей автоматизации.
 
+## Submission Inbox
+
+`Submission Inbox` закрывает контур после урока: ученик открывает `Student Launchpad`, нажимает `Сдать домашку`, заполняет evidence по self-check, `skill_graph` и готовности к следующему уроку, а ментор видит последнюю сдачу как проверяемый отчет.
+
+Первый релиз работает browser-local и не требует backend:
+
+- checklist строится из `control_plane.student_mode.self_check_commands`, `skill_graph` и `control_plane.next_lesson`;
+- completeness считается по заполненным evidence fields;
+- status принимает значения `needs-evidence` или `ready-for-review`;
+- ментор получает copyable Markdown и JSON для журнала, ревью или будущей автоматизации;
+- imported workspace sessions могут открывать свои submissions отдельно от live-сессии.
+
+Данные сохраняются в `localStorage` по ключу session identity:
+
+```text
+submission-inbox:<contract_version>:<lab_name>:<student_name>:<created_at>
+```
+
+Рекомендуемый workflow для домашки:
+
+1. Ученик выполняет homework и self-check команды.
+2. Ученик открывает `Student Launchpad` и нажимает `Сдать домашку`.
+3. Ученик вставляет вывод команд, `EXPLAIN`, короткие ответы и ссылки на артефакты.
+4. Ментор открывает `Submission Inbox`, сверяет completeness и копирует Markdown-отчет.
+5. Открытые gaps переносятся в `Mentor Review Center` и план следующего урока.
+
 ## Mentor Live Cockpit
 
 `Mentor Live Cockpit` — экран для проведения конкретной live-сессии. Ментор открывает текущую сессию из хаба и сразу видит:
@@ -282,6 +309,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `features/lesson-launcher` — генерация launch-пакета, route/platform preferences и copyable команды запуска.
 - `features/session-workspace` — browser-local импорт `session.json`, validation, recent runs и выбор session для cockpit.
 - `features/review-center` — evidence score, stage review, risks, recommendations и copyable handoff report.
+- `features/submission-inbox` — student homework submission, completeness scoring, mentor inbox и copyable submission report.
 - `features/session-dashboard` — композиция основного экрана.
 - `features/mentor-cockpit` — live cockpit: stage player, slides/commands rail, evidence panel и local persistence facade.
 - `features/student-launchpad` — student self-service: readiness по платформам, материалы, команды запуска, self-check и handoff.

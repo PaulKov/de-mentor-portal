@@ -7,6 +7,7 @@ import LessonHub from '~/features/lesson-hub/LessonHub.vue'
 import ReviewCenter from '~/features/review-center/ReviewCenter.vue'
 import SessionDashboard from '~/features/session-dashboard/SessionDashboard.vue'
 import SessionWorkspace from '~/features/session-workspace/SessionWorkspace.vue'
+import SubmissionInbox from '~/features/submission-inbox/SubmissionInbox.vue'
 
 const props = defineProps<{
   catalog: AcademyCatalog | null
@@ -23,7 +24,7 @@ const emit = defineEmits<{
   'reload-session': []
 }>()
 
-type PortalSurface = 'hub' | 'workspace' | 'session' | 'review'
+type PortalSurface = 'hub' | 'workspace' | 'session' | 'review' | 'submission'
 
 const surface = ref<PortalSurface>('hub')
 const surfaceStorageKey = 'academy-portal-surface'
@@ -55,6 +56,12 @@ const openWorkspaceReview = (payload: { session: AcademySession; source: string 
   selectSurface('review')
 }
 
+const openWorkspaceSubmission = (payload: { session: AcademySession; source: string }) => {
+  workspaceSession.value = payload.session
+  workspaceSource.value = payload.source
+  selectSurface('submission')
+}
+
 const activeSession = computed(() => workspaceSession.value ?? props.session)
 const activeSource = computed(() => workspaceSession.value ? workspaceSource.value : props.sessionSource)
 const activeIssues = computed(() => workspaceSession.value ? [] : props.sessionIssues)
@@ -66,7 +73,8 @@ onMounted(() => {
     savedSurface === 'hub' ||
     savedSurface === 'workspace' ||
     savedSurface === 'session' ||
-    savedSurface === 'review'
+    savedSurface === 'review' ||
+    savedSurface === 'submission'
   ) {
     surface.value = savedSurface
   }
@@ -103,6 +111,7 @@ watch(
     @open-current-session="openLiveSession"
     @open-session="openWorkspaceSession"
     @open-review="openWorkspaceReview"
+    @open-submission="openWorkspaceSubmission"
   />
 
   <ReviewCenter
@@ -111,8 +120,24 @@ watch(
     :source="activeSource"
     :can-open-hub="catalogIsValid"
     :can-open-workspace="true"
+    :can-open-submission="true"
     @open-hub="selectSurface('hub')"
     @open-workspace="selectSurface('workspace')"
+    @open-session="selectSurface('session')"
+    @open-submission="selectSurface('submission')"
+  />
+
+  <SubmissionInbox
+    v-else-if="activeSession && activeIsValid && surface === 'submission'"
+    :session="activeSession"
+    :source="activeSource"
+    :can-open-hub="catalogIsValid"
+    :can-open-workspace="true"
+    :can-open-review="true"
+    :can-open-session="true"
+    @open-hub="selectSurface('hub')"
+    @open-workspace="selectSurface('workspace')"
+    @open-review="selectSurface('review')"
     @open-session="selectSurface('session')"
   />
 
@@ -125,9 +150,11 @@ watch(
     :can-open-hub="catalogIsValid"
     :can-open-workspace="true"
     :can-open-review="true"
+    :can-open-submission="true"
     @reload="emit('reload-session')"
     @open-hub="selectSurface('hub')"
     @open-workspace="selectSurface('workspace')"
     @open-review="selectSurface('review')"
+    @open-submission="selectSurface('submission')"
   />
 </template>

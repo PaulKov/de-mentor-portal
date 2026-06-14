@@ -23,6 +23,7 @@ const props = defineProps<{
   canOpenHub?: boolean
   canOpenWorkspace?: boolean
   canOpenReview?: boolean
+  canOpenSubmission?: boolean
 }>()
 
 defineEmits<{
@@ -30,6 +31,7 @@ defineEmits<{
   'open-hub': []
   'open-workspace': []
   'open-review': []
+  'open-submission': []
 }>()
 
 const stages = computed(() => props.session?.stages ?? [])
@@ -59,11 +61,13 @@ const nextStage = computed(() => {
     :can-open-hub="canOpenHub"
     :can-open-workspace="canOpenWorkspace"
     :can-open-review="canOpenReview"
+    :can-open-submission="canOpenSubmission"
     @select-mode="selectMode"
     @reload="$emit('reload')"
     @open-hub="$emit('open-hub')"
     @open-workspace="$emit('open-workspace')"
     @open-review="$emit('open-review')"
+    @open-submission="$emit('open-submission')"
   />
 
   <StudentLaunchpad
@@ -76,11 +80,13 @@ const nextStage = computed(() => {
     :can-open-hub="canOpenHub"
     :can-open-workspace="canOpenWorkspace"
     :can-open-review="canOpenReview"
+    :can-open-submission="canOpenSubmission"
     @select-mode="selectMode"
     @reload="$emit('reload')"
     @open-hub="$emit('open-hub')"
     @open-workspace="$emit('open-workspace')"
     @open-review="$emit('open-review')"
+    @open-submission="$emit('open-submission')"
   />
 
   <AppShell
@@ -109,6 +115,14 @@ const nextStage = computed(() => {
         @click="$emit('open-review')"
       >
         Открыть review
+      </button>
+      <button
+        v-if="canOpenSubmission"
+        class="quiet-button portal-action-button"
+        type="button"
+        @click="$emit('open-submission')"
+      >
+        Открыть submissions
       </button>
     </template>
 

@@ -104,6 +104,32 @@ test('renders student launchpad with platform readiness and resources', async ({
   await expect(page.getByRole('button', { name: 'Windows + WSL2' })).toHaveAttribute('aria-pressed', 'true')
 })
 
+test('lets a student submit homework evidence and opens it in the mentor inbox', async ({ page }) => {
+  await openCurrentSession(page)
+
+  await page.getByRole('button', { name: 'Ученик' }).click()
+  await page.getByRole('button', { name: 'Сдать домашку' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Submission Inbox' })).toBeVisible()
+  await expect(page.getByText('0% complete')).toBeVisible()
+
+  await page.getByLabel('Evidence for Self-check commands').fill('doctor ok; release verify ok')
+  await page.getByLabel('Evidence for Partition pruning').fill('EXPLAIN shows selected partitions only')
+  await page.getByLabel('Evidence for Statistics after load').fill('ANALYZE executed; last_analyze is fresh')
+  await page.getByLabel('Evidence for Next lesson readiness').fill('Prepared questions for Lesson 02')
+  await page.getByRole('button', { name: 'Отправить submission' }).click()
+
+  const mentorInbox = page.getByLabel('Mentor submission inbox')
+  await expect(mentorInbox.getByText('ready-for-review')).toBeVisible()
+  await expect(mentorInbox.getByText('100% complete')).toBeVisible()
+  await expect(mentorInbox.getByText('EXPLAIN shows selected partitions only')).toBeVisible()
+  await expect(page.getByLabel('Submission markdown')).toHaveValue(/Completeness: 4\/4 \(100%\)/)
+
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Submission Inbox' })).toBeVisible()
+  await expect(page.getByLabel('Mentor submission inbox').getByText('ready-for-review')).toBeVisible()
+})
+
 test('selects Spark track and student commands in the lesson hub', async ({ page }) => {
   await page.goto('/')
 
