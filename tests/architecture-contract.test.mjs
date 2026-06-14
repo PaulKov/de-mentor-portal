@@ -18,6 +18,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'core/session/application/session-loader.ts',
     'core/session/infrastructure/http-session-source.ts',
     'assets/css/main.css',
+    'assets/css/control-plane.css',
     'assets/css/cockpit.css',
     'features/session-dashboard/SessionDashboard.vue',
     'features/session-status/SessionStatusBanner.vue',
@@ -50,6 +51,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
   const nuxtConfig = await readText('nuxt.config.ts')
   assert.ok(app.includes('<SessionDashboard'), 'app.vue should delegate rendering to SessionDashboard')
   assert.ok(dashboard.includes('<MentorCockpit'), 'SessionDashboard should delegate valid sessions to MentorCockpit')
+  assert.ok(nuxtConfig.includes('~/assets/css/control-plane.css'), 'Nuxt should load control plane styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/cockpit.css'), 'Nuxt should load cockpit styles explicitly')
   assert.ok(lineCount(app) <= 35, 'app.vue should stay a thin Nuxt facade')
 
@@ -67,6 +69,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'features/mentor-cockpit/useMentorCockpitState.ts',
     'features/mentor-cockpit/mentor-cockpit-state.ts',
     'assets/css/main.css',
+    'assets/css/control-plane.css',
     'assets/css/cockpit.css'
   ]) {
     const source = await readText(path)
