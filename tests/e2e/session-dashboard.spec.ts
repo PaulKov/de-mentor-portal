@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { join } from 'node:path'
 
 const openCurrentSession = async page => {
   await page.goto('/')
@@ -108,4 +109,27 @@ test('builds a lesson launch packet from the hub', async ({ page }) => {
   await expect(page.getByText('python3 mentor-lab.py session greenplum start --student "Мария" --route deep --output artifacts/sessions/maria')).toBeVisible()
   await expect(page.getByText('python3 mentor-lab.py runbook greenplum deep')).toBeVisible()
   await expect(page.getByText('wsl --status')).toBeVisible()
+})
+
+test('imports a session file into workspace and opens it in cockpit', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Открыть сессии' }).click()
+  await expect(page.getByRole('heading', { name: 'Session Workspace' })).toBeVisible()
+
+  await page.locator('input[type="file"]').setInputFiles(
+    join(process.cwd(), 'public/session.sample.json')
+  )
+
+  await expect(
+    page.getByRole('button', { name: /Demo Student greenplum-partitioning/ })
+  ).toBeVisible()
+  await expect(page.getByText('Partition pruning and retention').first()).toBeVisible()
+
+  await page.getByRole('button', { name: 'Открыть cockpit' }).first().click()
+
+  await expect(page.getByRole('heading', { name: 'Mentor Live Cockpit' })).toBeVisible()
+  await expect(
+    page.getByText('Источник состояния: workspace:Demo Student:greenplum-partitioning')
+  ).toBeVisible()
 })
