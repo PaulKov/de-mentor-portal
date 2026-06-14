@@ -1,53 +1,61 @@
 {
   "contract_version": "academy-session/v1",
   "academy_version": "Academy Experience v5",
-  "lab_name": "greenplum",
+  "lab_name": "greenplum-partitioning",
   "student_name": "Demo Student",
   "created_at": "2026-06-14T10:00:00",
   "current_stage": {
-    "code": "environment",
-    "title": "Окружение и паспорт кластера",
-    "timebox": "00:00-10:00",
-    "mentor_focus": "Проверить Docker, поднять Greenplum, показать topology.",
-    "student_action": "Запустить doctor/check и назвать coordinator/segments.",
-    "command": "python3 mentor-lab.py check greenplum --dry-run"
+    "code": "partition-pruning",
+    "title": "Partition pruning and retention",
+    "timebox": "10:00-25:00",
+    "mentor_focus": "Показать bad/good partition key и объяснить, что pruning/retention не заменяют DISTRIBUTED BY.",
+    "student_action": "Запустить SQL-lab и показать EXPLAIN pruning.",
+    "command": "python3 mentor-lab.py runbook greenplum-partitioning simple"
   },
   "stages": [
     {
-      "code": "environment",
-      "title": "Окружение и паспорт кластера",
+      "code": "replay",
+      "title": "Replay evidence from Lesson 01",
       "timebox": "00:00-10:00",
-      "mentor_focus": "Проверить Docker, поднять Greenplum, показать topology.",
-      "student_action": "Запустить doctor/check и назвать coordinator/segments.",
-      "command": "python3 mentor-lab.py check greenplum --dry-run"
+      "mentor_focus": "Проверить, что ученик принес EXPLAIN, gp_segment_id и validation evidence.",
+      "student_action": "Назвать один evidence gap и его влияние на partitioning decision.",
+      "command": "python3 mentor-lab.py replay greenplum --student Иван --submission submissions/query-tuning.md --pre 40 --post 85 --output artifacts/greenplum-replay.md"
     },
     {
-      "code": "plan-reading",
-      "title": "EXPLAIN, Motion, QD/QE/gang/slice",
-      "timebox": "22:00-40:00",
-      "mentor_focus": "Показать, как Motion режет план на slices.",
-      "student_action": "Найти Redistribute/Broadcast/Gather Motion в плане.",
-      "command": "python3 mentor-lab.py coach-plan greenplum --query bad_customer_join --sample"
+      "code": "partition-pruning",
+      "title": "Partition pruning and retention",
+      "timebox": "10:00-25:00",
+      "mentor_focus": "Показать bad/good partition key и объяснить, что pruning/retention не заменяют DISTRIBUTED BY.",
+      "student_action": "Запустить SQL-lab и показать EXPLAIN pruning.",
+      "command": "python3 mentor-lab.py runbook greenplum-partitioning simple"
+    },
+    {
+      "code": "statistics",
+      "title": "Statistics after incremental load",
+      "timebox": "25:00-40:00",
+      "mentor_focus": "Связать incremental load с optimizer contract и свежей статистикой.",
+      "student_action": "Показать last_analyze и объяснить риск stale statistics.",
+      "command": "ANALYZE lesson02.fact_sales_partitioned;"
     }
   ],
   "skill_graph": [
     {
-      "code": "qd-qe",
-      "title": "QD/QE/gang/slice",
+      "code": "partition-pruning",
+      "title": "Partition pruning",
       "level": "core",
-      "evidence": "Ученик связывает QD, QE, gang, slice и Motion с EXPLAIN."
+      "evidence": "Ученик показывает EXPLAIN, где отсекаются partitions."
     },
     {
-      "code": "explain-motion",
-      "title": "EXPLAIN и Motion",
+      "code": "statistics",
+      "title": "Statistics after load",
       "level": "core",
-      "evidence": "Ученик отличает Broadcast Motion, Redistribute Motion и Gather Motion."
+      "evidence": "Ученик связывает ANALYZE с выбором join/Motion pattern."
     }
   ],
   "commands": [
-    "python3 mentor-lab.py dataset greenplum generate --scale small --seed 42 --skew high --late-facts --wide-rows --output artifacts/generated-enterprise.sql",
-    "python3 mentor-lab.py autograde-sql greenplum --submission labs/greenplum/examples/student-solution-example.sql --output artifacts/sql-autograde.md",
-    "python3 mentor-lab.py session greenplum report --session artifacts/sessions/demo --output artifacts/greenplum-session-report.md"
+    "python3 mentor-lab.py lesson-release greenplum-partitioning verify",
+    "python3 mentor-lab.py runbook greenplum-partitioning simple",
+    "python3 mentor-lab.py session greenplum-partitioning report --session artifacts/sessions/demo --output artifacts/lesson02-session-report.md"
   ],
   "events": [],
   "control_plane": {
@@ -55,35 +63,63 @@
     "mentor_mode": {
       "default_route": "simple",
       "runbook_commands": [
-        "python3 mentor-lab.py runbook greenplum simple",
-        "python3 mentor-lab.py runbook greenplum deep",
-        "python3 mentor-lab.py runbook greenplum homework"
+        "python3 mentor-lab.py runbook greenplum-partitioning simple",
+        "python3 mentor-lab.py runbook greenplum-partitioning deep",
+        "python3 mentor-lab.py runbook greenplum-partitioning homework"
       ],
-      "slide_deck": "artifacts/greenplum-theory.pptx",
+      "slide_deck": "artifacts/greenplum-partitioning-theory.pptx",
+      "google_slides": "https://docs.google.com/presentation/d/17Ae88PoniaFU34egsFPwC0PndAOoXMze4qV1pIKQkaI/edit?usp=sharing",
       "stage_guides": [
         {
-          "stage_code": "environment",
-          "slides": "1-4",
-          "mentor_script": "Открой урок с цели, затем собери паспорт кластера: coordinator, segments, Docker context и команды проверки окружения.",
+          "stage_code": "replay",
+          "slides": "1-3",
+          "mentor_script": "Начни с replay evidence: без EXPLAIN, gp_segment_id и validation partition design будет гаданием.",
           "show_commands": [
-            "python3 mentor-lab.py check greenplum --dry-run",
-            "python3 mentor-lab.py readiness greenplum --platform macos"
+            "python3 mentor-lab.py replay greenplum --student Иван --submission submissions/query-tuning.md --pre 40 --post 85 --output artifacts/greenplum-replay.md"
           ],
-          "question": "Почему Greenplum не равен просто набору шардированных PostgreSQL?",
-          "expected_answer": "Есть единый optimizer/dispatcher, QD/QE execution, Motion, gangs и MPP-план целиком.",
-          "verification": "Ученик называет coordinator/master, primary segments и gp_segment_configuration.",
-          "workbook_ref": "docs/lessons/01-greenplum/student-workbook.md",
-          "homework_ref": "docs/lessons/01-greenplum/homework.md"
+          "question": "Какой missing marker мешает Lesson 02?",
+          "expected_answer": "EXPLAIN, gp_segment_id, root cause, validation или residual risk.",
+          "verification": "Ученик называет один evidence gap и его влияние на partitioning decision.",
+          "workbook_ref": "docs/lessons/02-greenplum-partitioning/student-workbook.md",
+          "homework_ref": "docs/lessons/02-greenplum-partitioning/homework.md"
+        },
+        {
+          "stage_code": "partition-pruning",
+          "slides": "4-7",
+          "mentor_script": "Покажи bad/good partition key и объясни, что pruning/retention не заменяют DISTRIBUTED BY.",
+          "show_commands": [
+            "python3 mentor-lab.py runbook greenplum-partitioning simple",
+            "docker compose -f labs/greenplum/docker-compose.yml exec -T -u gpadmin greenplum psql -U gpadmin -d mentor -f /mentor-lab/examples/lesson02-partitioning-statistics-loads.sql"
+          ],
+          "question": "Почему partition key не равен distribution key?",
+          "expected_answer": "Partition key отсекает partitions; distribution key размещает строки по segments и влияет на joins.",
+          "verification": "SQL-lab выполнен; ученик показывает EXPLAIN pruning.",
+          "workbook_ref": "docs/lessons/02-greenplum-partitioning/student-workbook.md",
+          "homework_ref": "docs/lessons/02-greenplum-partitioning/homework.md"
+        },
+        {
+          "stage_code": "statistics",
+          "slides": "8-10",
+          "mentor_script": "Свяжи incremental load с optimizer contract: touched data должна получить свежую статистику.",
+          "show_commands": [
+            "ANALYZE lesson02.fact_sales_partitioned;",
+            "SELECT schemaname, relname, n_live_tup, last_analyze FROM pg_stat_user_tables WHERE schemaname = 'lesson02' ORDER BY relname;"
+          ],
+          "question": "Почему stale statistics опасны в MPP?",
+          "expected_answer": "Плохие estimates могут выбрать не тот join/Motion pattern и раздуть network exchange.",
+          "verification": "Ученик показывает last_analyze и before/after EXPLAIN.",
+          "workbook_ref": "docs/lessons/02-greenplum-partitioning/student-workbook.md",
+          "homework_ref": "docs/lessons/02-greenplum-partitioning/homework.md"
         }
       ]
     },
     "student_mode": {
-      "prep_runbook": "docs/lessons/01-greenplum/runbooks/student-prep.md",
-      "workbook": "docs/lessons/01-greenplum/student-workbook.md",
-      "homework": "docs/lessons/01-greenplum/homework.md",
+      "prep_runbook": "docs/lessons/02-greenplum-partitioning/runbooks/student-prep.md",
+      "workbook": "docs/lessons/02-greenplum-partitioning/student-workbook.md",
+      "homework": "docs/lessons/02-greenplum-partitioning/homework.md",
       "self_check_commands": [
         "python3 mentor-lab.py doctor",
-        "python3 mentor-lab.py check greenplum --dry-run"
+        "python3 mentor-lab.py lesson-release greenplum-partitioning verify"
       ]
     },
     "portal_actions": {
@@ -94,8 +130,13 @@
     "artifacts": [
       {
         "kind": "deck",
-        "path": "artifacts/greenplum-theory.pptx",
-        "label": "Презентация Greenplum theory"
+        "path": "https://docs.google.com/presentation/d/17Ae88PoniaFU34egsFPwC0PndAOoXMze4qV1pIKQkaI/edit?usp=sharing",
+        "label": "Google Slides"
+      },
+      {
+        "kind": "sql",
+        "path": "labs/greenplum/examples/lesson02-partitioning-statistics-loads.sql",
+        "label": "Lesson 02 SQL-lab"
       }
     ],
     "next_lesson": {

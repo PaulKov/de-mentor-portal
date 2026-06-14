@@ -1,37 +1,37 @@
 {
   "contract_version": "academy-session/v1",
   "academy_version": "Academy Experience v5",
-  "lab_name": "greenplum",
+  "lab_name": "greenplum-partitioning",
   "student_name": "Demo Student",
   "created_at": "2026-06-14T10:00:00",
   "current_stage": {
-    "code": "environment",
-    "title": "Окружение и паспорт кластера",
-    "timebox": "00:00-10:00",
-    "mentor_focus": "Проверить Docker, поднять Greenplum, показать topology.",
-    "student_action": "Запустить doctor/check и назвать coordinator/segments.",
-    "command": "python3 mentor-lab.py check greenplum --dry-run"
+    "code": "partition-pruning",
+    "title": "Partition pruning and retention",
+    "timebox": "10:00-25:00",
+    "mentor_focus": "Показать bad/good partition key и объяснить distribution vs partitioning.",
+    "student_action": "Запустить SQL-lab и показать EXPLAIN pruning.",
+    "command": "python3 mentor-lab.py runbook greenplum-partitioning simple"
   },
   "stages": [
     {
-      "code": "environment",
-      "title": "Окружение и паспорт кластера",
-      "timebox": "00:00-10:00",
-      "mentor_focus": "Проверить Docker, поднять Greenplum, показать topology.",
-      "student_action": "Запустить doctor/check и назвать coordinator/segments.",
-      "command": "python3 mentor-lab.py check greenplum --dry-run"
+      "code": "partition-pruning",
+      "title": "Partition pruning and retention",
+      "timebox": "10:00-25:00",
+      "mentor_focus": "Показать bad/good partition key и объяснить distribution vs partitioning.",
+      "student_action": "Запустить SQL-lab и показать EXPLAIN pruning.",
+      "command": "python3 mentor-lab.py runbook greenplum-partitioning simple"
     }
   ],
   "skill_graph": [
     {
-      "code": "qd-qe",
-      "title": "QD/QE/gang/slice",
+      "code": "partition-pruning",
+      "title": "Partition pruning",
       "level": "core",
-      "evidence": "Ученик связывает QD, QE, gang, slice и Motion с EXPLAIN."
+      "evidence": "Ученик показывает EXPLAIN, где отсекаются partitions."
     }
   ],
   "commands": [
-    "python3 mentor-lab.py session greenplum report --session artifacts/sessions/demo --output artifacts/greenplum-session-report.md"
+    "python3 mentor-lab.py lesson-release greenplum-partitioning verify"
   ],
   "events": [],
   "control_plane": {
@@ -39,29 +39,30 @@
     "mentor_mode": {
       "default_route": "simple",
       "runbook_commands": [
-        "python3 mentor-lab.py runbook greenplum simple"
+        "python3 mentor-lab.py runbook greenplum-partitioning simple"
       ],
-      "slide_deck": "artifacts/greenplum-theory.pptx",
+      "slide_deck": "artifacts/greenplum-partitioning-theory.pptx",
+      "google_slides": "https://docs.google.com/presentation/d/17Ae88PoniaFU34egsFPwC0PndAOoXMze4qV1pIKQkaI/edit?usp=sharing",
       "stage_guides": [
         {
-          "stage_code": "environment",
-          "slides": "1-4",
-          "mentor_script": "Собрать паспорт кластера и проверить окружение.",
+          "stage_code": "partition-pruning",
+          "slides": "4-7",
+          "mentor_script": "Покажи bad/good partition key и объясни, что pruning/retention не заменяют DISTRIBUTED BY.",
           "show_commands": [
-            "python3 mentor-lab.py check greenplum --dry-run"
+            "python3 mentor-lab.py runbook greenplum-partitioning simple"
           ],
-          "question": "Где выполняется основная работа запроса?",
-          "expected_answer": "На QE-процессах сегментов.",
-          "verification": "Ученик называет coordinator и primary segments.",
-          "workbook_ref": "docs/lessons/01-greenplum/student-workbook.md",
-          "homework_ref": "docs/lessons/01-greenplum/homework.md"
+          "question": "Почему partition key не равен distribution key?",
+          "expected_answer": "Partition key отсекает partitions; distribution key размещает строки по segments и влияет на joins.",
+          "verification": "Ученик показывает EXPLAIN pruning.",
+          "workbook_ref": "docs/lessons/02-greenplum-partitioning/student-workbook.md",
+          "homework_ref": "docs/lessons/02-greenplum-partitioning/homework.md"
         }
       ]
     },
     "student_mode": {
-      "prep_runbook": "docs/lessons/01-greenplum/runbooks/student-prep.md",
-      "workbook": "docs/lessons/01-greenplum/student-workbook.md",
-      "homework": "docs/lessons/01-greenplum/homework.md",
+      "prep_runbook": "docs/lessons/02-greenplum-partitioning/runbooks/student-prep.md",
+      "workbook": "docs/lessons/02-greenplum-partitioning/student-workbook.md",
+      "homework": "docs/lessons/02-greenplum-partitioning/homework.md",
       "self_check_commands": [
         "python3 mentor-lab.py doctor"
       ]
@@ -71,7 +72,13 @@
       "export_command": "python3 mentor-lab.py portal greenplum export --session <session-dir> --portal-dir de-mentor-portal",
       "open_command": "python3 mentor-lab.py portal greenplum open --url http://127.0.0.1:3000"
     },
-    "artifacts": [],
+    "artifacts": [
+      {
+        "kind": "deck",
+        "path": "https://docs.google.com/presentation/d/17Ae88PoniaFU34egsFPwC0PndAOoXMze4qV1pIKQkaI/edit?usp=sharing",
+        "label": "Google Slides"
+      }
+    ],
     "next_lesson": {
       "code": "02-greenplum-partitioning",
       "title": "Partitioning, statistics and incremental loads in MPP",

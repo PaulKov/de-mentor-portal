@@ -207,6 +207,12 @@
             "slide_deck": {
               "type": "string"
             },
+            "google_slides": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
             "stage_guides": {
               "type": "array",
               "minItems": 1,

@@ -16,6 +16,7 @@ export interface MentorMode {
   default_route: string
   runbook_commands: string[]
   slide_deck: string
+  google_slides?: string | null
   stage_guides: StageGuide[]
 }
 
