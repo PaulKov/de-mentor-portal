@@ -70,6 +70,7 @@ const { hubState, selectLesson, selectRole, selectTrack } = useLessonHubState(ca
         />
         <LessonActionRail
           :state="hubState"
+          :catalog-generated-at="catalog.generated_at"
           @select-role="selectRole"
         />
       </div>

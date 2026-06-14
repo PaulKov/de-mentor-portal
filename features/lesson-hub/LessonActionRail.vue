@@ -3,11 +3,13 @@ import CopyButton from '~/components/shared/ui/CopyButton.vue'
 import CopyCommand from '~/components/shared/ui/CopyCommand.vue'
 import Panel from '~/components/shared/ui/Panel.vue'
 import StatusBadge from '~/components/shared/ui/StatusBadge.vue'
+import LessonLauncher from '~/features/lesson-launcher/LessonLauncher.vue'
 import DashboardModeSwitch from '~/features/session-dashboard/DashboardModeSwitch.vue'
 import type { LessonHubRole, LessonHubState } from './lesson-hub-state'
 
 defineProps<{
   state: LessonHubState
+  catalogGeneratedAt: string
 }>()
 
 const emit = defineEmits<{
@@ -25,6 +27,12 @@ const toneForStatus = (status: string) => status === 'ready' ? 'success' : 'warn
         @select-mode="emit('select-role', $event)"
       />
     </Panel>
+
+    <LessonLauncher
+      :track="state.selectedTrack"
+      :lesson="state.selectedLesson"
+      :catalog-generated-at="catalogGeneratedAt"
+    />
 
     <Panel eyebrow="readiness" title="Готовность">
       <ul class="readiness-stack">

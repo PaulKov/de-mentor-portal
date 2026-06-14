@@ -141,9 +141,116 @@
 .lesson-action-rail,
 .readiness-stack,
 .hub-material-list,
-.hub-command-list {
+.hub-command-list,
+.launcher-command-stack {
   display: grid;
   gap: 12px;
+}
+
+.lesson-launcher {
+  border-color: #b8ded1;
+}
+
+.launcher-form-grid,
+.launcher-option-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.launcher-form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 14px;
+}
+
+.launcher-form-grid label {
+  display: grid;
+  gap: 6px;
+}
+
+.launcher-form-grid span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.launcher-form-grid input {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+  color: var(--text);
+  padding: 0 10px;
+}
+
+.launcher-section {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.launcher-option-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.launcher-option-grid--compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.launcher-option {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+  color: var(--text);
+  padding: 10px;
+  text-align: left;
+}
+
+.launcher-option.active {
+  border-color: #b8ded1;
+  background: var(--accent-soft);
+}
+
+.launcher-option strong,
+.launcher-option span {
+  display: block;
+}
+
+.launcher-option span {
+  color: var(--accent);
+  font-size: 12px;
+  margin: 4px 0;
+}
+
+.launcher-option p,
+.launcher-note,
+.launcher-unavailable p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.launcher-checks {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.launcher-checks li {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+  padding: 8px 10px;
+}
+
+.launcher-checks code {
+  overflow-wrap: anywhere;
+}
+
+.launcher-unavailable {
+  display: grid;
+  gap: 10px;
 }
 
 .lesson-row {
@@ -243,7 +350,10 @@
   .track-button,
   .lesson-row,
   .hub-material-list article,
-  .hub-catalog-status {
+  .hub-catalog-status,
+  .launcher-form-grid,
+  .launcher-option-grid,
+  .launcher-option-grid--compact {
     grid-template-columns: 1fr;
   }
 
