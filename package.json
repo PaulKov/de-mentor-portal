@@ -4,16 +4,22 @@
   "type": "module",
   "scripts": {
     "dev": "nuxt dev",
+    "dev:sample": "nuxt dev",
     "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "test": "node --test tests/*.test.mjs"
+    "preview:built": "node scripts/serve-built-portal.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:e2e": "playwright test",
+    "validate:session": "node scripts/validate-session-contract.mjs",
+    "check": "npm run test && npm run validate:session -- public/session.sample.json && npm run test:e2e && npm audit --audit-level=high"
   },
   "dependencies": {
     "nuxt": "^3.17.7",
     "vue": "^3.5.16"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "typescript": "^5.8.3"
   },
   "overrides": {

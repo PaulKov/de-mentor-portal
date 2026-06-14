@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict'
-import { readFile } from 'node:fs/promises'
+import { execFile } from 'node:child_process'
+import { mkdtemp, readFile, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { promisify } from 'node:util'
 import test from 'node:test'
 
+const execFileAsync = promisify(execFile)
 const readJson = async path => JSON.parse(await readFile(path, 'utf-8'))
 
 test('sample session follows academy-session/v1 contract markers', async () => {
@@ -21,4 +26,51 @@ test('sample session follows academy-session/v1 contract markers', async () => {
   assert.equal(runtimeSample.portal.repository, 'https://github.com/PaulKov/de-mentor-portal')
   assert.equal(runtimeSample.portal.app_path, 'de-mentor-portal')
   assert.equal(runtimeSample.portal.session_env, 'MENTOR_LAB_SESSION')
+})
+
+test('validation CLI accepts the sample and rejects broken payloads', async () => {
+  const sampleResult = await execFileAsync('node', [
+    'scripts/validate-session-contract.mjs',
+    'public/session.sample.json'
+  ])
+
+  assert.match(sampleResult.stdout, /valid academy-session\/v1/)
+
+  const tempDir = await mkdtemp(join(tmpdir(), 'academy-session-'))
+  const brokenPath = join(tempDir, 'broken-session.json')
+  await writeFile(
+    brokenPath,
+    JSON.stringify(
+      {
+        contract_version: 'academy-session/v1',
+        academy_version: 'Academy Experience v5',
+        lab_name: 'greenplum',
+        student_name: 'Broken Demo',
+        created_at: '2026-06-14T10:00:00',
+        current_stage: { code: 'missing-from-stages' },
+        stages: [],
+        skill_graph: [],
+        commands: [],
+        events: [],
+        portal: {
+          framework: 'Vue 3 + Nuxt 3 + Vite',
+          repository: 'https://github.com/PaulKov/de-mentor-portal',
+          app_path: 'de-mentor-portal',
+          session_env: 'MENTOR_LAB_SESSION',
+          dev_command: 'npm run dev'
+        }
+      },
+      null,
+      2
+    )
+  )
+
+  await assert.rejects(
+    execFileAsync('node', ['scripts/validate-session-contract.mjs', brokenPath]),
+    error => {
+      assert.match(error.stderr, /stages should contain at least one stage/)
+      assert.match(error.stderr, /current_stage should be present in stages/)
+      return true
+    }
+  )
 })

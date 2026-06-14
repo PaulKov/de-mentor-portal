@@ -139,6 +139,10 @@ footer {
   line-height: 1.2;
 }
 
+.topbar-status {
+  width: min(430px, 100%);
+}
+
 .muted {
   margin: 0 0 6px;
   color: var(--muted);
@@ -198,6 +202,61 @@ footer {
 
 .panel-heading {
   margin-bottom: 14px;
+}
+
+.status-panel {
+  padding: 14px;
+}
+
+.status-panel .panel-heading {
+  margin-bottom: 10px;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  border-radius: 999px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  background: #fbfbfa;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 680;
+}
+
+.status-badge--success {
+  border-color: #b8ded1;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.status-badge--warning {
+  border-color: #eadb9c;
+  background: var(--warn-soft);
+  color: #8a6a0a;
+}
+
+.issue-list {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.issue-list code {
+  color: var(--text);
 }
 
 .timeline {
