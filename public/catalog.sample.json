@@ -1,0 +1,246 @@
+{
+  "contract_version": "academy-catalog/v1",
+  "generated_at": "2026-06-14T10:00:00",
+  "default_track": "greenplum",
+  "tracks": [
+    {
+      "code": "greenplum",
+      "title": "Greenplum",
+      "description": "MPP-хранилище, distributed execution, storage, partitioning и эксплуатация.",
+      "status": "ready",
+      "lessons": [
+        {
+          "code": "01-greenplum-foundations",
+          "title": "Greenplum Foundations",
+          "summary": "SMP/MPP/EPP, QD/QE/gang/slice, distribution, Motion, heap vs AOCO.",
+          "level": "junior",
+          "duration": "60 min",
+          "status": "ready",
+          "readiness": [
+            {
+              "label": "Deck",
+              "status": "ready",
+              "detail": "Google Slides и PPTX artifact доступны."
+            },
+            {
+              "label": "Docker lab",
+              "status": "ready",
+              "detail": "Greenplum test stand поднимается через mentor-lab."
+            }
+          ],
+          "materials": [
+            {
+              "kind": "deck",
+              "label": "Theory deck",
+              "path": "artifacts/greenplum-theory.pptx"
+            },
+            {
+              "kind": "workbook",
+              "label": "Student workbook",
+              "path": "docs/lessons/01-greenplum/student-workbook.md"
+            },
+            {
+              "kind": "homework",
+              "label": "Homework",
+              "path": "docs/lessons/01-greenplum/homework.md"
+            }
+          ],
+          "mentor_commands": [
+            "python3 mentor-lab.py runbook greenplum simple",
+            "python3 mentor-lab.py check greenplum"
+          ],
+          "student_commands": [
+            "python3 mentor-lab.py doctor",
+            "python3 mentor-lab.py runbook greenplum homework"
+          ],
+          "next_lesson_code": "02-greenplum-partitioning"
+        },
+        {
+          "code": "02-greenplum-partitioning",
+          "title": "Partitioning, Statistics and Incremental Loads",
+          "summary": "Partition pruning, retention, late-arriving facts, stats after load и AOCO partitions.",
+          "level": "junior+",
+          "duration": "90 min",
+          "status": "ready",
+          "readiness": [
+            {
+              "label": "SQL lab",
+              "status": "ready",
+              "detail": "Partitioning/statistics lab есть в examples."
+            }
+          ],
+          "materials": [
+            {
+              "kind": "sql",
+              "label": "SQL lab",
+              "path": "labs/greenplum/examples/lesson02-partitioning-statistics-loads.sql"
+            },
+            {
+              "kind": "workbook",
+              "label": "Student workbook",
+              "path": "docs/lessons/02-greenplum-partitioning/student-workbook.md"
+            }
+          ],
+          "mentor_commands": [
+            "python3 mentor-lab.py runbook greenplum-partitioning simple",
+            "python3 mentor-lab.py lesson-release greenplum-partitioning verify"
+          ],
+          "student_commands": [
+            "python3 mentor-lab.py doctor",
+            "python3 mentor-lab.py lesson-release greenplum-partitioning verify"
+          ],
+          "next_lesson_code": null
+        }
+      ]
+    },
+    {
+      "code": "clickhouse",
+      "title": "ClickHouse",
+      "description": "Columnar OLAP, MergeTree, sparse indexes, projections и ingestion patterns.",
+      "status": "planned",
+      "lessons": [
+        {
+          "code": "01-clickhouse-foundations",
+          "title": "ClickHouse Foundations",
+          "summary": "MergeTree anatomy, partition/order keys, compression и basic diagnostics.",
+          "level": "junior",
+          "duration": "60 min",
+          "status": "planned",
+          "readiness": [
+            {
+              "label": "Draft outline",
+              "status": "planned",
+              "detail": "Track planned after Greenplum Lesson 02."
+            }
+          ],
+          "materials": [
+            {
+              "kind": "outline",
+              "label": "Lesson outline",
+              "path": "docs/lessons/clickhouse/01-foundations.md"
+            }
+          ],
+          "mentor_commands": [
+            "python3 mentor-lab.py runbook clickhouse foundations"
+          ],
+          "student_commands": [
+            "python3 mentor-lab.py doctor"
+          ],
+          "next_lesson_code": null
+        }
+      ]
+    },
+    {
+      "code": "hadoop",
+      "title": "Hadoop",
+      "description": "HDFS, YARN, file formats, data locality и operational basics.",
+      "status": "planned",
+      "lessons": [
+        {
+          "code": "01-hadoop-hdfs-yarn",
+          "title": "HDFS and YARN Foundations",
+          "summary": "NameNode/DataNode, blocks, replication, ResourceManager и NodeManager.",
+          "level": "junior",
+          "duration": "75 min",
+          "status": "planned",
+          "readiness": [
+            {
+              "label": "Docker stand",
+              "status": "planned",
+              "detail": "Will reuse portal catalog contract when lab is ready."
+            }
+          ],
+          "materials": [
+            {
+              "kind": "outline",
+              "label": "Lesson outline",
+              "path": "docs/lessons/hadoop/01-hdfs-yarn.md"
+            }
+          ],
+          "mentor_commands": [
+            "python3 mentor-lab.py runbook hadoop hdfs-yarn"
+          ],
+          "student_commands": [
+            "python3 mentor-lab.py doctor"
+          ],
+          "next_lesson_code": null
+        }
+      ]
+    },
+    {
+      "code": "spark",
+      "title": "Spark",
+      "description": "Spark SQL, execution plans, Spark on YARN, Spark on Kubernetes и performance tuning.",
+      "status": "planned",
+      "lessons": [
+        {
+          "code": "01-spark-runtime-foundations",
+          "title": "Spark Runtime Foundations",
+          "summary": "Spark on yarn, Spark on k8s, driver/executors, shuffle и storage formats.",
+          "level": "junior+",
+          "duration": "90 min",
+          "status": "planned",
+          "readiness": [
+            {
+              "label": "Runtime map",
+              "status": "planned",
+              "detail": "Track will compare local, YARN and Kubernetes deployments."
+            }
+          ],
+          "materials": [
+            {
+              "kind": "outline",
+              "label": "Lesson outline",
+              "path": "docs/lessons/spark/01-runtime-foundations.md"
+            }
+          ],
+          "mentor_commands": [
+            "python3 mentor-lab.py runbook spark intro mentor"
+          ],
+          "student_commands": [
+            "python3 mentor-lab.py runbook spark intro student",
+            "python3 mentor-lab.py doctor"
+          ],
+          "next_lesson_code": null
+        }
+      ]
+    },
+    {
+      "code": "postgres",
+      "title": "Postgres",
+      "description": "SQL fundamentals, indexing, planner, transactions and operational diagnostics.",
+      "status": "planned",
+      "lessons": [
+        {
+          "code": "01-postgres-query-plans",
+          "title": "Postgres Query Plans",
+          "summary": "EXPLAIN, indexes, joins, VACUUM/ANALYZE и planner estimates.",
+          "level": "junior",
+          "duration": "60 min",
+          "status": "planned",
+          "readiness": [
+            {
+              "label": "Outline",
+              "status": "planned",
+              "detail": "Planned as bridge before comparing Postgres and Greenplum."
+            }
+          ],
+          "materials": [
+            {
+              "kind": "outline",
+              "label": "Lesson outline",
+              "path": "docs/lessons/postgres/01-query-plans.md"
+            }
+          ],
+          "mentor_commands": [
+            "python3 mentor-lab.py runbook postgres query-plans"
+          ],
+          "student_commands": [
+            "python3 mentor-lab.py doctor"
+          ],
+          "next_lesson_code": null
+        }
+      ]
+    }
+  ]
+}

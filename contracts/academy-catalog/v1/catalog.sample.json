@@ -1,0 +1,44 @@
+{
+  "contract_version": "academy-catalog/v1",
+  "generated_at": "2026-06-14T10:00:00",
+  "default_track": "greenplum",
+  "tracks": [
+    {
+      "code": "greenplum",
+      "title": "Greenplum",
+      "description": "MPP-хранилище, distributed execution, storage, partitioning и эксплуатация.",
+      "status": "ready",
+      "lessons": [
+        {
+          "code": "01-greenplum-foundations",
+          "title": "Greenplum Foundations",
+          "summary": "SMP/MPP/EPP, QD/QE/gang/slice, distribution, Motion, heap vs AOCO.",
+          "level": "junior",
+          "duration": "60 min",
+          "status": "ready",
+          "readiness": [
+            {
+              "label": "Deck",
+              "status": "ready",
+              "detail": "Google Slides и PPTX artifact доступны."
+            }
+          ],
+          "materials": [
+            {
+              "kind": "workbook",
+              "label": "Student workbook",
+              "path": "docs/lessons/01-greenplum/student-workbook.md"
+            }
+          ],
+          "mentor_commands": [
+            "python3 mentor-lab.py runbook greenplum simple"
+          ],
+          "student_commands": [
+            "python3 mentor-lab.py doctor"
+          ],
+          "next_lesson_code": "02-greenplum-partitioning"
+        }
+      ]
+    }
+  ]
+}
