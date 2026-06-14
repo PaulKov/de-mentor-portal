@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, useSlots } from 'vue'
 import type { AcademyStage } from '~/core/session/domain/academy-session'
 
 defineProps<{
@@ -7,6 +8,9 @@ defineProps<{
   framework?: string
   source: string
 }>()
+
+const slots = useSlots()
+const hasPortalActions = computed(() => Boolean(slots['portal-actions']))
 </script>
 
 <template>
@@ -18,6 +22,10 @@ defineProps<{
           <strong>Academy Experience v5</strong>
           <small>{{ framework || 'Vue 3 + Nuxt 3 + Vite' }}</small>
         </div>
+      </div>
+
+      <div v-if="hasPortalActions" class="portal-actions">
+        <slot name="portal-actions" />
       </div>
 
       <nav class="stage-nav" aria-label="Этапы">

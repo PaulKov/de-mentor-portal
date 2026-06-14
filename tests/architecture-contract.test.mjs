@@ -17,10 +17,22 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'core/session/application/session-contract.ts',
     'core/session/application/session-loader.ts',
     'core/session/infrastructure/http-session-source.ts',
+    'core/catalog/domain/academy-catalog.ts',
+    'core/catalog/application/catalog-contract.ts',
+    'core/catalog/application/catalog-loader.ts',
+    'core/catalog/infrastructure/http-catalog-source.ts',
     'assets/css/main.css',
     'assets/css/control-plane.css',
     'assets/css/cockpit.css',
     'assets/css/student-launchpad.css',
+    'assets/css/lesson-hub.css',
+    'features/academy-portal/AcademyPortal.vue',
+    'features/lesson-hub/LessonHub.vue',
+    'features/lesson-hub/TrackNavigation.vue',
+    'features/lesson-hub/LessonList.vue',
+    'features/lesson-hub/LessonActionRail.vue',
+    'features/lesson-hub/useLessonHubState.ts',
+    'features/lesson-hub/lesson-hub-state.ts',
     'features/session-dashboard/SessionDashboard.vue',
     'features/session-dashboard/DashboardModeSwitch.vue',
     'features/session-dashboard/session-dashboard-mode.ts',
@@ -60,19 +72,27 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
   const app = await readText('app.vue')
   const dashboard = await readText('features/session-dashboard/SessionDashboard.vue')
   const nuxtConfig = await readText('nuxt.config.ts')
-  assert.ok(app.includes('<SessionDashboard'), 'app.vue should delegate rendering to SessionDashboard')
+  assert.ok(app.includes('<AcademyPortal'), 'app.vue should delegate rendering to AcademyPortal')
+  assert.ok(app.includes('useCatalogState'), 'app.vue should load the academy catalog through a composable')
+  assert.ok(app.includes('useSessionState'), 'app.vue should still load the live session through a composable')
   assert.ok(dashboard.includes('<MentorCockpit'), 'SessionDashboard should delegate valid sessions to MentorCockpit')
   assert.ok(dashboard.includes('<StudentLaunchpad'), 'SessionDashboard should delegate student mode to StudentLaunchpad')
   assert.ok(dashboard.includes('useSessionDashboardMode'), 'SessionDashboard should keep mode persistence in a composable')
   assert.ok(nuxtConfig.includes('~/assets/css/control-plane.css'), 'Nuxt should load control plane styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/cockpit.css'), 'Nuxt should load cockpit styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/student-launchpad.css'), 'Nuxt should load student launchpad styles explicitly')
+  assert.ok(nuxtConfig.includes('~/assets/css/lesson-hub.css'), 'Nuxt should load lesson hub styles explicitly')
   assert.ok(lineCount(app) <= 35, 'app.vue should stay a thin Nuxt facade')
 
   const composable = await readText('composables/useSessionState.ts')
   assert.ok(composable.includes('SessionLoader'), 'session composable should depend on the application loader')
   assert.ok(composable.includes('HttpSessionSource'), 'session composable should inject HTTP session sources')
   assert.ok(lineCount(composable) <= 85, 'useSessionState should stay a thin state facade')
+
+  const catalogComposable = await readText('composables/useCatalogState.ts')
+  assert.ok(catalogComposable.includes('CatalogLoader'), 'catalog composable should depend on the application loader')
+  assert.ok(catalogComposable.includes('HttpCatalogSource'), 'catalog composable should inject HTTP catalog sources')
+  assert.ok(lineCount(catalogComposable) <= 85, 'useCatalogState should stay a thin state facade')
 
   for (const path of [
     'features/mentor-cockpit/MentorCockpit.vue',
@@ -91,10 +111,18 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'features/session-dashboard/DashboardModeSwitch.vue',
     'features/session-dashboard/useSessionDashboardMode.ts',
     'features/session-dashboard/session-dashboard-mode.ts',
+    'features/academy-portal/AcademyPortal.vue',
+    'features/lesson-hub/LessonHub.vue',
+    'features/lesson-hub/TrackNavigation.vue',
+    'features/lesson-hub/LessonList.vue',
+    'features/lesson-hub/LessonActionRail.vue',
+    'features/lesson-hub/useLessonHubState.ts',
+    'features/lesson-hub/lesson-hub-state.ts',
     'assets/css/main.css',
     'assets/css/control-plane.css',
     'assets/css/cockpit.css',
-    'assets/css/student-launchpad.css'
+    'assets/css/student-launchpad.css',
+    'assets/css/lesson-hub.css'
   ]) {
     const source = await readText(path)
     assert.ok(lineCount(source) <= 400, `${path} should stay below the module SLOC guard`)
@@ -149,6 +177,7 @@ test('session core exposes typed contracts, validation and DI seams', async () =
 test('developer experience documents validation and local sample workflow', async () => {
   const packageJson = JSON.parse(await readText('package.json'))
   const readme = await readText('README.md')
+  const envExample = await readText('.env.example')
   const workflow = await readText('.github/workflows/ci.yml')
 
   assert.equal(packageJson.scripts['validate:session'], 'node scripts/validate-session-contract.mjs')
@@ -161,15 +190,23 @@ test('developer experience documents validation and local sample workflow', asyn
   assertFileExists('.env.example')
   assertFileExists('scripts/validate-session-contract.mjs')
   assertFileExists('scripts/serve-built-portal.mjs')
+  assert.ok(envExample.includes('ACADEMY_CATALOG='))
+  assert.ok(envExample.includes('MENTOR_LAB_SESSION='))
 
   assert.ok(readme.includes('npm run validate:session -- public/session.sample.json'))
   assert.ok(readme.includes('npm run dev:sample'))
+  assert.ok(readme.includes('Academy Lesson Hub'))
+  assert.ok(readme.includes('academy-catalog/v1'))
+  assert.ok(readme.includes('ACADEMY_CATALOG=/absolute/path/to/catalog.json npm run dev'))
   assert.ok(readme.includes('Mentor Live Cockpit'))
   assert.ok(readme.includes('Student Launchpad'))
   assert.ok(readme.includes('Windows + WSL2'))
   assert.ok(readme.includes('MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev'))
   assert.ok(readme.includes('Архитектура'))
   assert.ok(readme.includes('core/session/domain'))
+  assert.ok(readme.includes('core/catalog/domain'))
+  assert.ok(readme.includes('features/academy-portal'))
+  assert.ok(readme.includes('features/lesson-hub'))
   assert.ok(readme.includes('features/session-dashboard'))
   assert.ok(readme.includes('components/shared/ui'))
 

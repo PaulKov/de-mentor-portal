@@ -1,15 +1,31 @@
 <script setup lang="ts">
-import SessionDashboard from '~/features/session-dashboard/SessionDashboard.vue'
+import AcademyPortal from '~/features/academy-portal/AcademyPortal.vue'
 
-const { session, source, issues, reload, isValid } = await useSessionState()
+const {
+  catalog,
+  source: catalogSource,
+  reload: reloadCatalog,
+  isValid: catalogIsValid
+} = await useCatalogState()
+const {
+  session,
+  source: sessionSource,
+  issues: sessionIssues,
+  reload: reloadSession,
+  isValid: sessionIsValid
+} = await useSessionState()
 </script>
 
 <template>
-  <SessionDashboard
+  <AcademyPortal
+    :catalog="catalog"
+    :catalog-source="catalogSource"
+    :catalog-is-valid="catalogIsValid"
     :session="session"
-    :source="source"
-    :issues="issues"
-    :is-valid="isValid"
-    @reload="reload"
+    :session-source="sessionSource"
+    :session-issues="sessionIssues"
+    :session-is-valid="sessionIsValid"
+    @reload-catalog="reloadCatalog"
+    @reload-session="reloadSession"
   />
 </template>

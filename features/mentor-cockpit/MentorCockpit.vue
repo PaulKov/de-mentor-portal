@@ -18,11 +18,13 @@ const props = defineProps<{
   issues: ValidationIssue[]
   isValid: boolean
   activeMode: DashboardMode
+  canOpenHub?: boolean
 }>()
 
 const emit = defineEmits<{
   reload: []
   'select-mode': [mode: DashboardMode]
+  'open-hub': []
 }>()
 
 const sessionRef = toRef(props, 'session')
@@ -43,6 +45,12 @@ const {
     :framework="session.portal.framework"
     :source="source"
   >
+    <template v-if="canOpenHub" #portal-actions>
+      <button class="quiet-button portal-action-button" type="button" @click="emit('open-hub')">
+        Вернуться в каталог
+      </button>
+    </template>
+
     <header class="topbar cockpit-topbar">
       <div>
         <p class="muted">Greenplum mentor cockpit</p>

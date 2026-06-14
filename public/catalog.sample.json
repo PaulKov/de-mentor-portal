@@ -170,13 +170,13 @@
     {
       "code": "spark",
       "title": "Spark",
-      "description": "Spark SQL, execution plans, Spark on YARN, Spark on Kubernetes и performance tuning.",
+      "description": "Spark SQL, execution plans, cluster runtimes и performance tuning.",
       "status": "planned",
       "lessons": [
         {
           "code": "01-spark-runtime-foundations",
           "title": "Spark Runtime Foundations",
-          "summary": "Spark on yarn, Spark on k8s, driver/executors, shuffle и storage formats.",
+          "summary": "spark on yarn, Spark on k8s, driver/executors, shuffle и storage formats.",
           "level": "junior+",
           "duration": "90 min",
           "status": "planned",

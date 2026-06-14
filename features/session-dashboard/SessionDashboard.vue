@@ -20,10 +20,12 @@ const props = defineProps<{
   source: string
   issues: ValidationIssue[]
   isValid: boolean
+  canOpenHub?: boolean
 }>()
 
 defineEmits<{
   reload: []
+  'open-hub': []
 }>()
 
 const stages = computed(() => props.session?.stages ?? [])
@@ -50,8 +52,10 @@ const nextStage = computed(() => {
     :issues="issues"
     :is-valid="isValid"
     :active-mode="mode"
+    :can-open-hub="canOpenHub"
     @select-mode="selectMode"
     @reload="$emit('reload')"
+    @open-hub="$emit('open-hub')"
   />
 
   <StudentLaunchpad
@@ -61,8 +65,10 @@ const nextStage = computed(() => {
     :issues="issues"
     :is-valid="isValid"
     :active-mode="mode"
+    :can-open-hub="canOpenHub"
     @select-mode="selectMode"
     @reload="$emit('reload')"
+    @open-hub="$emit('open-hub')"
   />
 
   <AppShell
@@ -72,6 +78,12 @@ const nextStage = computed(() => {
     :framework="session?.portal.framework"
     :source="source"
   >
+    <template v-if="canOpenHub" #portal-actions>
+      <button class="quiet-button portal-action-button" type="button" @click="$emit('open-hub')">
+        Вернуться в каталог
+      </button>
+    </template>
+
     <header class="topbar">
       <div>
         <p class="muted">Greenplum mentor cockpit</p>
