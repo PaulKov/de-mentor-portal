@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import type { ValidationIssue } from '~/core/session/application/session-contract'
 import type { AcademySession } from '~/core/session/domain/academy-session'
 import CommandList from '~/features/commands/CommandList.vue'
+import ControlPlanePanel from '~/features/control-plane/ControlPlanePanel.vue'
 import EvidenceChecklist from '~/features/evidence/EvidenceChecklist.vue'
 import SessionStatusBanner from '~/features/session-status/SessionStatusBanner.vue'
 import SkillGraphPanel from '~/features/skill-graph/SkillGraphPanel.vue'
@@ -77,6 +78,11 @@ const nextStage = computed(() => {
       <SessionTimeline :stages="stages" />
       <CommandList :commands="session?.commands ?? []" />
     </div>
+
+    <ControlPlanePanel
+      :control-plane="session?.control_plane"
+      :current-stage="currentStage"
+    />
 
     <div class="workspace-grid lower-grid">
       <SkillGraphPanel :nodes="session?.skill_graph ?? []" />

@@ -26,6 +26,12 @@ test('sample session follows academy-session/v1 contract markers', async () => {
   assert.equal(runtimeSample.portal.repository, 'https://github.com/PaulKov/de-mentor-portal')
   assert.equal(runtimeSample.portal.app_path, 'de-mentor-portal')
   assert.equal(runtimeSample.portal.session_env, 'MENTOR_LAB_SESSION')
+
+  assert.equal(runtimeSample.control_plane.version, 'academy-control-plane/v1')
+  assert.equal(runtimeSample.control_plane.mentor_mode.default_route, 'simple')
+  assert.equal(runtimeSample.control_plane.mentor_mode.stage_guides[0].stage_code, 'environment')
+  assert.ok(runtimeSample.control_plane.portal_actions.export_command.includes('mentor-lab.py portal greenplum export'))
+  assert.equal(runtimeSample.control_plane.next_lesson.code, '02-greenplum-partitioning')
 })
 
 test('validation CLI accepts the sample and rejects broken payloads', async () => {
@@ -52,6 +58,14 @@ test('validation CLI accepts the sample and rejects broken payloads', async () =
         skill_graph: [],
         commands: [],
         events: [],
+        control_plane: {
+          version: 'broken-control-plane/v1',
+          mentor_mode: {},
+          student_mode: {},
+          portal_actions: {},
+          artifacts: [],
+          next_lesson: {}
+        },
         portal: {
           framework: 'Vue 3 + Nuxt 3 + Vite',
           repository: 'https://github.com/PaulKov/de-mentor-portal',
@@ -70,6 +84,7 @@ test('validation CLI accepts the sample and rejects broken payloads', async () =
     error => {
       assert.match(error.stderr, /stages should contain at least one stage/)
       assert.match(error.stderr, /current_stage should be present in stages/)
+      assert.match(error.stderr, /control_plane.version should be academy-control-plane\/v1/)
       return true
     }
   )

@@ -13,6 +13,7 @@ const assertFileExists = path => {
 test('portal keeps a clean feature-oriented architecture taxonomy', async () => {
   const expectedFiles = [
     'core/session/domain/academy-session.ts',
+    'core/session/domain/control-plane.ts',
     'core/session/application/session-contract.ts',
     'core/session/application/session-loader.ts',
     'core/session/infrastructure/http-session-source.ts',
@@ -21,6 +22,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'features/timeline/SessionTimeline.vue',
     'features/commands/CommandList.vue',
     'features/evidence/EvidenceChecklist.vue',
+    'features/control-plane/ControlPlanePanel.vue',
     'features/skill-graph/SkillGraphPanel.vue',
     'components/shared/ui/AppShell.vue',
     'components/shared/ui/Panel.vue',
@@ -45,6 +47,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
 
 test('session core exposes typed contracts, validation and DI seams', async () => {
   const domain = await readText('core/session/domain/academy-session.ts')
+  const controlPlaneDomain = await readText('core/session/domain/control-plane.ts')
   const contract = await readText('core/session/application/session-contract.ts')
   const loader = await readText('core/session/application/session-loader.ts')
   const httpSource = await readText('core/session/infrastructure/http-session-source.ts')
@@ -65,6 +68,17 @@ test('session core exposes typed contracts, validation and DI seams', async () =
   assert.ok(contract.includes('validate(payload: unknown)'))
   assert.ok(contract.includes('ValidationResult'))
   assert.ok(contract.includes('CONTRACT_VERSION'))
+  assert.ok(contract.includes('validateControlPlane'))
+  assert.ok(contract.includes('CONTROL_PLANE_VERSION'))
+
+  for (const marker of [
+    'export interface AcademyControlPlane',
+    'export interface StageGuide',
+    'export interface PortalActions',
+    'CONTROL_PLANE_VERSION'
+  ]) {
+    assert.ok(controlPlaneDomain.includes(marker), `control plane domain should expose ${marker}`)
+  }
 
   assert.ok(loader.includes('export interface SessionSource'))
   assert.ok(loader.includes('class SessionLoader'))
