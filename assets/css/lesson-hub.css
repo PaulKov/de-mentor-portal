@@ -61,7 +61,7 @@
 }
 
 .lesson-hub-main {
-  width: min(1160px, calc(100vw - 276px));
+  width: min(1160px, 100%);
   margin: 0 auto;
   padding: 28px;
 }
