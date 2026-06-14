@@ -1,0 +1,176 @@
+.submission-topbar,
+.submission-summary,
+.submission-grid {
+  margin-bottom: 18px;
+}
+
+.submission-topbar-actions,
+.submission-export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.submission-summary,
+.submission-form,
+.submission-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.submission-summary {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.32fr) minmax(0, 1fr);
+  gap: 18px;
+  padding: 18px;
+}
+
+.submission-summary strong {
+  display: block;
+  font-size: 42px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.submission-summary span {
+  color: var(--accent);
+  font-weight: 720;
+}
+
+.submission-summary ul,
+.submission-evidence-list {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.submission-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.submission-form,
+.submission-card {
+  padding: 18px;
+}
+
+.submission-form .primary-button {
+  min-height: 38px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--surface);
+  font-weight: 720;
+  padding: 0 12px;
+}
+
+.submission-form {
+  display: grid;
+  gap: 14px;
+}
+
+.submission-form-heading,
+.submission-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.submission-form-heading h2,
+.submission-card-heading h2 {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.submission-evidence-field {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+  padding: 12px;
+}
+
+.submission-evidence-field span {
+  font-weight: 720;
+}
+
+.submission-evidence-field small,
+.submission-empty,
+.submission-meta,
+.submission-evidence-list span {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.submission-evidence-field code {
+  display: block;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.submission-evidence-field textarea,
+.submission-export textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  padding: 12px;
+}
+
+.submission-mentor-rail {
+  display: grid;
+  gap: 14px;
+}
+
+.submission-evidence-list {
+  padding-left: 0;
+  list-style: none;
+}
+
+.submission-evidence-list li {
+  display: grid;
+  gap: 4px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.submission-export textarea {
+  min-height: 300px;
+  margin-top: 14px;
+}
+
+@media (max-width: 980px) {
+  .submission-summary,
+  .submission-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .submission-topbar-actions,
+  .submission-form-heading,
+  .submission-card-heading,
+  .submission-export-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+  }
+
+  .submission-summary strong {
+    font-size: 34px;
+  }
+}

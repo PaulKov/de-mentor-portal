@@ -1,0 +1,86 @@
+{
+  "contract_version": "academy-catalog/v1",
+  "generated_at": "2026-06-14T10:00:00",
+  "default_track": "greenplum",
+  "tracks": [
+    {
+      "code": "greenplum",
+      "title": "Greenplum",
+      "description": "MPP-хранилище, distributed execution, storage, partitioning и эксплуатация.",
+      "status": "ready",
+      "lessons": [
+        {
+          "code": "01-greenplum-foundations",
+          "title": "Greenplum Foundations",
+          "summary": "SMP/MPP/EPP, QD/QE/gang/slice, distribution, Motion, heap vs AOCO.",
+          "level": "junior",
+          "duration": "60 min",
+          "status": "ready",
+          "readiness": [
+            {
+              "label": "Deck",
+              "status": "ready",
+              "detail": "Google Slides и PPTX artifact доступны."
+            }
+          ],
+          "materials": [
+            {
+              "kind": "workbook",
+              "label": "Student workbook",
+              "path": "docs/lessons/01-greenplum/student-workbook.md"
+            }
+          ],
+          "mentor_commands": [
+            "python3 mentor-lab.py runbook greenplum simple"
+          ],
+          "student_commands": [
+            "python3 mentor-lab.py doctor"
+          ],
+          "next_lesson_code": "02-greenplum-partitioning",
+          "launcher": {
+            "lab": "greenplum",
+            "default_route": "simple",
+            "default_platform": "macos",
+            "default_output_dir": "artifacts/sessions/lesson01-greenplum",
+            "routes": [
+              {
+                "code": "simple",
+                "title": "Simple path",
+                "description": "60-minute route for first lesson delivery.",
+                "timebox": "60 min",
+                "session_route": "simple",
+                "mentor_command": "python3 mentor-lab.py runbook greenplum simple",
+                "student_command": "python3 mentor-lab.py runbook greenplum homework",
+                "check_command": "python3 mentor-lab.py check greenplum"
+              }
+            ],
+            "platforms": [
+              {
+                "code": "macos",
+                "title": "macOS",
+                "checks": [
+                  "docker --version",
+                  "docker compose version"
+                ],
+                "notes": [
+                  "Run commands in Terminal from the cloned repository."
+                ]
+              },
+              {
+                "code": "windows-wsl2",
+                "title": "Windows + WSL2",
+                "checks": [
+                  "wsl --status",
+                  "docker --version"
+                ],
+                "notes": [
+                  "Use a WSL distro shell and enable Docker Desktop WSL integration."
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

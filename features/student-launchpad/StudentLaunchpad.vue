@@ -18,11 +18,21 @@ const props = defineProps<{
   issues: ValidationIssue[]
   isValid: boolean
   activeMode: DashboardMode
+  canOpenHub?: boolean
+  canOpenWorkspace?: boolean
+  canOpenReview?: boolean
+  canOpenSubmission?: boolean
+  canOpenCohort?: boolean
 }>()
 
 const emit = defineEmits<{
   reload: []
   'select-mode': [mode: DashboardMode]
+  'open-hub': []
+  'open-workspace': []
+  'open-review': []
+  'open-submission': []
+  'open-cohort': []
 }>()
 
 const sessionRef = toRef(props, 'session')
@@ -36,6 +46,44 @@ const { launchpadState, selectPlatform } = useStudentLaunchpadState(sessionRef)
     :framework="session.portal.framework"
     :source="source"
   >
+    <template v-if="canOpenHub" #portal-actions>
+      <button class="quiet-button portal-action-button" type="button" @click="emit('open-hub')">
+        Вернуться в каталог
+      </button>
+      <button
+        v-if="canOpenWorkspace"
+        class="quiet-button portal-action-button"
+        type="button"
+        @click="emit('open-workspace')"
+      >
+        Открыть сессии
+      </button>
+      <button
+        v-if="canOpenReview"
+        class="quiet-button portal-action-button"
+        type="button"
+        @click="emit('open-review')"
+      >
+        Открыть review
+      </button>
+      <button
+        v-if="canOpenSubmission"
+        class="quiet-button portal-action-button"
+        type="button"
+        @click="emit('open-submission')"
+      >
+        Сдать домашку
+      </button>
+      <button
+        v-if="canOpenCohort"
+        class="quiet-button portal-action-button"
+        type="button"
+        @click="emit('open-cohort')"
+      >
+        Открыть cohort
+      </button>
+    </template>
+
     <header class="topbar student-topbar">
       <div>
         <p class="muted">student self-service</p>

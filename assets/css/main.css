@@ -76,6 +76,17 @@ button {
   margin-top: 3px;
 }
 
+.portal-actions {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.portal-action-button {
+  width: 100%;
+  text-align: left;
+}
+
 .stage-nav {
   display: grid;
   gap: 8px;
@@ -103,7 +114,7 @@ button {
 }
 
 main {
-  width: min(1160px, calc(100vw - 276px));
+  width: min(1160px, 100%);
   margin: 0 auto;
   padding: 28px;
 }

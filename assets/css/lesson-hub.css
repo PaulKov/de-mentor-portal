@@ -1,0 +1,363 @@
+.lesson-hub-shell {
+  display: grid;
+  grid-template-columns: 276px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.hub-track-nav {
+  border-right: 1px solid var(--line);
+  background: #fbfbfa;
+  padding: 24px 18px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.hub-brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.hub-brand strong,
+.hub-brand small {
+  display: block;
+}
+
+.hub-brand small {
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.track-button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px 10px;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  padding: 10px;
+  text-align: left;
+}
+
+.track-button span,
+.track-button small {
+  display: block;
+}
+
+.track-button small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.track-button.active {
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow: var(--shadow);
+}
+
+.lesson-hub-main {
+  width: min(1160px, 100%);
+  margin: 0 auto;
+  padding: 28px;
+}
+
+.hub-topbar,
+.hub-current-track,
+.lesson-hub-grid {
+  margin-bottom: 18px;
+}
+
+.hub-topbar,
+.hub-current-track {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.hub-topbar h1,
+.hub-current-track h2 {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.hub-topbar h1 {
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.hub-topbar p:last-child,
+.hub-current-track p:last-child {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.hub-topbar-actions {
+  width: min(440px, 100%);
+  display: grid;
+  gap: 10px;
+}
+
+.hub-catalog-status,
+.hub-current-track,
+.lesson-row,
+.readiness-stack li,
+.hub-material-list article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.hub-catalog-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px;
+}
+
+.hub-catalog-status span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.hub-current-track {
+  padding: 18px;
+}
+
+.lesson-hub-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 0.72fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.lesson-list,
+.lesson-action-rail,
+.readiness-stack,
+.hub-material-list,
+.hub-command-list,
+.launcher-command-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.lesson-launcher {
+  border-color: #b8ded1;
+}
+
+.launcher-form-grid,
+.launcher-option-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.launcher-form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 14px;
+}
+
+.launcher-form-grid label {
+  display: grid;
+  gap: 6px;
+}
+
+.launcher-form-grid span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.launcher-form-grid input {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+  color: var(--text);
+  padding: 0 10px;
+}
+
+.launcher-section {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.launcher-option-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.launcher-option-grid--compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.launcher-option {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+  color: var(--text);
+  padding: 10px;
+  text-align: left;
+}
+
+.launcher-option.active {
+  border-color: #b8ded1;
+  background: var(--accent-soft);
+}
+
+.launcher-option strong,
+.launcher-option span {
+  display: block;
+}
+
+.launcher-option span {
+  color: var(--accent);
+  font-size: 12px;
+  margin: 4px 0;
+}
+
+.launcher-option p,
+.launcher-note,
+.launcher-unavailable p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.launcher-checks {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.launcher-checks li {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+  padding: 8px 10px;
+}
+
+.launcher-checks code {
+  overflow-wrap: anywhere;
+}
+
+.launcher-unavailable {
+  display: grid;
+  gap: 10px;
+}
+
+.lesson-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  padding: 12px;
+}
+
+.lesson-row.active {
+  border-color: #b8ded1;
+  background: var(--accent-soft);
+}
+
+.lesson-row button {
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  padding: 0;
+  text-align: left;
+}
+
+.lesson-row span,
+.hub-material-list span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.lesson-row strong,
+.readiness-stack strong,
+.hub-material-list strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.lesson-row p,
+.readiness-stack p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.readiness-stack {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.readiness-stack li,
+.hub-material-list article {
+  padding: 12px;
+}
+
+.hub-material-list article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  background: #fbfbfa;
+}
+
+.hub-material-list code {
+  display: block;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+}
+
+@media (max-width: 980px) {
+  .lesson-hub-shell,
+  .lesson-hub-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hub-track-nav {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .lesson-hub-main {
+    width: 100%;
+    padding: 18px;
+  }
+
+  .hub-topbar,
+  .hub-current-track {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .track-button,
+  .lesson-row,
+  .hub-material-list article,
+  .hub-catalog-status,
+  .launcher-form-grid,
+  .launcher-option-grid,
+  .launcher-option-grid--compact {
+    grid-template-columns: 1fr;
+  }
+
+  .hub-catalog-status {
+    align-items: stretch;
+  }
+}
