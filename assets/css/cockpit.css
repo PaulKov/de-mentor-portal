@@ -181,6 +181,20 @@
   padding-left: 12px;
 }
 
+.evidence-check {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.evidence-check input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: var(--accent);
+}
+
 .evidence-cockpit-list strong,
 .evidence-cockpit-list span {
   display: block;
@@ -190,6 +204,34 @@
   color: var(--muted);
   line-height: 1.5;
   margin-top: 4px;
+}
+
+.stage-note {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.stage-note > span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stage-note textarea {
+  width: 100%;
+  min-height: 108px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  background: #fbfbfa;
+  padding: 10px 12px;
+  line-height: 1.5;
+}
+
+.stage-note textarea:focus {
+  outline: 2px solid #b8ded1;
+  outline-offset: 2px;
 }
 
 .intervention-box {

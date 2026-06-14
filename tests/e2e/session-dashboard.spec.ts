@@ -24,3 +24,14 @@ test('keeps cockpit controls reachable and responsive', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Копировать' }).first()).toBeVisible()
   await expect(page.getByText('Источник состояния: /api/session')).toBeVisible()
 })
+
+test('persists mentor evidence checks and stage notes locally', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('checkbox', { name: /Partition pruning/ }).check()
+  await page.getByLabel('Заметка по этапу').fill('Ученик сам объяснил pruning и retention.')
+  await page.reload()
+
+  await expect(page.getByRole('checkbox', { name: /Partition pruning/ })).toBeChecked()
+  await expect(page.getByLabel('Заметка по этапу')).toHaveValue('Ученик сам объяснил pruning и retention.')
+})

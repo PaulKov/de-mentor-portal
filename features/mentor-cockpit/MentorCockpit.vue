@@ -22,7 +22,14 @@ defineEmits<{
 }>()
 
 const sessionRef = toRef(props, 'session')
-const { cockpitState, selectStage } = useMentorCockpitState(sessionRef)
+const {
+  checkedEvidence,
+  cockpitState,
+  currentStageNote,
+  selectStage,
+  toggleEvidence,
+  updateCurrentStageNote
+} = useMentorCockpitState(sessionRef)
 </script>
 
 <template>
@@ -58,7 +65,14 @@ const { cockpitState, selectStage } = useMentorCockpitState(sessionRef)
       </div>
 
       <SlideCommandRail :state="cockpitState" />
-      <EvidencePanel :session="session" :state="cockpitState" />
+      <EvidencePanel
+        :session="session"
+        :state="cockpitState"
+        :checked-evidence="checkedEvidence"
+        :stage-note="currentStageNote"
+        @toggle-evidence="toggleEvidence"
+        @update-stage-note="updateCurrentStageNote"
+      />
     </div>
   </AppShell>
 </template>
