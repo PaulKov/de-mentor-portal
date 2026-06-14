@@ -8,6 +8,7 @@
 
 - [Быстрый старт](#быстрый-старт)
 - [Academy Lesson Hub](#academy-lesson-hub)
+- [Lesson Launcher](#lesson-launcher)
 - [Mentor Live Cockpit](#mentor-live-cockpit)
 - [Student Launchpad](#student-launchpad)
 - [Контракт каталога](#контракт-каталога)
@@ -65,6 +66,56 @@ academy-lesson-hub:<contract_version>:<generated_at>
 ```
 
 Кнопка `Открыть текущую сессию` переводит из каталога в live-экран занятия. Последняя выбранная поверхность портала сохраняется в браузере, поэтому перезагрузка во время урока не возвращает ментора обратно в каталог.
+
+## Lesson Launcher
+
+`Lesson Launcher` — рабочий блок внутри `Academy Lesson Hub`, который превращает выбранный урок в готовый launch-пакет. Ментор выбирает route, платформу ученика, имя ученика и папку session, а портал сразу показывает copyable-команды:
+
+- создание `session.json`;
+- mentor runbook;
+- student runbook;
+- self-check.
+
+Браузер намеренно не запускает локальные CLI-команды сам: это защищает машину пользователя и оставляет контроль у ментора. Портал генерирует точные команды, которые можно скопировать в терминал.
+
+Для работы launcher урок должен содержать optional-блок `launcher` в `academy-catalog/v1`:
+
+```json
+{
+  "launcher": {
+    "lab": "greenplum",
+    "default_route": "simple",
+    "default_platform": "macos",
+    "default_output_dir": "artifacts/sessions/lesson01-greenplum",
+    "routes": [
+      {
+        "code": "simple",
+        "title": "Simple path",
+        "description": "60-minute route for first lesson delivery.",
+        "timebox": "60 min",
+        "session_route": "simple",
+        "mentor_command": "python3 mentor-lab.py runbook greenplum simple",
+        "student_command": "python3 mentor-lab.py runbook greenplum homework",
+        "check_command": "python3 mentor-lab.py check greenplum"
+      }
+    ],
+    "platforms": [
+      {
+        "code": "windows-wsl2",
+        "title": "Windows + WSL2",
+        "checks": ["wsl --status", "docker --version"],
+        "notes": ["Use a WSL distro shell and enable Docker Desktop WSL integration."]
+      }
+    ]
+  }
+}
+```
+
+Состояние launcher сохраняется локально по выбранному уроку:
+
+```text
+lesson-launcher:<generated_at>:<track_code>:<lesson_code>
+```
 
 ## Mentor Live Cockpit
 
@@ -134,6 +185,8 @@ node --version
 
 Каталог намеренно отделен от `academy-session/v1`: он отвечает за витрину направлений, уроков и self-service материалов, а session contract отвечает за конкретный live-запуск с текущим stage, progress и evidence.
 
+Optional `launcher` metadata в каталоге используется только для подготовки launch-пакета. Если у урока нет `launcher`, портал показывает planned-состояние и не выдумывает команды.
+
 ## Контракт сессии
 
 Портал читает `academy-session/v1`.
@@ -171,6 +224,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `composables/useCatalogState.ts` — тонкий Nuxt-фасад для состояния каталога.
 - `features/academy-portal` — переключение между catalog-first поверхностью и текущей live-сессией.
 - `features/lesson-hub` — витрина направлений, уроков, role-aware команд и readiness.
+- `features/lesson-launcher` — генерация launch-пакета, route/platform preferences и copyable команды запуска.
 - `features/session-dashboard` — композиция основного экрана.
 - `features/mentor-cockpit` — live cockpit: stage player, slides/commands rail, evidence panel и local persistence facade.
 - `features/student-launchpad` — student self-service: readiness по платформам, материалы, команды запуска, self-check и handoff.

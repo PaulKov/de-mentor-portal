@@ -95,3 +95,17 @@ test('selects Spark track and student commands in the lesson hub', async ({ page
   await expect(page.getByText('spark on yarn')).toBeVisible()
   await expect(page.getByText('python3 mentor-lab.py runbook spark intro student')).toBeVisible()
 })
+
+test('builds a lesson launch packet from the hub', async ({ page }) => {
+  await page.goto('/')
+
+  await expect(page.getByRole('heading', { name: 'Запуск урока' })).toBeVisible()
+  await page.getByLabel('Имя ученика').fill('Мария')
+  await page.getByRole('button', { name: 'Deep-dive path' }).click()
+  await page.getByRole('button', { name: 'Windows + WSL2' }).click()
+  await page.getByLabel('Папка session').fill('artifacts/sessions/maria')
+
+  await expect(page.getByText('python3 mentor-lab.py session greenplum start --student "Мария" --route deep --output artifacts/sessions/maria')).toBeVisible()
+  await expect(page.getByText('python3 mentor-lab.py runbook greenplum deep')).toBeVisible()
+  await expect(page.getByText('wsl --status')).toBeVisible()
+})
