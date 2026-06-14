@@ -17,18 +17,28 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'core/session/application/session-contract.ts',
     'core/session/application/session-loader.ts',
     'core/session/infrastructure/http-session-source.ts',
+    'assets/css/main.css',
+    'assets/css/cockpit.css',
     'features/session-dashboard/SessionDashboard.vue',
     'features/session-status/SessionStatusBanner.vue',
     'features/timeline/SessionTimeline.vue',
     'features/commands/CommandList.vue',
     'features/evidence/EvidenceChecklist.vue',
     'features/control-plane/ControlPlanePanel.vue',
+    'features/mentor-cockpit/MentorCockpit.vue',
+    'features/mentor-cockpit/StagePlayer.vue',
+    'features/mentor-cockpit/SlideCommandRail.vue',
+    'features/mentor-cockpit/EvidencePanel.vue',
+    'features/mentor-cockpit/ReleaseStatusStrip.vue',
+    'features/mentor-cockpit/useMentorCockpitState.ts',
+    'features/mentor-cockpit/mentor-cockpit-state.ts',
     'features/skill-graph/SkillGraphPanel.vue',
     'components/shared/ui/AppShell.vue',
     'components/shared/ui/Panel.vue',
     'components/shared/ui/CopyCommand.vue',
     'components/shared/ui/StatusBadge.vue',
-    'shared/utils/clipboard.ts'
+    'shared/utils/clipboard.ts',
+    'shared/utils/local-storage.ts'
   ]
 
   for (const path of expectedFiles) {
@@ -36,7 +46,11 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
   }
 
   const app = await readText('app.vue')
+  const dashboard = await readText('features/session-dashboard/SessionDashboard.vue')
+  const nuxtConfig = await readText('nuxt.config.ts')
   assert.ok(app.includes('<SessionDashboard'), 'app.vue should delegate rendering to SessionDashboard')
+  assert.ok(dashboard.includes('<MentorCockpit'), 'SessionDashboard should delegate valid sessions to MentorCockpit')
+  assert.ok(nuxtConfig.includes('~/assets/css/cockpit.css'), 'Nuxt should load cockpit styles explicitly')
   assert.ok(lineCount(app) <= 35, 'app.vue should stay a thin Nuxt facade')
 
   const composable = await readText('composables/useSessionState.ts')
@@ -108,6 +122,8 @@ test('developer experience documents validation and local sample workflow', asyn
 
   assert.ok(readme.includes('npm run validate:session -- public/session.sample.json'))
   assert.ok(readme.includes('npm run dev:sample'))
+  assert.ok(readme.includes('Mentor Live Cockpit'))
+  assert.ok(readme.includes('MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev'))
   assert.ok(readme.includes('Архитектура'))
   assert.ok(readme.includes('core/session/domain'))
   assert.ok(readme.includes('features/session-dashboard'))

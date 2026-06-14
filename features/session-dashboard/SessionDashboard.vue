@@ -5,6 +5,7 @@ import type { AcademySession } from '~/core/session/domain/academy-session'
 import CommandList from '~/features/commands/CommandList.vue'
 import ControlPlanePanel from '~/features/control-plane/ControlPlanePanel.vue'
 import EvidenceChecklist from '~/features/evidence/EvidenceChecklist.vue'
+import MentorCockpit from '~/features/mentor-cockpit/MentorCockpit.vue'
 import SessionStatusBanner from '~/features/session-status/SessionStatusBanner.vue'
 import SkillGraphPanel from '~/features/skill-graph/SkillGraphPanel.vue'
 import SessionTimeline from '~/features/timeline/SessionTimeline.vue'
@@ -38,7 +39,17 @@ const nextStage = computed(() => {
 </script>
 
 <template>
+  <MentorCockpit
+    v-if="session && isValid"
+    :session="session"
+    :source="source"
+    :issues="issues"
+    :is-valid="isValid"
+    @reload="$emit('reload')"
+  />
+
   <AppShell
+    v-else
     :stages="stages"
     :current-stage-code="currentStage?.code"
     :framework="session?.portal.framework"
