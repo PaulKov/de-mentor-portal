@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.4.0 - 2026-06-15
+
+Релиз evidence ledger: портал начал фиксировать ход живого урока как проверяемый операционный журнал, а не только как набор заметок и checkbox evidence.
+
+### Добавлено
+
+- `Lesson Run Evidence Ledger`: stage-by-stage журнал внутри `Mentor Live Cockpit`.
+- Статусы этапов `pending`, `done`, `risk`, `skipped` для быстрого handoff после урока.
+- Фактическое время по stage, расчет planned/actual delta и общий счетчик прогресса.
+- Blockers по этапам с browser-local persistence.
+- Copy-ready `Lesson ledger markdown` с evidence summary, time delta, notes и blockers.
+
+### Качество и UX
+
+- Добавлены unit/contract тесты для `features/evidence-ledger`.
+- Расширены Playwright e2e сценарии: desktop/mobile, ledger status, actual time, blocker, Markdown и reload persistence.
+- README расширен разделом `Lesson Run Evidence Ledger`.
+- Rendered QA выполнен на production preview: чистая консоль, desktop/mobile без horizontal overflow.
+
 ## v0.3.0 - 2026-06-15
 
 Релиз проведения урока: портал получил отдельный `Lesson Delivery Control Room`, который помогает ментору держать темп занятия, фиксировать evidence и быстро переключаться в fallback-сценарии без потери контекста.
