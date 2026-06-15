@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.9.0 - 2026-06-15
+
+Релиз lesson authoring automation: портал теперь помогает ментору собрать, проверить и экспортировать lesson/session пакет до live-сессии.
+
+### Добавлено
+
+- `Lesson Authoring Studio`: catalog-first поверхность для сборки browser-local lesson draft.
+- Editable `Stage Matrix`: duration, mentor action, student action, command, question и evidence по каждому stage.
+- Deterministic `Quality Gate` с blockers, warnings, readiness score и объяснимыми критериями.
+- Mentor/student preview маршрута урока.
+- Copy-ready exports: catalog patch Markdown, lesson package JSON, session seed JSON и quality report Markdown.
+- Навигация `Lesson Authoring Studio` в `Global Navigation`; surface требует валидный catalog, но не требует валидную session.
+
+### Качество и UX
+
+- Добавлены unit/contract тесты для `features/lesson-authoring`.
+- Расширены global navigation, architecture contract и Playwright e2e сценарии на desktop/mobile.
+- README описывает authoring workflow, quality gate, export и browser-local ограничения.
+- Все новые модули удержаны ниже `400` SLOC, avg clustering guard остается зеленым.
+- Browser QA выполнен на production preview: desktop/mobile без horizontal overflow, чистая консоль, interaction обновляет Quality Gate.
+
 ## v0.8.0 - 2026-06-15
 
 Релиз mentor mission control: портал получил единый операционный экран, который показывает ментору следующий лучший шаг до урока, во время урока и после него.
