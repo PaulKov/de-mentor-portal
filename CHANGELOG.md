@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.6.0 - 2026-06-15
+
+Релиз post-lesson automation: портал теперь собирает итоговый пакет после урока из живого cockpit, evidence ledger, review center и homework inbox.
+
+### Добавлено
+
+- `Post-Lesson Pack`: единый экран для передачи ученику итогов урока, домашки, next steps и follow-up действий ментора.
+- Readiness-модель `ready-to-send` / `needs-attention` на базе evidence, homework completeness, ledger delta и unresolved blockers.
+- Markdown/JSON export итогового пакета с lesson summary, learner handoff, homework, next lesson preview и mentor follow-up.
+- Навигация `Post-Lesson Pack` в глобальном портале с route guard по активной session.
+
+### Качество и UX
+
+- Добавлены unit/contract тесты для `features/post-lesson-pack`.
+- Расширены Playwright e2e сценарии на desktop/mobile для полного post-lesson flow.
+- README описывает маршрут `Cockpit -> Ledger -> Review -> Homework -> Post-Lesson Pack`.
+- CI на `master` после merge PR #17 прошел: unit, session validator, e2e и audit.
+
 ## v0.5.0 - 2026-06-15
 
 Релиз review automation: Ledger стал не отдельным журналом, а источником операционных сигналов для закрытия урока, cohort overview и быстрых команд ментора.
