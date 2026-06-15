@@ -1,6 +1,6 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Mentor Mission Control**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Skill Assessment Center**, **Post-Lesson Pack**, **Submission Inbox**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Lesson Run Evidence Ledger**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, оценка skill mastery, сдача домашки и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Lesson Authoring Studio**, **Mentor Mission Control**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Skill Assessment Center**, **Post-Lesson Pack**, **Submission Inbox**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Lesson Run Evidence Ledger**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, оценка skill mastery, сдача домашки и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs, `catalog.json` и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 4 + Vite.
 
@@ -8,6 +8,7 @@
 
 - [Быстрый старт](#быстрый-старт)
 - [Global Navigation и Command Center](#global-navigation-и-command-center)
+- [Lesson Authoring Studio](#lesson-authoring-studio)
 - [Mentor Mission Control](#mentor-mission-control)
 - [Academy Lesson Hub](#academy-lesson-hub)
 - [Lesson Launcher](#lesson-launcher)
@@ -60,6 +61,7 @@ MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev
 Доступные поверхности:
 
 - `Academy Lesson Hub`
+- `Lesson Authoring Studio`
 - `Mentor Mission Control`
 - `Lesson Release Console`
 - `Session Workspace`
@@ -74,7 +76,38 @@ MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev
 
 Во время live-сессии `Command Center` также показывает stage-aware команды: команду текущего этапа, вопрос ученику из `control_plane.mentor_mode.stage_guides` и `Скопировать ledger report`. Ledger report строится из текущей session, отметок evidence, stage notes, stage statuses, actual time и blockers.
 
-Если session невалидна или не загружена, `Mentor Live Cockpit` остается доступным как экран диагностики, а `Mentor Mission Control`, `Review Center`, `Skill Assessment Center`, `Submission Inbox`, `Cohort Dashboard` и `Post-Lesson Pack` блокируются до появления валидной session. Это защищает ментора от пустых review/submission-экранов во время подготовки урока.
+Если session невалидна или не загружена, `Mentor Live Cockpit` остается доступным как экран диагностики, а `Mentor Mission Control`, `Review Center`, `Skill Assessment Center`, `Submission Inbox`, `Cohort Dashboard` и `Post-Lesson Pack` блокируются до появления валидной session. `Lesson Authoring Studio` требует только валидный catalog: урок можно проектировать до появления live session.
+
+## Lesson Authoring Studio
+
+`Lesson Authoring Studio` — рабочий экран автора урока. Он нужен до live-сессии: ментор выбирает track/lesson из catalog, проверяет структуру занятия, редактирует browser-local draft и получает quality gate перед тем, как выпускать материалы в урок.
+
+Экран показывает:
+
+- `Blueprint` — цель урока, общий таймбокс, количество stages, homework, blockers и warnings;
+- `Stage Matrix` — stage-by-stage таблицу с duration, mentor action, student action, command, question и evidence;
+- `Quality Gate` — deterministic checks по полноте урока;
+- `Preview` — компактный mentor/student route;
+- `Export` — copy-ready Markdown/JSON для PR, dry-run session seed и quality report.
+
+Quality gate считает blockers и warnings:
+
+- blockers: нет stages, нулевой таймбокс, stage без mentor/student action, stage без evidence, пустая homework, total minutes вне диапазона `30-90`;
+- warnings: stage без runnable command, stage без question, stage длиннее `20` минут, неполные evidence checks, нет student prep resource или next lesson hint.
+
+Draft хранится только в браузере:
+
+```text
+lesson-authoring:<contract_version>:<generated_at>:<track_code>:<lesson_code>
+```
+
+Рекомендуемый workflow:
+
+1. Открыть `Lesson Authoring Studio` из глобальной навигации.
+2. Выбрать track и lesson.
+3. Проверить `Stage Matrix` и убрать blockers/warnings.
+4. Скопировать `lesson package`, `session seed` или `quality report`.
+5. Использовать export как материал для PR/release review.
 
 ## Mentor Mission Control
 
@@ -529,6 +562,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `composables/useCatalogState.ts` — тонкий Nuxt-фасад для состояния каталога.
 - `features/academy-portal` — переключение между catalog-first поверхностью и текущей live-сессией.
 - `features/global-navigation` — постоянная навигация, Command Center и route guard для surface-переходов.
+- `features/lesson-authoring` — browser-local сборка lesson draft, quality gate, preview и copy-ready export.
 - `features/mission-control` — next best action, journey checklist, signals, focus queue и quick links для mentor workflow.
 - `features/delivery-control-room` — фокусный режим проведения stage: timer, stage script, quick evidence/note actions и panic mode.
 - `features/evidence-ledger` — журнал проведения урока: stage statuses, actual time, blockers, evidence summary и Markdown handoff.

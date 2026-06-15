@@ -32,6 +32,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'assets/css/cohort-dashboard.css',
     'assets/css/release-console.css',
     'assets/css/global-navigation.css',
+    'assets/css/lesson-authoring.css',
     'assets/css/mission-control.css',
     'assets/css/delivery-control-room.css',
     'assets/css/evidence-ledger.css',
@@ -41,6 +42,9 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'features/global-navigation/GlobalNavigation.vue',
     'features/global-navigation/useGlobalNavigationState.ts',
     'features/global-navigation/global-navigation-state.ts',
+    'features/lesson-authoring/LessonAuthoringStudio.vue',
+    'features/lesson-authoring/useLessonAuthoringState.ts',
+    'features/lesson-authoring/lesson-authoring-state.ts',
     'features/mission-control/MissionControl.vue',
     'features/mission-control/useMissionControlState.ts',
     'features/mission-control/mission-control-state.ts',
@@ -137,6 +141,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
   assert.ok(nuxtConfig.includes('~/assets/css/cohort-dashboard.css'), 'Nuxt should load cohort dashboard styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/release-console.css'), 'Nuxt should load release console styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/global-navigation.css'), 'Nuxt should load global navigation styles explicitly')
+  assert.ok(nuxtConfig.includes('~/assets/css/lesson-authoring.css'), 'Nuxt should load lesson authoring styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/mission-control.css'), 'Nuxt should load mission control styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/delivery-control-room.css'), 'Nuxt should load delivery control room styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/evidence-ledger.css'), 'Nuxt should load evidence ledger styles explicitly')
@@ -152,6 +157,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
   assert.ok(portal.includes('<AssessmentCenter'), 'AcademyPortal should render Skill Assessment Center as a portal surface')
   assert.ok(portal.includes('<PostLessonPack'), 'AcademyPortal should render Post-Lesson Pack as a portal surface')
   assert.ok(portal.includes('<ReleaseConsole'), 'AcademyPortal should render Release Console as a portal surface')
+  assert.ok(portal.includes('<LessonAuthoringStudio'), 'AcademyPortal should render Lesson Authoring Studio as a portal surface')
   assert.ok(portal.includes('<MissionControl'), 'AcademyPortal should render Mentor Mission Control as a portal surface')
   assert.ok(portal.includes('<GlobalNavigation'), 'AcademyPortal should render Global Navigation above portal surfaces')
   assert.ok(portal.includes('useGlobalNavigationState'), 'AcademyPortal should delegate global navigation state to a composable')
@@ -223,6 +229,9 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'features/global-navigation/GlobalNavigation.vue',
     'features/global-navigation/useGlobalNavigationState.ts',
     'features/global-navigation/global-navigation-state.ts',
+    'features/lesson-authoring/LessonAuthoringStudio.vue',
+    'features/lesson-authoring/useLessonAuthoringState.ts',
+    'features/lesson-authoring/lesson-authoring-state.ts',
     'features/mission-control/MissionControl.vue',
     'features/mission-control/useMissionControlState.ts',
     'features/mission-control/mission-control-state.ts',
@@ -243,6 +252,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'assets/css/cohort-dashboard.css',
     'assets/css/release-console.css',
     'assets/css/global-navigation.css',
+    'assets/css/lesson-authoring.css',
     'assets/css/mission-control.css',
     'assets/css/delivery-control-room.css',
     'assets/css/evidence-ledger.css',

@@ -3,6 +3,7 @@ import type { AcademySession } from '../../core/session/domain/academy-session.t
 
 export type PortalSurface =
   | 'hub'
+  | 'authoring'
   | 'mission-control'
   | 'release'
   | 'workspace'
@@ -70,6 +71,7 @@ export interface GlobalNavigationState {
 
 const PORTAL_SURFACES: PortalSurface[] = [
   'hub',
+  'authoring',
   'mission-control',
   'release',
   'workspace',
@@ -89,12 +91,16 @@ const SESSION_REQUIRED_SURFACES = new Set<PortalSurface>([
   'cohort',
   'post-lesson'
 ])
-const CATALOG_REQUIRED_SURFACES = new Set<PortalSurface>(['hub', 'release'])
+const CATALOG_REQUIRED_SURFACES = new Set<PortalSurface>(['hub', 'authoring', 'release'])
 
 const SURFACE_COPY: Record<PortalSurface, Pick<GlobalNavigationItem, 'label' | 'description'>> = {
   hub: {
     label: 'Lesson Hub',
     description: 'Каталог направлений, уроков, материалов и launcher-команд.'
+  },
+  authoring: {
+    label: 'Lesson Authoring Studio',
+    description: 'Сборка, quality gate, preview и export lesson/session пакета.'
   },
   'mission-control': {
     label: 'Mentor Mission Control',

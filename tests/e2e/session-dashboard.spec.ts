@@ -16,6 +16,29 @@ test('renders academy lesson hub from sample catalog', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Открыть текущую сессию' })).toBeVisible()
 })
 
+test('opens lesson authoring studio and recalculates quality gate', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Lesson Authoring Studio' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Lesson Authoring Studio' })).toBeVisible()
+  await expect(page.getByLabel('Authoring blueprint')).toBeVisible()
+  await expect(page.getByLabel('Authoring stage matrix')).toBeVisible()
+  await expect(page.getByLabel('Authoring quality gate')).toBeVisible()
+  await expect(page.getByLabel('Authoring preview')).toBeVisible()
+  await expect(page.getByLabel('Authoring exports')).toBeVisible()
+
+  await page.getByLabel('Stage 1 question').fill('')
+  await expect(page.getByLabel('Authoring quality gate').getByText('Stage без question')).toBeVisible()
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1
+      )
+    )
+    .toBe(true)
+})
+
 test('opens current session from the lesson hub', async ({ page }) => {
   await openCurrentSession(page)
 
