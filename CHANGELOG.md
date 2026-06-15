@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.8.0 - 2026-06-15
+
+Релиз mentor mission control: портал получил единый операционный экран, который показывает ментору следующий лучший шаг до урока, во время урока и после него.
+
+### Добавлено
+
+- `Mentor Mission Control`: новый верхнеуровневый экран для управления маршрутом `pre-lesson -> live lesson -> post-lesson`.
+- Next best action на базе валидности release/session, статусов evidence ledger, review blockers, homework readiness, skill assessment и post-lesson pack.
+- Journey signals: быстрые индикаторы по live evidence, ledger blockers, homework, skill mastery и post-lesson readiness.
+- Mission checklist по трем фазам: подготовка, проведение, закрытие урока.
+- Focus queue, quick links на ключевые поверхности портала и copy-ready Markdown export mission report.
+
+### Качество и UX
+
+- Добавлены unit/contract тесты для `features/mission-control`.
+- Расширены global navigation guards и Playwright e2e сценарии на desktop/mobile.
+- README описывает назначение Mission Control и его место в менторском workflow.
+- Все новые модули удержаны ниже `400` SLOC и используют существующие state builders без дублирования логики.
+- Browser/Playwright QA выполнен на production preview: desktop/mobile без horizontal overflow, чистая консоль.
+
 ## v0.7.0 - 2026-06-15
 
 Релиз learning-path automation: портал теперь оценивает освоение навыков после урока и помогает ментору выбрать фокус следующей встречи.
