@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.3.0 - 2026-06-15
+
+Релиз проведения урока: портал получил отдельный `Lesson Delivery Control Room`, который помогает ментору держать темп занятия, фиксировать evidence и быстро переключаться в fallback-сценарии без потери контекста.
+
+### Добавлено
+
+- `Lesson Delivery Control Room`: stage timer, прогресс таймбокса, фокусные карточки “что сказать”, “что показать”, “что спросить” и “как проверить”.
+- Быстрое evidence-действие из Control Room: ментор может отметить ключевой чек текущего stage, не спускаясь в нижнюю evidence panel.
+- Stage note sync: заметка из Control Room синхронизируется с заметкой текущего этапа в `Mentor Live Cockpit`.
+- Panic-mode подсказки для ситуаций “стенд не поднялся”, “SQL не работает” и “ученик отстал”.
+- Stage-aware команды в `Command Center`: копирование команды и вопроса текущего этапа.
+
+### Качество и UX
+
+- Добавлены unit/contract тесты для `features/delivery-control-room`.
+- Расширены Playwright e2e сценарии: desktop/mobile, timer, evidence, note sync, panic-mode и stage-aware Command Center.
+- README расширен разделом `Lesson Delivery Control Room`.
+- Browser QA выполнен на production preview: чистая консоль, корректный clipboard, отсутствие horizontal overflow на мобильном viewport.
+
 ## v0.2.0 - 2026-06-15
 
 Навигационный релиз портала: теперь ментор видит единый верхний слой управления уроком и может быстро переходить между ключевыми поверхностями без поиска кнопок внутри экранов.
