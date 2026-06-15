@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.5.0 - 2026-06-15
+
+Релиз review automation: Ledger стал не отдельным журналом, а источником операционных сигналов для закрытия урока, cohort overview и быстрых команд ментора.
+
+### Добавлено
+
+- `Mentor Review Center` теперь показывает ledger status, planned/actual delta и blockers по каждому stage.
+- Review Markdown/JSON включает отдельный блок `Ledger Signals`.
+- `Cohort Progress Dashboard` подсвечивает ledger risk/skipped, time overrun и evidence summary в learner cards и Markdown summary.
+- `Command Center` получил действие `Скопировать ledger report` для текущей session.
+
+### Качество и UX
+
+- Расширены unit/contract тесты для review, cohort и global navigation state.
+- Расширены Playwright e2e сценарии: desktop/mobile, ledger-driven review, cohort signals и Command Center ledger copy.
+- README описывает маршрут `Ledger -> Review -> Cohort -> Command Center`.
+- CI на `master` после merge PR #16 прошел: unit, session validator, e2e и audit.
+
 ## v0.4.0 - 2026-06-15
 
 Релиз evidence ledger: портал начал фиксировать ход живого урока как проверяемый операционный журнал, а не только как набор заметок и checkbox evidence.
