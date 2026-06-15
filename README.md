@@ -500,6 +500,8 @@ npx playwright install chromium
 npm run check
 ```
 
+GitHub Actions выполняет тот же preflight в `Portal CI`. Workflow закреплен на `actions/checkout@v6`, `actions/setup-node@v6`, `node-version: 24` и `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true`, чтобы заранее пройти миграцию JavaScript actions runtime с Node 20 на Node 24.
+
 Quality guard входит в `npm run test`:
 
 - любой модуль Vue/TypeScript/JavaScript должен быть не больше `400` SLOC;
