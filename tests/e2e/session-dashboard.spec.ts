@@ -82,6 +82,38 @@ test('runs lesson delivery control room during a mentor session', async ({ page 
   await expect(controlRoom.getByText('Fallback: открыть workbook/runbook')).toBeVisible()
 })
 
+test('records lesson run evidence ledger during a mentor session', async ({ page }) => {
+  await openCurrentSession(page)
+
+  const ledger = page.getByLabel('Lesson run evidence ledger')
+  await expect(ledger.getByRole('heading', { name: 'Lesson Run Evidence Ledger' })).toBeVisible()
+  await expect(ledger.getByText('0/3 done')).toBeVisible()
+  await expect(ledger.getByText('0/2 evidence')).toBeVisible()
+  await expect(ledger.getByText('Partition pruning and retention')).toBeVisible()
+  await expect(ledger.getByText('Statistics after incremental load')).toBeVisible()
+
+  await page.getByLabel('Lesson delivery control room')
+    .getByRole('button', { name: 'Mark evidence: Partition pruning' })
+    .click()
+  await page.getByLabel('Control room note').fill('Ledger QA: ученик показал EXPLAIN pruning.')
+  await ledger.getByRole('button', { name: 'Set Partition pruning and retention done' }).click()
+  await ledger.getByLabel('Actual minutes for Partition pruning and retention').fill('18')
+  await ledger.getByRole('button', { name: 'Set Statistics after incremental load risk' }).click()
+  await ledger.getByLabel('Blocker for Statistics after incremental load').fill('Нет before/after EXPLAIN.')
+
+  await expect(ledger.getByText('1/3 done')).toBeVisible()
+  await expect(ledger.getByText('1/2 evidence')).toBeVisible()
+  await expect(ledger.getByLabel('Lesson ledger markdown')).toHaveValue(/Partition pruning and retention: done/)
+  await expect(ledger.getByLabel('Lesson ledger markdown')).toHaveValue(/actual 18 min/)
+  await expect(ledger.getByLabel('Lesson ledger markdown')).toHaveValue(/blocker: Нет before\/after EXPLAIN\./)
+
+  await page.reload()
+  await expect(page.getByLabel('Lesson run evidence ledger')
+    .getByRole('button', { name: 'Set Partition pruning and retention done' }))
+    .toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByLabel('Blocker for Statistics after incremental load')).toHaveValue('Нет before/after EXPLAIN.')
+})
+
 test('persists mentor evidence checks and stage notes locally', async ({ page }) => {
   await openCurrentSession(page)
 

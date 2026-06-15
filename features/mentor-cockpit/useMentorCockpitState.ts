@@ -27,6 +27,7 @@ export const useMentorCockpitState = (session: Ref<AcademySession>) => {
   )
   const storageKey = computed(() => createMentorStorageKey(session.value))
   const checkedEvidence = computed(() => localState.value.checkedEvidence)
+  const notesByStage = computed(() => localState.value.notesByStage)
   const currentStageNote = computed(
     () => localState.value.notesByStage[cockpitState.value.selectedStage.code] ?? ''
   )
@@ -99,6 +100,7 @@ export const useMentorCockpitState = (session: Ref<AcademySession>) => {
     checkedEvidence,
     cockpitState,
     currentStageNote,
+    notesByStage,
     selectedStageCode,
     selectStage,
     toggleEvidence,

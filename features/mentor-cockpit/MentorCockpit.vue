@@ -4,6 +4,7 @@ import type { ValidationIssue } from '~/core/session/application/session-contrac
 import type { AcademySession } from '~/core/session/domain/academy-session'
 import AppShell from '~/components/shared/ui/AppShell.vue'
 import DeliveryControlRoom from '~/features/delivery-control-room/DeliveryControlRoom.vue'
+import EvidenceLedger from '~/features/evidence-ledger/EvidenceLedger.vue'
 import DashboardModeSwitch from '~/features/session-dashboard/DashboardModeSwitch.vue'
 import type { DashboardMode } from '~/features/session-dashboard/session-dashboard-mode'
 import SessionStatusBanner from '~/features/session-status/SessionStatusBanner.vue'
@@ -41,6 +42,7 @@ const {
   checkedEvidence,
   cockpitState,
   currentStageNote,
+  notesByStage,
   selectStage,
   toggleEvidence,
   updateCurrentStageNote
@@ -122,6 +124,12 @@ const {
       :stage-note="currentStageNote"
       @toggle-evidence="toggleEvidence"
       @update-stage-note="updateCurrentStageNote"
+    />
+
+    <EvidenceLedger
+      :session="session"
+      :checked-evidence="checkedEvidence"
+      :notes-by-stage="notesByStage"
     />
 
     <div class="cockpit-layout">
