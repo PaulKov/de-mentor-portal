@@ -12,6 +12,7 @@ import {
   type PortalSurface
 } from '~/features/global-navigation/global-navigation-state'
 import { useGlobalNavigationState } from '~/features/global-navigation/useGlobalNavigationState'
+import LessonAuthoringStudio from '~/features/lesson-authoring/LessonAuthoringStudio.vue'
 import LessonHub from '~/features/lesson-hub/LessonHub.vue'
 import MissionControl from '~/features/mission-control/MissionControl.vue'
 import PostLessonPack from '~/features/post-lesson-pack/PostLessonPack.vue'
@@ -144,6 +145,16 @@ watch(
         :can-open-session="Boolean(activeSession && activeIsValid)"
         @open-hub="selectSurface('hub')"
         @open-session="selectSurface('session')"
+      />
+
+      <LessonAuthoringStudio
+        v-else-if="catalog && catalogIsValid && surface === 'authoring'"
+        :catalog="catalog"
+        :catalog-source="catalogSource"
+        :can-open-hub="true"
+        :can-open-release="true"
+        @open-hub="selectSurface('hub')"
+        @open-release="selectSurface('release')"
       />
 
       <MissionControl

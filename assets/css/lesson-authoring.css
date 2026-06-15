@@ -1,0 +1,239 @@
+.authoring-shell {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+}
+
+.authoring-topbar,
+.authoring-selectors,
+.authoring-blueprint,
+.authoring-stage-matrix,
+.authoring-panel,
+.authoring-exports {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 18px;
+}
+
+.authoring-topbar,
+.authoring-section-head,
+.authoring-stage-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.authoring-topbar h1,
+.authoring-blueprint h2,
+.authoring-stage-matrix h2,
+.authoring-panel h2,
+.authoring-exports h2 {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.authoring-topbar-actions,
+.authoring-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.authoring-topbar-actions strong {
+  color: var(--accent);
+  font-size: 26px;
+  line-height: 1;
+}
+
+.authoring-selectors {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 16px;
+}
+
+.authoring-button-row .quiet-button[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.authoring-blueprint {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.5fr);
+  gap: 16px;
+}
+
+.authoring-blueprint > label,
+.authoring-panel label,
+.authoring-exports label,
+.authoring-stage-fields label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.authoring-blueprint input,
+.authoring-blueprint textarea,
+.authoring-panel textarea,
+.authoring-exports textarea,
+.authoring-stage-fields input,
+.authoring-stage-fields textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+  color: var(--text);
+  font: inherit;
+  padding: 10px 12px;
+}
+
+.authoring-blueprint textarea,
+.authoring-panel textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.authoring-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.authoring-metrics article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.authoring-metrics span {
+  color: var(--accent);
+  display: block;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.authoring-metrics p,
+.authoring-stage-card__head span,
+.authoring-panel small {
+  color: var(--muted);
+}
+
+.authoring-stage-matrix {
+  display: grid;
+  gap: 14px;
+}
+
+.authoring-stage-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.authoring-stage-fields {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(110px, 0.3fr) repeat(2, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.authoring-stage-fields label:nth-child(n + 5) {
+  grid-column: span 2;
+}
+
+.authoring-stage-fields textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
+.authoring-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.authoring-panel ul,
+.authoring-panel ol {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding-left: 20px;
+}
+
+.authoring-panel h3 {
+  margin: 16px 0 0;
+  letter-spacing: 0;
+}
+
+.authoring-check span {
+  display: block;
+  font-weight: 800;
+}
+
+.authoring-check--blocker span {
+  color: #b42318;
+}
+
+.authoring-check--warning span {
+  color: #946200;
+}
+
+.authoring-check--ok span {
+  color: #087443;
+}
+
+.authoring-exports {
+  display: grid;
+  gap: 14px;
+}
+
+.authoring-exports textarea {
+  min-height: 180px;
+  font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  resize: vertical;
+}
+
+@media (max-width: 1180px) {
+  .authoring-stage-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .authoring-selectors,
+  .authoring-blueprint,
+  .authoring-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .authoring-topbar,
+  .authoring-section-head {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .authoring-topbar-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 620px) {
+  .authoring-shell {
+    padding: 14px;
+  }
+
+  .authoring-stage-fields,
+  .authoring-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .authoring-stage-fields label:nth-child(n + 5) {
+    grid-column: auto;
+  }
+}
