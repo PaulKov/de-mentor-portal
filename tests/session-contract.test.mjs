@@ -22,7 +22,7 @@ test('sample session follows academy-session/v1 contract markers', async () => {
     assert.ok(requiredKey in runtimeSample, `runtime sample is missing ${requiredKey}`)
   }
 
-  assert.equal(runtimeSample.portal.framework, 'Vue 3 + Nuxt 3 + Vite')
+  assert.equal(runtimeSample.portal.framework, 'Vue 3 + Nuxt 4 + Vite')
   assert.equal(runtimeSample.portal.repository, 'https://github.com/PaulKov/de-mentor-portal')
   assert.equal(runtimeSample.portal.app_path, 'de-mentor-portal')
   assert.equal(runtimeSample.portal.session_env, 'MENTOR_LAB_SESSION')
@@ -77,7 +77,7 @@ test('validation CLI accepts the sample and rejects broken payloads', async () =
           next_lesson: {}
         },
         portal: {
-          framework: 'Vue 3 + Nuxt 3 + Vite',
+          framework: 'Vue 3 + Nuxt 4 + Vite',
           repository: 'https://github.com/PaulKov/de-mentor-portal',
           app_path: 'de-mentor-portal',
           session_env: 'MENTOR_LAB_SESSION',

@@ -86,7 +86,7 @@
     }
   },
   "portal": {
-    "framework": "Vue 3 + Nuxt 3 + Vite",
+    "framework": "Vue 3 + Nuxt 4 + Vite",
     "repository": "https://github.com/PaulKov/de-mentor-portal",
     "app_path": "de-mentor-portal",
     "session_env": "MENTOR_LAB_SESSION",

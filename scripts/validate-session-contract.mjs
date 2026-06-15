@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises'
 import { basename } from 'node:path'
 
 const CONTRACT_VERSION = 'academy-session/v1'
-const PORTAL_FRAMEWORK = 'Vue 3 + Nuxt 3 + Vite'
+const PORTAL_FRAMEWORK = 'Vue 3 + Nuxt 4 + Vite'
 const PORTAL_REPOSITORY = 'https://github.com/PaulKov/de-mentor-portal'
 const PORTAL_APP_PATH = 'de-mentor-portal'
 const PORTAL_SESSION_ENV = 'MENTOR_LAB_SESSION'
