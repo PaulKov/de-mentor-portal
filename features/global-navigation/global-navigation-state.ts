@@ -7,6 +7,7 @@ export type PortalSurface =
   | 'workspace'
   | 'session'
   | 'review'
+  | 'assessment'
   | 'submission'
   | 'cohort'
   | 'post-lesson'
@@ -72,6 +73,7 @@ const PORTAL_SURFACES: PortalSurface[] = [
   'workspace',
   'session',
   'review',
+  'assessment',
   'submission',
   'cohort',
   'post-lesson'
@@ -79,6 +81,7 @@ const PORTAL_SURFACES: PortalSurface[] = [
 
 const SESSION_REQUIRED_SURFACES = new Set<PortalSurface>([
   'review',
+  'assessment',
   'submission',
   'cohort',
   'post-lesson'
@@ -105,6 +108,10 @@ const SURFACE_COPY: Record<PortalSurface, Pick<GlobalNavigationItem, 'label' | '
   review: {
     label: 'Review Center',
     description: 'Handoff-отчет, риски, рекомендации и next actions.'
+  },
+  assessment: {
+    label: 'Skill Assessment Center',
+    description: 'Оценка skill mastery, evidence sources и learning path на следующий урок.'
   },
   submission: {
     label: 'Submission Inbox',
