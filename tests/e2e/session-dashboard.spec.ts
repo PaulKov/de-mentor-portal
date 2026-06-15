@@ -158,7 +158,7 @@ test('summarizes learner progress in the cohort dashboard', async ({ page }) => 
 test('opens lesson release console and shows go no-go checks', async ({ page }) => {
   await page.goto('/')
 
-  await page.getByRole('button', { name: 'Release Console' }).click()
+  await page.getByRole('main').getByRole('button', { name: 'Release Console' }).click()
 
   await expect(page.getByRole('heading', { name: 'Lesson Release Console' })).toBeVisible()
   await expect(page.getByText('go/no-go')).toBeVisible()
@@ -180,6 +180,45 @@ test('opens lesson release console and shows go no-go checks', async ({ page }) 
   await page.getByRole('button', { name: 'ClickHouse' }).click()
   await expect(page.getByLabel('Selected release detail').getByText('blocked')).toBeVisible()
   await expect(page.getByLabel('Release risks').getByText('Lesson status is planned.')).toBeVisible()
+})
+
+test('opens global command center and navigates between portal surfaces', async ({ page }) => {
+  await page.goto('/')
+
+  await expect(page.getByLabel('Global portal navigation')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Command Center' })).toBeVisible()
+  await expect(page.getByText('Demo Student · greenplum-partitioning')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Command Center' }).click()
+  const commandCenter = page.getByRole('dialog', { name: 'Command Center' })
+  await expect(commandCenter).toBeVisible()
+  await expect(commandCenter.getByText('Demo Student · greenplum-partitioning')).toBeVisible()
+  await expect(commandCenter.getByText('python3 mentor-lab.py portal greenplum start')).toBeVisible()
+
+  await commandCenter.getByRole('button', { name: 'Открыть Release Console' }).click()
+  await expect(page.getByRole('heading', { name: 'Lesson Release Console' })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Command Center' }).click()
+  await page.getByRole('dialog', { name: 'Command Center' })
+    .getByRole('button', { name: 'Открыть Mentor Live Cockpit' })
+    .click()
+  await expect(page.getByRole('heading', { name: 'Mentor Live Cockpit' })).toBeVisible()
+})
+
+test('keeps global command center usable on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Command Center' }).click()
+
+  await expect(page.getByRole('dialog', { name: 'Command Center' })).toBeVisible()
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1
+      )
+    )
+    .toBe(true)
 })
 
 test('selects Spark track and student commands in the lesson hub', async ({ page }) => {

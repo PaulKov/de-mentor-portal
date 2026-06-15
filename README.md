@@ -1,12 +1,13 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Submission Inbox**, **Mentor Live Cockpit**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, сдача домашки и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Submission Inbox**, **Mentor Live Cockpit**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, сдача домашки и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs, `catalog.json` и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 3 + Vite.
 
 ## Оглавление
 
 - [Быстрый старт](#быстрый-старт)
+- [Global Navigation и Command Center](#global-navigation-и-command-center)
 - [Academy Lesson Hub](#academy-lesson-hub)
 - [Lesson Launcher](#lesson-launcher)
 - [Session Workspace](#session-workspace)
@@ -46,6 +47,24 @@ MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev
 ```
 
 Можно создать локальный `.env` из `.env.example` и прописать путь там.
+
+## Global Navigation и Command Center
+
+`Global Navigation` — постоянный верхний слой портала. Он показывает текущий контекст ученика и урока, статус `catalog` / `session`, быстрые переходы между основными поверхностями и не дает открыть экраны, которым нужна валидная session.
+
+Доступные поверхности:
+
+- `Academy Lesson Hub`
+- `Lesson Release Console`
+- `Session Workspace`
+- `Mentor Live Cockpit`
+- `Mentor Review Center`
+- `Submission Inbox`
+- `Cohort Progress Dashboard`
+
+`Command Center` открывается кнопкой в верхней панели или горячей клавишей `Cmd/Ctrl + K`. Внутри собраны переходы по порталу и copyable-команды из `control_plane.portal_actions`: запуск, открытие, export портала и release verification command для текущего урока.
+
+Если session невалидна или не загружена, `Mentor Live Cockpit` остается доступным как экран диагностики, а `Review Center`, `Submission Inbox` и `Cohort Dashboard` блокируются до появления валидной session. Это защищает ментора от пустых review/submission-экранов во время подготовки урока.
 
 ## Academy Lesson Hub
 
@@ -359,6 +378,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `composables/useSessionState.ts` — тонкий Nuxt-фасад для состояния.
 - `composables/useCatalogState.ts` — тонкий Nuxt-фасад для состояния каталога.
 - `features/academy-portal` — переключение между catalog-first поверхностью и текущей live-сессией.
+- `features/global-navigation` — постоянная навигация, Command Center и route guard для surface-переходов.
 - `features/lesson-hub` — витрина направлений, уроков, role-aware команд и readiness.
 - `features/lesson-launcher` — генерация launch-пакета, route/platform preferences и copyable команды запуска.
 - `features/session-workspace` — browser-local импорт `session.json`, validation, recent runs и выбор session для cockpit.

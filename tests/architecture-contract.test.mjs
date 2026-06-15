@@ -31,7 +31,11 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'assets/css/submission-inbox.css',
     'assets/css/cohort-dashboard.css',
     'assets/css/release-console.css',
+    'assets/css/global-navigation.css',
     'features/academy-portal/AcademyPortal.vue',
+    'features/global-navigation/GlobalNavigation.vue',
+    'features/global-navigation/useGlobalNavigationState.ts',
+    'features/global-navigation/global-navigation-state.ts',
     'features/lesson-hub/LessonHub.vue',
     'features/lesson-hub/TrackNavigation.vue',
     'features/lesson-hub/LessonList.vue',
@@ -111,6 +115,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
   assert.ok(nuxtConfig.includes('~/assets/css/submission-inbox.css'), 'Nuxt should load submission inbox styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/cohort-dashboard.css'), 'Nuxt should load cohort dashboard styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/release-console.css'), 'Nuxt should load release console styles explicitly')
+  assert.ok(nuxtConfig.includes('~/assets/css/global-navigation.css'), 'Nuxt should load global navigation styles explicitly')
   assert.ok(dashboard.includes('@open-workspace'), 'SessionDashboard should keep workspace navigation reachable')
   assert.ok(dashboard.includes('@open-review'), 'SessionDashboard should keep review navigation reachable')
   assert.ok(dashboard.includes('@open-submission'), 'SessionDashboard should keep submission navigation reachable')
@@ -119,6 +124,8 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
   assert.ok(portal.includes('<SubmissionInbox'), 'AcademyPortal should render Submission Inbox as a portal surface')
   assert.ok(portal.includes('<CohortDashboard'), 'AcademyPortal should render Cohort Dashboard as a portal surface')
   assert.ok(portal.includes('<ReleaseConsole'), 'AcademyPortal should render Release Console as a portal surface')
+  assert.ok(portal.includes('<GlobalNavigation'), 'AcademyPortal should render Global Navigation above portal surfaces')
+  assert.ok(portal.includes('useGlobalNavigationState'), 'AcademyPortal should delegate global navigation state to a composable')
   assert.ok(app.includes(':session-issues'), 'app.vue should pass live session validation issues through the portal facade')
   assert.ok(lineCount(app) <= 35, 'app.vue should stay a thin Nuxt facade')
 
@@ -174,6 +181,9 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'features/release-console/ReleaseConsole.vue',
     'features/release-console/useReleaseConsoleState.ts',
     'features/release-console/release-console-state.ts',
+    'features/global-navigation/GlobalNavigation.vue',
+    'features/global-navigation/useGlobalNavigationState.ts',
+    'features/global-navigation/global-navigation-state.ts',
     'assets/css/main.css',
     'assets/css/control-plane.css',
     'assets/css/cockpit.css',
@@ -183,7 +193,8 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'assets/css/review-center.css',
     'assets/css/submission-inbox.css',
     'assets/css/cohort-dashboard.css',
-    'assets/css/release-console.css'
+    'assets/css/release-console.css',
+    'assets/css/global-navigation.css'
   ]) {
     const source = await readText(path)
     assert.ok(lineCount(source) <= 400, `${path} should stay below the module SLOC guard`)
@@ -263,6 +274,8 @@ test('developer experience documents validation and local sample workflow', asyn
   assert.ok(readme.includes('Submission Inbox'))
   assert.ok(readme.includes('Cohort Progress Dashboard'))
   assert.ok(readme.includes('Lesson Release Console'))
+  assert.ok(readme.includes('Global Navigation'))
+  assert.ok(readme.includes('Command Center'))
   assert.ok(readme.includes('browser-local'))
   assert.ok(readme.includes('academy-catalog/v1'))
   assert.ok(readme.includes('launcher'))
@@ -280,6 +293,7 @@ test('developer experience documents validation and local sample workflow', asyn
   assert.ok(readme.includes('features/submission-inbox'))
   assert.ok(readme.includes('features/cohort-dashboard'))
   assert.ok(readme.includes('features/release-console'))
+  assert.ok(readme.includes('features/global-navigation'))
   assert.ok(readme.includes('features/session-dashboard'))
   assert.ok(readme.includes('components/shared/ui'))
 
