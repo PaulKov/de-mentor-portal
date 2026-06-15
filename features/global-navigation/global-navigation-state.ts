@@ -21,6 +21,7 @@ export interface GlobalNavigationInput {
   sessionSource: string
   sessionIsValid: boolean
   activeSurface: unknown
+  ledgerReportMarkdown?: string
 }
 
 export interface GlobalNavigationItem {
@@ -212,6 +213,7 @@ const createCopyCommands = (input: GlobalNavigationInput): GlobalNavigationComma
     createCopyCommand('copy-portal-open', 'Скопировать open-команду', portalActions?.open_command),
     createCopyCommand('copy-portal-export', 'Скопировать export-команду', portalActions?.export_command),
     createCopyCommand('copy-release-verify', 'Скопировать release verify', findReleaseVerifyCommand(input.session)),
+    createCopyCommand('copy-ledger-report', 'Скопировать ledger report', input.ledgerReportMarkdown),
     createCopyCommand('copy-current-stage-command', 'Скопировать команду текущего этапа', input.session?.current_stage.command),
     createCopyCommand('copy-current-stage-question', 'Скопировать вопрос текущего этапа', currentStageGuide?.question)
   ]

@@ -17,7 +17,8 @@ test('buildGlobalNavigationState exposes all portal surfaces and session context
     session: await loadSession(),
     sessionSource: '/api/session',
     sessionIsValid: true,
-    activeSurface: 'session'
+    activeSurface: 'session',
+    ledgerReportMarkdown: '# Lesson Run Ledger: Demo Student'
   })
 
   assert.equal(state.activeSurface, 'session')
@@ -61,6 +62,12 @@ test('buildGlobalNavigationState exposes all portal surfaces and session context
     command.id === 'copy-current-stage-question' &&
     command.kind === 'copy' &&
     command.value.includes('Почему partition key')
+  ))
+  assert.ok(commands.some(command =>
+    command.id === 'copy-ledger-report' &&
+    command.kind === 'copy' &&
+    command.label === 'Скопировать ledger report' &&
+    command.value === '# Lesson Run Ledger: Demo Student'
   ))
 })
 

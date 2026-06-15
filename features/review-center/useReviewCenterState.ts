@@ -1,5 +1,6 @@
 import { computed, onMounted, ref, watch, type Ref } from 'vue'
 import type { AcademySession } from '~/core/session/domain/academy-session'
+import { createEvidenceLedgerStorageKey } from '~/features/evidence-ledger/evidence-ledger-state'
 import { createMentorStorageKey } from '~/features/mentor-cockpit/mentor-cockpit-state'
 import { createSafeLocalStoragePort } from '~/shared/utils/local-storage'
 import {
@@ -12,15 +13,19 @@ import {
 
 export const useReviewCenterState = (session: Ref<AcademySession>) => {
   const localState = ref<ReviewLocalState>(normalizeReviewLocalState())
-  const storageKey = computed(() => createMentorStorageKey(session.value))
+  const mentorStorageKey = computed(() => createMentorStorageKey(session.value))
+  const ledgerStorageKey = computed(() => createEvidenceLedgerStorageKey(session.value))
 
   const hydrate = () => {
     const storagePort = createSafeLocalStoragePort(
       typeof window === 'undefined' ? undefined : window.localStorage
     )
-    localState.value = normalizeReviewLocalState(
-      storagePort.get<Partial<ReviewLocalState>>(storageKey.value)
-    )
+    const mentorState = storagePort.get<Partial<ReviewLocalState>>(mentorStorageKey.value)
+    const ledgerState = storagePort.get<Partial<ReviewLocalState>>(ledgerStorageKey.value)
+    localState.value = normalizeReviewLocalState({
+      ...safeRecord(mentorState),
+      ...safeRecord(ledgerState)
+    })
   }
 
   const reviewState = computed(() => buildReviewCenterState(session.value, localState.value))
@@ -30,7 +35,7 @@ export const useReviewCenterState = (session: Ref<AcademySession>) => {
   )
 
   onMounted(hydrate)
-  watch(storageKey, hydrate)
+  watch([mentorStorageKey, ledgerStorageKey], hydrate)
 
   return {
     exportJson,
@@ -39,3 +44,8 @@ export const useReviewCenterState = (session: Ref<AcademySession>) => {
     reviewState
   }
 }
+
+const safeRecord = (value: unknown) =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}

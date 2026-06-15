@@ -37,6 +37,50 @@ test('buildReviewCenterState scores evidence and derives handoff signals', async
   assert.equal(state.nextLesson?.code, '02-greenplum-partitioning')
 })
 
+test('buildReviewCenterState includes ledger stage status, blockers and time deltas', async () => {
+  const {
+    buildReviewCenterState,
+    createReviewReportMarkdown
+  } = await import('../features/review-center/review-center-state.ts')
+  const session = await loadSample()
+
+  const state = buildReviewCenterState(session, {
+    checkedEvidence: ['Partition pruning'],
+    notesByStage: {
+      'partition-pruning': 'Ученик сам показал pruning в EXPLAIN.'
+    },
+    flagsByStage: {},
+    stageStatuses: {
+      'partition-pruning': 'done',
+      statistics: 'risk'
+    },
+    actualMinutesByStage: {
+      'partition-pruning': 18
+    },
+    blockersByStage: {
+      statistics: 'Нет before/after EXPLAIN.'
+    }
+  })
+  const partitionStage = state.stageSummaries.find(stage => stage.code === 'partition-pruning')
+  const statisticsStage = state.stageSummaries.find(stage => stage.code === 'statistics')
+  const markdown = createReviewReportMarkdown(state)
+
+  assert.equal(state.ledgerSummary.done, 1)
+  assert.equal(state.ledgerSummary.risk, 1)
+  assert.equal(state.ledgerSummary.deltaMinutes, 3)
+  assert.equal(partitionStage?.ledgerStatus, 'done')
+  assert.equal(partitionStage?.actualMinutes, 18)
+  assert.equal(partitionStage?.timeDeltaMinutes, 3)
+  assert.equal(statisticsStage?.ledgerStatus, 'risk')
+  assert.equal(statisticsStage?.blocker, 'Нет before/after EXPLAIN.')
+  assert.ok(state.risks.some(item => item.includes('Ledger risk: Statistics after incremental load')))
+  assert.ok(state.risks.some(item => item.includes('Ledger time overrun: +3 min')))
+  assert.ok(markdown.includes('## Ledger Signals'))
+  assert.ok(markdown.includes('Partition pruning and retention: done'))
+  assert.ok(markdown.includes('delta +3 min'))
+  assert.ok(markdown.includes('blocker: Нет before/after EXPLAIN.'))
+})
+
 test('createReviewReportMarkdown and export payload are copy-ready', async () => {
   const {
     buildReviewCenterState,
@@ -62,6 +106,7 @@ test('createReviewReportMarkdown and export payload are copy-ready', async () =>
   assert.equal(payload.student_name, 'Demo Student')
   assert.equal(payload.evidence_score.percent, 50)
   assert.equal(payload.stage_summaries.length, 3)
+  assert.equal(payload.ledger_summary.total, 3)
   assert.ok(payload.report_markdown.includes('Evidence score: 1/2 (50%)'))
 })
 
@@ -78,12 +123,18 @@ test('normalizeReviewLocalState accepts partial and broken browser storage paylo
     {
       checkedEvidence: ['Partition pruning'],
       notesByStage: { replay: 'ok' },
-      flagsByStage: {}
+      flagsByStage: {},
+      stageStatuses: {},
+      actualMinutesByStage: {},
+      blockersByStage: {}
     }
   )
   assert.deepEqual(normalizeReviewLocalState({ checkedEvidence: 'broken' }), {
     checkedEvidence: [],
     notesByStage: {},
-    flagsByStage: {}
+    flagsByStage: {},
+    stageStatuses: {},
+    actualMinutesByStage: {},
+    blockersByStage: {}
   })
 })

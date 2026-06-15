@@ -1,5 +1,6 @@
 import { computed, onMounted, ref, watch, type Ref } from 'vue'
 import type { AcademySession } from '~/core/session/domain/academy-session'
+import { createEvidenceLedgerStorageKey } from '~/features/evidence-ledger/evidence-ledger-state'
 import { createMentorStorageKey } from '~/features/mentor-cockpit/mentor-cockpit-state'
 import {
   createSessionWorkspaceStorageKey,
@@ -85,16 +86,19 @@ const readSnapshots = (
 ): CohortStorageSnapshots => {
   const storagePort = createBrowserStoragePort()
   const mentorStates: Record<string, unknown> = {}
+  const ledgerStates: Record<string, unknown> = {}
   const submissionStates: Record<string, unknown> = {}
 
   for (const source of sources) {
     const mentorKey = createMentorStorageKey(source.session)
+    const ledgerKey = createEvidenceLedgerStorageKey(source.session)
     const submissionKey = createSubmissionStorageKey(source.session)
     mentorStates[mentorKey] = storagePort.get(mentorKey)
+    ledgerStates[ledgerKey] = storagePort.get(ledgerKey)
     submissionStates[submissionKey] = storagePort.get(submissionKey)
   }
 
-  return { mentorStates, submissionStates }
+  return { mentorStates, ledgerStates, submissionStates }
 }
 
 const isWorkspaceEntry = (value: unknown): value is SessionWorkspaceEntry =>

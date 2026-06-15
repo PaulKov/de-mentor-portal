@@ -3,6 +3,13 @@ import type {
   AcademyStage,
   SkillNode
 } from '../../core/session/domain/academy-session.ts'
+import {
+  buildEvidenceLedgerState,
+  normalizeEvidenceLedgerLocalState,
+  type EvidenceLedgerRow,
+  type EvidenceLedgerStageStatus,
+  type EvidenceLedgerSummary
+} from '../evidence-ledger/evidence-ledger-state.ts'
 
 export type ReviewStageStatus = 'reviewed' | 'needs-review'
 
@@ -10,6 +17,9 @@ export interface ReviewLocalState {
   checkedEvidence: string[]
   notesByStage: Record<string, string>
   flagsByStage: Record<string, string[]>
+  stageStatuses: Record<string, EvidenceLedgerStageStatus>
+  actualMinutesByStage: Record<string, number>
+  blockersByStage: Record<string, string>
 }
 
 export interface ReviewEvidenceScore {
@@ -27,6 +37,13 @@ export interface ReviewStageSummary {
   expectedAnswer?: string
   verification?: string
   reviewStatus: ReviewStageStatus
+  ledgerStatus: EvidenceLedgerStageStatus
+  plannedMinutes: number
+  actualMinutes: number
+  timeDeltaMinutes: number
+  evidenceChecked: number
+  evidenceTotal: number
+  blocker: string
 }
 
 export interface ReviewNextLesson {
@@ -45,6 +62,7 @@ export interface ReviewCenterState {
   strengths: string[]
   risks: string[]
   recommendations: string[]
+  ledgerSummary: EvidenceLedgerSummary
   nextLesson?: ReviewNextLesson
 }
 
@@ -57,6 +75,7 @@ export interface ReviewExportPayload {
   strengths: string[]
   risks: string[]
   recommendations: string[]
+  ledger_summary: EvidenceLedgerSummary
   next_lesson?: ReviewNextLesson
   report_markdown: string
 }
@@ -69,6 +88,8 @@ export const buildReviewCenterState = (
   const checkedSkillSet = new Set(normalized.checkedEvidence)
   const checkedSkills = session.skill_graph.filter(skill => isSkillChecked(skill, checkedSkillSet))
   const missingSkills = session.skill_graph.filter(skill => !isSkillChecked(skill, checkedSkillSet))
+  const ledger = buildEvidenceLedgerState(session, normalized)
+  const ledgerRowsByCode = new Map(ledger.rows.map(row => [row.code, row]))
 
   return {
     title: `${session.student_name} · ${session.lab_name}`,
@@ -77,11 +98,15 @@ export const buildReviewCenterState = (
     createdAt: session.created_at,
     evidenceScore: createEvidenceScore(checkedSkills.length, session.skill_graph.length),
     stageSummaries: session.stages.map(stage =>
-      summarizeStage(stage, session, normalized, checkedSkillSet)
+      summarizeStage(stage, session, normalized, checkedSkillSet, ledgerRowsByCode.get(stage.code))
     ),
     strengths: strengthsFromSkills(checkedSkills),
-    risks: risksFromSkills(missingSkills),
+    risks: [
+      ...risksFromSkills(missingSkills),
+      ...risksFromLedger(ledger.rows, ledger.summary)
+    ],
     recommendations: recommendationsFor(session, missingSkills),
+    ledgerSummary: ledger.summary,
     nextLesson: session.control_plane?.next_lesson
   }
 }
@@ -97,6 +122,10 @@ export const createReviewReportMarkdown = (state: ReviewCenterState) => {
     '',
     '## Risks',
     ...listOrFallback(state.risks, 'No open risks.'),
+    '',
+    '## Ledger Signals',
+    `Ledger: ${state.ledgerSummary.done}/${state.ledgerSummary.total} done · ${state.ledgerSummary.risk} risk · ${formatDelta(state.ledgerSummary.deltaMinutes)} min`,
+    ...state.stageSummaries.flatMap(formatLedgerStageSummary),
     '',
     '## Stage Notes',
     ...state.stageSummaries.map(stage =>
@@ -130,6 +159,7 @@ export const createReviewExportPayload = (
   strengths: state.strengths,
   risks: state.risks,
   recommendations: state.recommendations,
+  ledger_summary: state.ledgerSummary,
   next_lesson: state.nextLesson,
   report_markdown: createReviewReportMarkdown(state)
 })
@@ -141,7 +171,8 @@ export const normalizeReviewLocalState = (
     ? value.checkedEvidence.filter(isNonEmptyString)
     : [],
   notesByStage: isStringRecord(value?.notesByStage) ? value.notesByStage : {},
-  flagsByStage: isStringArrayRecord(value?.flagsByStage) ? value.flagsByStage : {}
+  flagsByStage: isStringArrayRecord(value?.flagsByStage) ? value.flagsByStage : {},
+  ...normalizeEvidenceLedgerLocalState(value)
 })
 
 const createEvidenceScore = (checked: number, total: number): ReviewEvidenceScore => ({
@@ -154,7 +185,8 @@ const summarizeStage = (
   stage: AcademyStage,
   session: AcademySession,
   localState: ReviewLocalState,
-  checkedSkillSet: Set<string>
+  checkedSkillSet: Set<string>,
+  ledgerRow?: EvidenceLedgerRow
 ): ReviewStageSummary => {
   const linkedSkills = skillsForStage(stage, session.skill_graph)
   const hasCheckedSkill = linkedSkills.some(skill => isSkillChecked(skill, checkedSkillSet))
@@ -171,7 +203,16 @@ const summarizeStage = (
     question: guide?.question,
     expectedAnswer: guide?.expected_answer,
     verification: guide?.verification,
-    reviewStatus: note.trim() || hasCheckedSkill ? 'reviewed' : 'needs-review'
+    reviewStatus: note.trim() || hasCheckedSkill || ledgerRow?.status === 'done'
+      ? 'reviewed'
+      : 'needs-review',
+    ledgerStatus: ledgerRow?.status ?? 'pending',
+    plannedMinutes: ledgerRow?.plannedMinutes ?? 0,
+    actualMinutes: ledgerRow?.actualMinutes ?? 0,
+    timeDeltaMinutes: ledgerRow ? ledgerRow.actualMinutes - ledgerRow.plannedMinutes : 0,
+    evidenceChecked: ledgerRow?.evidenceChecked ?? 0,
+    evidenceTotal: ledgerRow?.evidenceTotal ?? 0,
+    blocker: ledgerRow?.blocker ?? ''
   }
 }
 
@@ -180,6 +221,18 @@ const strengthsFromSkills = (skills: SkillNode[]) =>
 
 const risksFromSkills = (skills: SkillNode[]) =>
   skills.map(skill => `Evidence gap: ${skill.title} — ${skill.evidence}`)
+
+const risksFromLedger = (
+  rows: EvidenceLedgerRow[],
+  summary: EvidenceLedgerSummary
+) => [
+  ...rows
+    .filter(row => row.status === 'risk' || row.status === 'skipped')
+    .map(row => `Ledger risk: ${row.title}${row.blocker ? ` — ${row.blocker}` : ''}`),
+  ...(summary.deltaMinutes > 0
+    ? [`Ledger time overrun: ${formatDelta(summary.deltaMinutes)} min`]
+    : [])
+]
 
 const recommendationsFor = (session: AcademySession, missingSkills: SkillNode[]) => {
   const recommendations = missingSkills.map(
@@ -202,6 +255,20 @@ const isSkillChecked = (skill: SkillNode, checked: Set<string>) =>
 
 const listOrFallback = (items: string[], fallback: string) =>
   items.length > 0 ? items.map(item => `- ${item}`) : [`- ${fallback}`]
+
+const formatLedgerStageSummary = (stage: ReviewStageSummary) => {
+  const lines = [
+    `- ${stage.timebox} ${stage.title}: ${stage.ledgerStatus}, planned ${stage.plannedMinutes} min, actual ${stage.actualMinutes} min, delta ${formatDelta(stage.timeDeltaMinutes)} min, evidence ${stage.evidenceChecked}/${stage.evidenceTotal}`
+  ]
+
+  if (stage.blocker.trim()) {
+    lines.push(`  - blocker: ${stage.blocker}`)
+  }
+
+  return lines
+}
+
+const formatDelta = (minutes: number) => (minutes > 0 ? `+${minutes}` : String(minutes))
 
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === 'string' && value.trim().length > 0

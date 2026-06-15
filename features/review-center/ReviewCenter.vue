@@ -27,6 +27,7 @@ const sessionRef = toRef(props, 'session')
 const { exportJson, hydrate, reportMarkdown, reviewState } = useReviewCenterState(sessionRef)
 
 const scoreTone = () => reviewState.value.evidenceScore.percent >= 80 ? 'success' : 'warning'
+const formatDelta = (minutes: number) => minutes > 0 ? `+${minutes}` : String(minutes)
 </script>
 
 <template>
@@ -84,6 +85,11 @@ const scoreTone = () => reviewState.value.evidenceScore.percent >= 80 ? 'success
         <StatusBadge :tone="scoreTone()">
           {{ reviewState.evidenceScore.percent }}% evidence
         </StatusBadge>
+        <StatusBadge :tone="reviewState.ledgerSummary.risk > 0 ? 'warning' : 'success'">
+          Ledger: {{ reviewState.ledgerSummary.done }}/{{ reviewState.ledgerSummary.total }} done ·
+          {{ reviewState.ledgerSummary.risk }} risk ·
+          {{ formatDelta(reviewState.ledgerSummary.deltaMinutes) }} min
+        </StatusBadge>
         <button class="quiet-button" type="button" @click="hydrate">
           Обновить review
         </button>
@@ -119,6 +125,12 @@ const scoreTone = () => reviewState.value.evidenceScore.percent >= 80 ? 'success
           <StatusBadge :tone="stage.reviewStatus === 'reviewed' ? 'success' : 'warning'">
             {{ stage.reviewStatus }}
           </StatusBadge>
+          <p>
+            <strong>Ledger:</strong>
+            {{ stage.ledgerStatus }} · actual {{ stage.actualMinutes }} min ·
+            delta {{ formatDelta(stage.timeDeltaMinutes) }} min
+          </p>
+          <p v-if="stage.blocker"><strong>Blocker:</strong> {{ stage.blocker }}</p>
           <p v-if="stage.question"><strong>Вопрос:</strong> {{ stage.question }}</p>
           <p><strong>Заметка:</strong> {{ stage.note || 'Заметка ментора пока не заполнена.' }}</p>
           <p v-if="stage.verification"><strong>Проверка:</strong> {{ stage.verification }}</p>
