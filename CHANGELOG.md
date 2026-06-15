@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.10.0 - 2026-06-15
+
+Релиз workspace sync automation: портал получил self-service backup/restore для browser-local состояния и PR-ready workspace handoff.
+
+### Добавлено
+
+- `Workspace Sync Center`: новая catalog-first поверхность после `Lesson Authoring Studio`.
+- Контракт `academy-workspace/v1` для export/import портального browser-local workspace.
+- Snapshot по portal-owned ключам: `academy-portal-surface`, lesson hub/launcher/authoring, release console, session workspace, cockpit, delivery control room, evidence ledger, student launchpad, submission inbox и dashboard mode.
+- Import validation: блокировка неверного JSON, неподдержанного `contract_version`, отсутствующих `records` и ключей вне portal scope.
+- Restore preview с create/update counts и безопасным restore без удаления unrelated localStorage keys.
+- Copy-ready `PR bundle` для handoff по workspace.
+
+### Качество и UX
+
+- Добавлены unit/contract тесты для `features/workspace-sync`.
+- Расширены global navigation, architecture contract и Playwright e2e сценарии на desktop/mobile.
+- README описывает `Workspace Sync Center`, `academy-workspace/v1`, allowed prefixes и safe restore workflow.
+- Все новые модули удержаны ниже `400` SLOC; avg clustering guard остается зеленым.
+- Browser QA выполнен на production preview: desktop restore flow, mobile viewport `390x844`, чистая консоль, отсутствие page-level horizontal overflow.
+
 ## v0.9.0 - 2026-06-15
 
 Релиз lesson authoring automation: портал теперь помогает ментору собрать, проверить и экспортировать lesson/session пакет до live-сессии.
