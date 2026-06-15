@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.7.0 - 2026-06-15
+
+Релиз learning-path automation: портал теперь оценивает освоение навыков после урока и помогает ментору выбрать фокус следующей встречи.
+
+### Добавлено
+
+- `Skill Assessment Center`: отдельная поверхность портала для оценки `skill_graph` по уровням `not-started`, `aware`, `can-repeat`, `can-explain`, `can-apply`.
+- Mastery scoring на базе трех источников: evidence из `Mentor Live Cockpit`, stage status/blockers из `Lesson Run Evidence Ledger` и homework evidence из `Submission Inbox`.
+- Learning path с focus skills, blockers, next actions и next lesson preview.
+- Copy-ready Markdown/JSON export assessment-отчета.
+- Навигация `Skill Assessment Center` в `Global Navigation` и route guard по валидной session.
+
+### Качество и UX
+
+- Добавлены unit/contract тесты для `features/assessment-center`.
+- Расширены Playwright e2e сценарии на desktop/mobile для полного assessment flow.
+- README описывает уровни skill mastery, browser-local источники и рекомендуемый workflow.
+- Очищены npm deprecated warnings через обновление Nuxt/Vue и Node 24-compatible dependency overrides.
+- CI на `master` после merge PR #20 прошел: unit, session validator, e2e и audit.
+- Browser QA выполнен на production preview: desktop/mobile без horizontal overflow, чистая консоль.
+
 ## v0.6.0 - 2026-06-15
 
 Релиз post-lesson automation: портал теперь собирает итоговый пакет после урока из живого cockpit, evidence ledger, review center и homework inbox.
