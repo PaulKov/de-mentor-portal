@@ -306,6 +306,25 @@ test('builds a skill assessment and learning path from lesson evidence', async (
   await expect(page.getByLabel('Assessment report markdown')).toHaveValue(/Next lesson: Partitioning, statistics and incremental loads in MPP/)
 })
 
+test('opens mentor mission control with next action and journey signals', async ({ page }) => {
+  await openCurrentSession(page)
+
+  await page.getByRole('button', { name: 'Mentor Mission Control' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Mentor Mission Control' })).toBeVisible()
+  await expect(page.getByLabel('Mission next action')).toBeVisible()
+  await expect(page.getByLabel('Mission signals')).toBeVisible()
+  await expect(page.getByLabel('Mission journey checklist')).toBeVisible()
+  await expect(page.getByLabel('Mission focus queue')).toBeVisible()
+  await expect(page.getByLabel('Mission quick links')).toBeVisible()
+  const nextAction = page.getByLabel('Mission next action')
+  await expect(nextAction.getByRole('button', { name: 'Открыть cockpit' })).toBeVisible()
+  await expect(page.getByLabel('Mission Control report markdown')).toHaveValue(/# Mentor Mission Control/)
+
+  await nextAction.getByRole('button', { name: 'Открыть cockpit' }).click()
+  await expect(page.getByRole('heading', { name: 'Mentor Live Cockpit' })).toBeVisible()
+})
+
 test('opens lesson release console and shows go no-go checks', async ({ page }) => {
   await page.goto('/')
 

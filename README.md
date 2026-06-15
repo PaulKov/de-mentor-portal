@@ -1,6 +1,6 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Skill Assessment Center**, **Post-Lesson Pack**, **Submission Inbox**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Lesson Run Evidence Ledger**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, оценка skill mastery, сдача домашки и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Mentor Mission Control**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Skill Assessment Center**, **Post-Lesson Pack**, **Submission Inbox**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Lesson Run Evidence Ledger**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, оценка skill mastery, сдача домашки и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs, `catalog.json` и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 4 + Vite.
 
@@ -8,6 +8,7 @@
 
 - [Быстрый старт](#быстрый-старт)
 - [Global Navigation и Command Center](#global-navigation-и-command-center)
+- [Mentor Mission Control](#mentor-mission-control)
 - [Academy Lesson Hub](#academy-lesson-hub)
 - [Lesson Launcher](#lesson-launcher)
 - [Session Workspace](#session-workspace)
@@ -59,6 +60,7 @@ MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev
 Доступные поверхности:
 
 - `Academy Lesson Hub`
+- `Mentor Mission Control`
 - `Lesson Release Console`
 - `Session Workspace`
 - `Mentor Live Cockpit`
@@ -72,7 +74,43 @@ MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev
 
 Во время live-сессии `Command Center` также показывает stage-aware команды: команду текущего этапа, вопрос ученику из `control_plane.mentor_mode.stage_guides` и `Скопировать ledger report`. Ledger report строится из текущей session, отметок evidence, stage notes, stage statuses, actual time и blockers.
 
-Если session невалидна или не загружена, `Mentor Live Cockpit` остается доступным как экран диагностики, а `Review Center`, `Skill Assessment Center`, `Submission Inbox`, `Cohort Dashboard` и `Post-Lesson Pack` блокируются до появления валидной session. Это защищает ментора от пустых review/submission-экранов во время подготовки урока.
+Если session невалидна или не загружена, `Mentor Live Cockpit` остается доступным как экран диагностики, а `Mentor Mission Control`, `Review Center`, `Skill Assessment Center`, `Submission Inbox`, `Cohort Dashboard` и `Post-Lesson Pack` блокируются до появления валидной session. Это защищает ментора от пустых review/submission-экранов во время подготовки урока.
+
+## Mentor Mission Control
+
+`Mentor Mission Control` — операционный пульт ментора. Он не заменяет детальные экраны, а отвечает на один вопрос: что делать прямо сейчас, чтобы урок двигался дальше без ручного обхода всех surfaces.
+
+Экран собирает сигналы из уже существующих модулей:
+
+- `Mentor Live Cockpit`: отмеченные evidence items и stage notes;
+- `Lesson Run Evidence Ledger`: stage statuses, planned/actual time и blockers;
+- `Submission Inbox`: homework completeness и latest submission;
+- `Skill Assessment Center`: mastery, focus skills и blockers;
+- `Post-Lesson Pack`: readiness и unresolved items.
+
+На одном экране видны:
+
+- `Next Best Action` — главный следующий шаг с переходом в нужную surface;
+- `Journey Checklist` — Before / Live / After состояние урока;
+- `Signals` — компактные метрики по evidence, ledger, homework, assessment и pack;
+- `Focus Queue` — задачи, которые ментору стоит закрыть первыми;
+- `Quick Links` — быстрые переходы в cockpit, review, assessment, submissions, cohort и pack.
+
+Mission Control работает browser-local и читает те же session-scoped ключи:
+
+```text
+mentor-cockpit:<contract_version>:<lab_name>:<student_name>:<created_at>
+evidence-ledger:<contract_version>:<lab_name>:<student_name>:<created_at>
+submission-inbox:<contract_version>:<lab_name>:<student_name>:<created_at>
+```
+
+Рекомендуемый workflow:
+
+1. Открыть текущую session из `Academy Lesson Hub`.
+2. Перейти в `Mentor Mission Control`.
+3. Выполнить `Next Best Action`.
+4. После каждого крупного шага нажимать `Обновить mission`.
+5. В конце урока использовать Mission report как краткую операционную сводку.
 
 ## Academy Lesson Hub
 
@@ -491,6 +529,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `composables/useCatalogState.ts` — тонкий Nuxt-фасад для состояния каталога.
 - `features/academy-portal` — переключение между catalog-first поверхностью и текущей live-сессией.
 - `features/global-navigation` — постоянная навигация, Command Center и route guard для surface-переходов.
+- `features/mission-control` — next best action, journey checklist, signals, focus queue и quick links для mentor workflow.
 - `features/delivery-control-room` — фокусный режим проведения stage: timer, stage script, quick evidence/note actions и panic mode.
 - `features/evidence-ledger` — журнал проведения урока: stage statuses, actual time, blockers, evidence summary и Markdown handoff.
 - `features/lesson-hub` — витрина направлений, уроков, role-aware команд и readiness.
