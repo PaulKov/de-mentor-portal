@@ -24,7 +24,7 @@ test('buildGlobalNavigationState exposes all portal surfaces and session context
   assert.equal(state.activeSurface, 'session')
   assert.deepEqual(
     state.items.map(item => item.surface),
-    ['hub', 'authoring', 'mission-control', 'release', 'workspace', 'session', 'review', 'assessment', 'submission', 'cohort', 'post-lesson']
+    ['hub', 'authoring', 'sync', 'mission-control', 'release', 'workspace', 'session', 'review', 'assessment', 'submission', 'cohort', 'post-lesson']
   )
   assert.equal(state.context.primaryLabel, 'Demo Student · greenplum-partitioning')
   assert.equal(state.context.catalogStatus, 'ready')
@@ -36,6 +36,11 @@ test('buildGlobalNavigationState exposes all portal surfaces and session context
     command.id === 'open-authoring' &&
     command.label === 'Открыть Lesson Authoring Studio' &&
     command.surface === 'authoring'
+  ))
+  assert.ok(commands.some(command =>
+    command.id === 'open-sync' &&
+    command.label === 'Открыть Workspace Sync Center' &&
+    command.surface === 'sync'
   ))
   assert.ok(commands.some(command =>
     command.id === 'open-mission-control' &&
@@ -111,6 +116,7 @@ test('buildGlobalNavigationState disables evidence surfaces without a valid sess
   assert.equal(state.context.sessionStatus, 'error')
   assert.equal(state.items.find(item => item.surface === 'session')?.isEnabled, true)
   assert.equal(state.items.find(item => item.surface === 'authoring')?.isEnabled, true)
+  assert.equal(state.items.find(item => item.surface === 'sync')?.isEnabled, true)
   assert.equal(state.items.find(item => item.surface === 'mission-control')?.isEnabled, false)
   assert.equal(state.items.find(item => item.surface === 'review')?.isEnabled, false)
   assert.equal(state.items.find(item => item.surface === 'assessment')?.isEnabled, false)
@@ -142,6 +148,7 @@ test('normalizePortalSurface accepts only known portal surfaces', async () => {
 
   assert.equal(normalizePortalSurface('cohort'), 'cohort')
   assert.equal(normalizePortalSurface('authoring'), 'authoring')
+  assert.equal(normalizePortalSurface('sync'), 'sync')
   assert.equal(normalizePortalSurface('mission-control'), 'mission-control')
   assert.equal(normalizePortalSurface('assessment'), 'assessment')
   assert.equal(normalizePortalSurface('post-lesson'), 'post-lesson')

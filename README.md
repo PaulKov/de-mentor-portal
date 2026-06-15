@@ -1,6 +1,6 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Lesson Authoring Studio**, **Mentor Mission Control**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Skill Assessment Center**, **Post-Lesson Pack**, **Submission Inbox**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Lesson Run Evidence Ledger**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, оценка skill mastery, сдача домашки и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Lesson Authoring Studio**, **Workspace Sync Center**, **Mentor Mission Control**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Skill Assessment Center**, **Post-Lesson Pack**, **Submission Inbox**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Lesson Run Evidence Ledger**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, оценка skill mastery, сдача домашки и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs, `catalog.json` и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 4 + Vite.
 
@@ -9,6 +9,7 @@
 - [Быстрый старт](#быстрый-старт)
 - [Global Navigation и Command Center](#global-navigation-и-command-center)
 - [Lesson Authoring Studio](#lesson-authoring-studio)
+- [Workspace Sync Center](#workspace-sync-center)
 - [Mentor Mission Control](#mentor-mission-control)
 - [Academy Lesson Hub](#academy-lesson-hub)
 - [Lesson Launcher](#lesson-launcher)
@@ -62,6 +63,7 @@ MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev
 
 - `Academy Lesson Hub`
 - `Lesson Authoring Studio`
+- `Workspace Sync Center`
 - `Mentor Mission Control`
 - `Lesson Release Console`
 - `Session Workspace`
@@ -76,7 +78,7 @@ MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev
 
 Во время live-сессии `Command Center` также показывает stage-aware команды: команду текущего этапа, вопрос ученику из `control_plane.mentor_mode.stage_guides` и `Скопировать ledger report`. Ledger report строится из текущей session, отметок evidence, stage notes, stage statuses, actual time и blockers.
 
-Если session невалидна или не загружена, `Mentor Live Cockpit` остается доступным как экран диагностики, а `Mentor Mission Control`, `Review Center`, `Skill Assessment Center`, `Submission Inbox`, `Cohort Dashboard` и `Post-Lesson Pack` блокируются до появления валидной session. `Lesson Authoring Studio` требует только валидный catalog: урок можно проектировать до появления live session.
+Если session невалидна или не загружена, `Mentor Live Cockpit` остается доступным как экран диагностики, а `Mentor Mission Control`, `Review Center`, `Skill Assessment Center`, `Submission Inbox`, `Cohort Dashboard` и `Post-Lesson Pack` блокируются до появления валидной session. `Lesson Authoring Studio` и `Workspace Sync Center` требуют только валидный catalog: урок можно проектировать, экспортировать и восстанавливать browser-local workspace до появления live session.
 
 ## Lesson Authoring Studio
 
@@ -108,6 +110,45 @@ lesson-authoring:<contract_version>:<generated_at>:<track_code>:<lesson_code>
 3. Проверить `Stage Matrix` и убрать blockers/warnings.
 4. Скопировать `lesson package`, `session seed` или `quality report`.
 5. Использовать export как материал для PR/release review.
+
+## Workspace Sync Center
+
+`Workspace Sync Center` — browser-local backup/restore слой для портала. Он нужен, когда ментор готовит урок, ведет несколько локальных runs, хочет перенести состояние между браузерами или приложить воспроизводимый workspace package к PR.
+
+Экран собирает только portal-owned `localStorage` ключи:
+
+```text
+academy-portal-surface
+academy-lesson-hub:
+lesson-launcher:
+lesson-authoring-selection:
+lesson-authoring:
+release-console:
+session-workspace:
+mentor-cockpit:
+delivery-control-room:
+evidence-ledger:
+student-launchpad:
+submission-inbox:
+academy-dashboard-mode:
+```
+
+Пакет имеет контракт:
+
+```text
+academy-workspace/v1
+```
+
+Restore безопасный по границе ответственности: портал записывает только записи из импортированного package и не удаляет другие browser-local ключи. Если package содержит незнакомый key, неверный `contract_version` или некорректную форму `records`, import блокируется.
+
+Рекомендуемый workflow:
+
+1. Открыть `Workspace Sync Center` после настройки `Lesson Authoring Studio`, live-сессии или homework evidence.
+2. Проверить `Workspace snapshot summary`, `Records` и `Validation`.
+3. Скопировать `Workspace package JSON` как backup или приложить к PR.
+4. Для восстановления вставить package в `Import workspace JSON`.
+5. Если preview показывает `ready to restore`, нажать `Restore workspace`.
+6. Скопировать `PR bundle`, если нужен краткий Markdown handoff по workspace.
 
 ## Mentor Mission Control
 
@@ -563,6 +604,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `features/academy-portal` — переключение между catalog-first поверхностью и текущей live-сессией.
 - `features/global-navigation` — постоянная навигация, Command Center и route guard для surface-переходов.
 - `features/lesson-authoring` — browser-local сборка lesson draft, quality gate, preview и copy-ready export.
+- `features/workspace-sync` — browser-local workspace export/import, restore validation и PR bundle.
 - `features/mission-control` — next best action, journey checklist, signals, focus queue и quick links для mentor workflow.
 - `features/delivery-control-room` — фокусный режим проведения stage: timer, stage script, quick evidence/note actions и panic mode.
 - `features/evidence-ledger` — журнал проведения урока: stage statuses, actual time, blockers, evidence summary и Markdown handoff.

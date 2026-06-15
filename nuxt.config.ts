@@ -20,6 +20,7 @@ export default defineNuxtConfig({
     '~/assets/css/release-console.css',
     '~/assets/css/global-navigation.css',
     '~/assets/css/lesson-authoring.css',
+    '~/assets/css/workspace-sync.css',
     '~/assets/css/mission-control.css',
     '~/assets/css/delivery-control-room.css',
     '~/assets/css/evidence-ledger.css',

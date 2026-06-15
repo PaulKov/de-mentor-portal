@@ -21,6 +21,7 @@ import ReviewCenter from '~/features/review-center/ReviewCenter.vue'
 import SessionDashboard from '~/features/session-dashboard/SessionDashboard.vue'
 import SessionWorkspace from '~/features/session-workspace/SessionWorkspace.vue'
 import SubmissionInbox from '~/features/submission-inbox/SubmissionInbox.vue'
+import WorkspaceSyncCenter from '~/features/workspace-sync/WorkspaceSyncCenter.vue'
 
 const props = defineProps<{
   catalog: AcademyCatalog | null
@@ -155,6 +156,17 @@ watch(
         :can-open-release="true"
         @open-hub="selectSurface('hub')"
         @open-release="selectSurface('release')"
+      />
+
+      <WorkspaceSyncCenter
+        v-else-if="catalog && catalogIsValid && surface === 'sync'"
+        :catalog="catalog"
+        :catalog-source="catalogSource"
+        :session="activeSession"
+        :can-open-hub="true"
+        :can-open-authoring="true"
+        @open-hub="selectSurface('hub')"
+        @open-authoring="selectSurface('authoring')"
       />
 
       <MissionControl
