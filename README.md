@@ -1,6 +1,6 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Submission Inbox**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Lesson Run Evidence Ledger**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, сдача домашки и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Post-Lesson Pack**, **Submission Inbox**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Lesson Run Evidence Ledger**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, сдача домашки и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs, `catalog.json` и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 3 + Vite.
 
@@ -14,6 +14,7 @@
 - [Lesson Release Console](#lesson-release-console)
 - [Cohort Progress Dashboard](#cohort-progress-dashboard)
 - [Mentor Review Center](#mentor-review-center)
+- [Post-Lesson Pack](#post-lesson-pack)
 - [Submission Inbox](#submission-inbox)
 - [Mentor Live Cockpit](#mentor-live-cockpit)
 - [Lesson Delivery Control Room](#lesson-delivery-control-room)
@@ -63,12 +64,13 @@ MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev
 - `Mentor Review Center`
 - `Submission Inbox`
 - `Cohort Progress Dashboard`
+- `Post-Lesson Pack`
 
 `Command Center` открывается кнопкой в верхней панели или горячей клавишей `Cmd/Ctrl + K`. Внутри собраны переходы по порталу и copyable-команды из `control_plane.portal_actions`: запуск, открытие, export портала и release verification command для текущего урока.
 
 Во время live-сессии `Command Center` также показывает stage-aware команды: команду текущего этапа, вопрос ученику из `control_plane.mentor_mode.stage_guides` и `Скопировать ledger report`. Ledger report строится из текущей session, отметок evidence, stage notes, stage statuses, actual time и blockers.
 
-Если session невалидна или не загружена, `Mentor Live Cockpit` остается доступным как экран диагностики, а `Review Center`, `Submission Inbox` и `Cohort Dashboard` блокируются до появления валидной session. Это защищает ментора от пустых review/submission-экранов во время подготовки урока.
+Если session невалидна или не загружена, `Mentor Live Cockpit` остается доступным как экран диагностики, а `Review Center`, `Submission Inbox`, `Cohort Dashboard` и `Post-Lesson Pack` блокируются до появления валидной session. Это защищает ментора от пустых review/submission-экранов во время подготовки урока.
 
 ## Academy Lesson Hub
 
@@ -251,6 +253,32 @@ evidence-ledger:<contract_version>:<lab_name>:<student_name>:<created_at>
 3. Проверить score, ledger summary, risks и recommendations.
 4. Скопировать Markdown-отчет ученику или в рабочий журнал.
 5. Скопировать JSON, если нужен машинно-читаемый handoff для будущей автоматизации.
+
+## Post-Lesson Pack
+
+`Post-Lesson Pack` — единый пакет закрытия урока. Он собирает в один экран и один copy-ready Markdown:
+
+- review score, сильные сигналы и рекомендации из `Mentor Review Center`;
+- ledger status, blockers и time delta из `Lesson Run Evidence Ledger`;
+- homework readiness из `Submission Inbox`;
+- next lesson из `control_plane.next_lesson`;
+- unresolved blockers и next actions для ментора.
+
+Пакет работает browser-local и читает те же session-scoped ключи:
+
+```text
+mentor-cockpit:<contract_version>:<lab_name>:<student_name>:<created_at>
+evidence-ledger:<contract_version>:<lab_name>:<student_name>:<created_at>
+submission-inbox:<contract_version>:<lab_name>:<student_name>:<created_at>
+```
+
+Рекомендуемый workflow:
+
+1. Провести урок в `Mentor Live Cockpit` и закрыть ledger statuses.
+2. Проверить homework в `Submission Inbox`.
+3. Открыть `Post-Lesson Pack`.
+4. Если readiness `needs-attention`, закрыть blockers или явно зафиксировать их в follow-up.
+5. Скопировать `Pack` ученику, в рабочий журнал или в следующий lesson handoff.
 
 ## Submission Inbox
 
@@ -435,6 +463,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `features/release-console` — pre-flight go/no-go, release checks, risks и copyable release report.
 - `features/cohort-dashboard` — browser-local cohort aggregation, learner cards, skill heatmap и mentor ops handoff.
 - `features/review-center` — evidence score, stage review, risks, recommendations и copyable handoff report.
+- `features/post-lesson-pack` — единый post-lesson packet: review, ledger, homework, blockers, next lesson и copyable Markdown/JSON.
 - `features/submission-inbox` — student homework submission, completeness scoring, mentor inbox и copyable submission report.
 - `features/session-dashboard` — композиция основного экрана.
 - `features/mentor-cockpit` — live cockpit: stage player, slides/commands rail, evidence panel и local persistence facade.
