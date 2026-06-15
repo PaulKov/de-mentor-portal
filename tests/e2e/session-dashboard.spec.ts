@@ -39,6 +39,34 @@ test('opens lesson authoring studio and recalculates quality gate', async ({ pag
     .toBe(true)
 })
 
+test('exports and imports a workspace package from sync center', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Lesson Authoring Studio' }).click()
+  await page.getByLabel('Stage 1 question').fill('')
+  await page.getByRole('button', { name: 'Workspace Sync Center' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Workspace Sync Center' })).toBeVisible()
+  await expect(page.getByLabel('Workspace snapshot summary')).toBeVisible()
+  await expect(page.getByLabel('Workspace records')).toBeVisible()
+  await expect(page.getByLabel('Workspace validation')).toBeVisible()
+  await expect(page.getByLabel('Workspace import restore')).toBeVisible()
+  await expect(page.getByLabel('Workspace PR bundle')).toBeVisible()
+
+  const workspaceJson = await page.getByLabel('Workspace package JSON').inputValue()
+  await page.getByLabel('Import workspace JSON').fill(workspaceJson)
+  await expect(page.getByText('ready to restore')).toBeVisible()
+  await page.getByRole('button', { name: 'Restore workspace' }).click()
+  await expect(page.getByText('Workspace restored')).toBeVisible()
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1
+      )
+    )
+    .toBe(true)
+})
+
 test('opens current session from the lesson hub', async ({ page }) => {
   await openCurrentSession(page)
 

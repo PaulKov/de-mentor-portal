@@ -4,6 +4,7 @@ import type { AcademySession } from '../../core/session/domain/academy-session.t
 export type PortalSurface =
   | 'hub'
   | 'authoring'
+  | 'sync'
   | 'mission-control'
   | 'release'
   | 'workspace'
@@ -72,6 +73,7 @@ export interface GlobalNavigationState {
 const PORTAL_SURFACES: PortalSurface[] = [
   'hub',
   'authoring',
+  'sync',
   'mission-control',
   'release',
   'workspace',
@@ -91,7 +93,7 @@ const SESSION_REQUIRED_SURFACES = new Set<PortalSurface>([
   'cohort',
   'post-lesson'
 ])
-const CATALOG_REQUIRED_SURFACES = new Set<PortalSurface>(['hub', 'authoring', 'release'])
+const CATALOG_REQUIRED_SURFACES = new Set<PortalSurface>(['hub', 'authoring', 'sync', 'release'])
 
 const SURFACE_COPY: Record<PortalSurface, Pick<GlobalNavigationItem, 'label' | 'description'>> = {
   hub: {
@@ -101,6 +103,10 @@ const SURFACE_COPY: Record<PortalSurface, Pick<GlobalNavigationItem, 'label' | '
   authoring: {
     label: 'Lesson Authoring Studio',
     description: 'Сборка, quality gate, preview и export lesson/session пакета.'
+  },
+  sync: {
+    label: 'Workspace Sync Center',
+    description: 'Backup, restore, validation и PR bundle для browser-local workspace.'
   },
   'mission-control': {
     label: 'Mentor Mission Control',
