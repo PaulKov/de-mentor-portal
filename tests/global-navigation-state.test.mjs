@@ -52,6 +52,16 @@ test('buildGlobalNavigationState exposes all portal surfaces and session context
     command.kind === 'copy' &&
     command.value === 'python3 mentor-lab.py lesson-release greenplum-partitioning verify'
   ))
+  assert.ok(commands.some(command =>
+    command.id === 'copy-current-stage-command' &&
+    command.kind === 'copy' &&
+    command.value === 'python3 mentor-lab.py runbook greenplum-partitioning simple'
+  ))
+  assert.ok(commands.some(command =>
+    command.id === 'copy-current-stage-question' &&
+    command.kind === 'copy' &&
+    command.value.includes('Почему partition key')
+  ))
 })
 
 test('buildGlobalNavigationState disables evidence surfaces without a valid session', async () => {

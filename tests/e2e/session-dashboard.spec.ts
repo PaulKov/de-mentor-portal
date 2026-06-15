@@ -25,8 +25,8 @@ test('opens current session from the lesson hub', async ({ page }) => {
   await expect(page.getByLabel('Evidence panel')).toBeVisible()
   await expect(page.getByText('control plane')).toBeVisible()
   await expect(page.getByText('валиден')).toBeVisible()
-  await expect(page.getByText('Почему partition key не равен distribution key?')).toBeVisible()
-  await expect(page.getByText('python3 mentor-lab.py runbook greenplum-partitioning simple')).toBeVisible()
+  await expect(page.getByLabel('Stage player').getByText('Почему partition key не равен distribution key?')).toBeVisible()
+  await expect(page.getByLabel('Slides and commands').getByText('python3 mentor-lab.py runbook greenplum-partitioning simple')).toBeVisible()
   await expect(page.getByRole('button', { name: 'Вернуться в каталог' })).toBeVisible()
 })
 
@@ -41,6 +41,7 @@ test('returns from current session to the lesson hub', async ({ page }) => {
 test('keeps cockpit controls reachable and responsive', async ({ page }) => {
   await openCurrentSession(page)
 
+  await expect(page.getByLabel('Lesson delivery control room')).toBeVisible()
   await expect(page.locator('.cockpit-layout')).toHaveCSS('display', 'grid')
   await expect(page.getByLabel('Навигация урока')).toBeVisible()
   await expect
@@ -54,6 +55,31 @@ test('keeps cockpit controls reachable and responsive', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Обновить state' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Копировать' }).first()).toBeVisible()
   await expect(page.getByText('Источник состояния: /api/session')).toBeVisible()
+})
+
+test('runs lesson delivery control room during a mentor session', async ({ page }) => {
+  await openCurrentSession(page)
+
+  const controlRoom = page.getByLabel('Lesson delivery control room')
+  await expect(controlRoom.getByText('Stage 2 / 3')).toBeVisible()
+  await expect(controlRoom.getByText('15:00 planned')).toBeVisible()
+  await expect(controlRoom.getByText('Что сказать')).toBeVisible()
+  await expect(controlRoom.getByText('Что показать')).toBeVisible()
+  await expect(controlRoom.getByText('Что спросить')).toBeVisible()
+  await expect(controlRoom.getByText('Как проверить')).toBeVisible()
+  await expect(controlRoom.getByText('Почему partition key не равен distribution key?')).toBeVisible()
+
+  await controlRoom.getByRole('button', { name: 'Start timer' }).click()
+  await expect(controlRoom.getByRole('button', { name: 'Pause timer' })).toBeVisible()
+
+  await controlRoom.getByRole('button', { name: 'Mark evidence: Partition pruning' }).click()
+  await expect(page.getByRole('checkbox', { name: /Partition pruning/ })).toBeChecked()
+
+  await controlRoom.getByLabel('Control room note').fill('Control room note: ученик сам объяснил pruning.')
+  await expect(page.getByLabel('Заметка по этапу')).toHaveValue('Control room note: ученик сам объяснил pruning.')
+
+  await controlRoom.getByRole('button', { name: 'Стенд не поднялся' }).click()
+  await expect(controlRoom.getByText('Fallback: открыть workbook/runbook')).toBeVisible()
 })
 
 test('persists mentor evidence checks and stage notes locally', async ({ page }) => {
@@ -88,7 +114,7 @@ test('builds mentor review from cockpit evidence and notes', async ({ page }) =>
 test('renders student launchpad with platform readiness and resources', async ({ page }) => {
   await openCurrentSession(page)
 
-  await page.getByRole('button', { name: 'Ученик' }).click()
+  await page.getByRole('button', { name: 'Ученик', exact: true }).click()
 
   await expect(page.getByRole('heading', { name: 'Student Launchpad' })).toBeVisible()
   await expect(page.getByLabel('Подготовка окружения ученика')).toBeVisible()
@@ -107,7 +133,7 @@ test('renders student launchpad with platform readiness and resources', async ({
 test('lets a student submit homework evidence and opens it in the mentor inbox', async ({ page }) => {
   await openCurrentSession(page)
 
-  await page.getByRole('button', { name: 'Ученик' }).click()
+  await page.getByRole('button', { name: 'Ученик', exact: true }).click()
   await page.getByRole('button', { name: 'Сдать домашку' }).click()
 
   await expect(page.getByRole('heading', { name: 'Submission Inbox' })).toBeVisible()
@@ -194,6 +220,8 @@ test('opens global command center and navigates between portal surfaces', async 
   await expect(commandCenter).toBeVisible()
   await expect(commandCenter.getByText('Demo Student · greenplum-partitioning')).toBeVisible()
   await expect(commandCenter.getByText('python3 mentor-lab.py portal greenplum start')).toBeVisible()
+  await expect(commandCenter.getByRole('button', { name: 'Скопировать команду текущего этапа' })).toBeVisible()
+  await expect(commandCenter.getByRole('button', { name: 'Скопировать вопрос текущего этапа' })).toBeVisible()
 
   await commandCenter.getByRole('button', { name: 'Открыть Release Console' }).click()
   await expect(page.getByRole('heading', { name: 'Lesson Release Console' })).toBeVisible()

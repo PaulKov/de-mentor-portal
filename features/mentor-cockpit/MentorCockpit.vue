@@ -3,6 +3,7 @@ import { toRef } from 'vue'
 import type { ValidationIssue } from '~/core/session/application/session-contract'
 import type { AcademySession } from '~/core/session/domain/academy-session'
 import AppShell from '~/components/shared/ui/AppShell.vue'
+import DeliveryControlRoom from '~/features/delivery-control-room/DeliveryControlRoom.vue'
 import DashboardModeSwitch from '~/features/session-dashboard/DashboardModeSwitch.vue'
 import type { DashboardMode } from '~/features/session-dashboard/session-dashboard-mode'
 import SessionStatusBanner from '~/features/session-status/SessionStatusBanner.vue'
@@ -113,6 +114,15 @@ const {
     </header>
 
     <ReleaseStatusStrip :status="cockpitState.releaseStatus" />
+
+    <DeliveryControlRoom
+      :session="session"
+      :state="cockpitState"
+      :checked-evidence="checkedEvidence"
+      :stage-note="currentStageNote"
+      @toggle-evidence="toggleEvidence"
+      @update-stage-note="updateCurrentStageNote"
+    />
 
     <div class="cockpit-layout">
       <div class="cockpit-main">
