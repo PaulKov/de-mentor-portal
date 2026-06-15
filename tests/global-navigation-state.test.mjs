@@ -24,7 +24,7 @@ test('buildGlobalNavigationState exposes all portal surfaces and session context
   assert.equal(state.activeSurface, 'session')
   assert.deepEqual(
     state.items.map(item => item.surface),
-    ['hub', 'release', 'workspace', 'session', 'review', 'submission', 'cohort']
+    ['hub', 'release', 'workspace', 'session', 'review', 'submission', 'cohort', 'post-lesson']
   )
   assert.equal(state.context.primaryLabel, 'Demo Student · greenplum-partitioning')
   assert.equal(state.context.catalogStatus, 'ready')
@@ -42,6 +42,11 @@ test('buildGlobalNavigationState exposes all portal surfaces and session context
     command.id === 'open-session' &&
     command.label === 'Открыть Mentor Live Cockpit' &&
     command.surface === 'session'
+  ))
+  assert.ok(commands.some(command =>
+    command.id === 'open-post-lesson' &&
+    command.label === 'Открыть Post-Lesson Pack' &&
+    command.surface === 'post-lesson'
   ))
   assert.ok(commands.some(command =>
     command.id === 'copy-portal-start' &&
@@ -93,6 +98,7 @@ test('buildGlobalNavigationState disables evidence surfaces without a valid sess
   assert.equal(state.items.find(item => item.surface === 'review')?.isEnabled, false)
   assert.equal(state.items.find(item => item.surface === 'submission')?.isEnabled, false)
   assert.equal(state.items.find(item => item.surface === 'cohort')?.isEnabled, false)
+  assert.equal(state.items.find(item => item.surface === 'post-lesson')?.isEnabled, false)
   assert.match(
     state.items.find(item => item.surface === 'review')?.disabledReason ?? '',
     /валидная session/i
@@ -109,6 +115,7 @@ test('normalizePortalSurface accepts only known portal surfaces', async () => {
   } = await import('../features/global-navigation/global-navigation-state.ts')
 
   assert.equal(normalizePortalSurface('cohort'), 'cohort')
+  assert.equal(normalizePortalSurface('post-lesson'), 'post-lesson')
   assert.equal(normalizePortalSurface('release'), 'release')
   assert.equal(normalizePortalSurface('broken'), 'hub')
   assert.equal(normalizePortalSurface(null), 'hub')

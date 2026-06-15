@@ -234,6 +234,43 @@ test('summarizes learner progress in the cohort dashboard', async ({ page }) => 
   await expect(page.getByText('ready-for-review')).toBeVisible()
 })
 
+test('builds a post-lesson pack from review, ledger and homework signals', async ({ page }) => {
+  await openCurrentSession(page)
+
+  await page.getByRole('checkbox', { name: /Partition pruning/ }).check()
+  await page.getByLabel('Заметка по этапу').fill('Ученик сам объяснил pruning и retention.')
+  const ledger = page.getByLabel('Lesson run evidence ledger')
+  await ledger.getByRole('button', { name: 'Set Partition pruning and retention done' }).click()
+  await ledger.getByLabel('Actual minutes for Partition pruning and retention').fill('18')
+  await ledger.getByRole('button', { name: 'Set Statistics after incremental load risk' }).click()
+  await ledger.getByLabel('Blocker for Statistics after incremental load').fill('Нет before/after EXPLAIN.')
+
+  await page.getByRole('button', { name: 'Открыть submissions' }).click()
+  await page.getByLabel('Evidence for Self-check commands').fill('doctor ok; release verify ok')
+  await page.getByLabel('Evidence for Partition pruning').fill('EXPLAIN shows selected partitions only')
+  await page.getByLabel('Evidence for Statistics after load').fill('ANALYZE executed; last_analyze is fresh')
+  await page.getByLabel('Evidence for Next lesson readiness').fill('Prepared questions for Lesson 02')
+  await page.getByRole('button', { name: 'Отправить submission' }).click()
+
+  await page.getByRole('button', { name: 'Post-Lesson Pack' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Post-Lesson Pack' })).toBeVisible()
+  await expect(page.getByText('needs-attention')).toBeVisible()
+  const metrics = page.getByLabel('Post-lesson metrics')
+  await expect(metrics.getByText('50%', { exact: true })).toBeVisible()
+  await expect(metrics.getByText('100%', { exact: true })).toBeVisible()
+  await expect(metrics.getByText('+3 min', { exact: true })).toBeVisible()
+  await expect(page.getByText('Submitted at:')).toBeVisible()
+  await expect(page.getByLabel('Unresolved blockers').getByText('Нет before/after EXPLAIN.')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Копировать Pack' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Копировать JSON' })).toBeVisible()
+  await expect(page.getByLabel('Post-lesson packet markdown')).toHaveValue(/# Post-Lesson Pack/)
+  await expect(page.getByLabel('Post-lesson packet markdown')).toHaveValue(/## Lesson Summary/)
+  await expect(page.getByLabel('Post-lesson packet markdown')).toHaveValue(/## Homework/)
+  await expect(page.getByLabel('Post-lesson packet markdown')).toHaveValue(/Homework: ready-for-review, 4\/4 \(100%\)/)
+  await expect(page.getByLabel('Post-lesson packet markdown')).toHaveValue(/Next lesson: Partitioning, statistics and incremental loads in MPP/)
+})
+
 test('opens lesson release console and shows go no-go checks', async ({ page }) => {
   await page.goto('/')
 

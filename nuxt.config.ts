@@ -14,7 +14,8 @@ export default defineNuxtConfig({
     '~/assets/css/release-console.css',
     '~/assets/css/global-navigation.css',
     '~/assets/css/delivery-control-room.css',
-    '~/assets/css/evidence-ledger.css'
+    '~/assets/css/evidence-ledger.css',
+    '~/assets/css/post-lesson-pack.css'
   ],
   app: {
     head: {

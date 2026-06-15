@@ -12,6 +12,7 @@ import {
 } from '~/features/global-navigation/global-navigation-state'
 import { useGlobalNavigationState } from '~/features/global-navigation/useGlobalNavigationState'
 import LessonHub from '~/features/lesson-hub/LessonHub.vue'
+import PostLessonPack from '~/features/post-lesson-pack/PostLessonPack.vue'
 import ReleaseConsole from '~/features/release-console/ReleaseConsole.vue'
 import ReviewCenter from '~/features/review-center/ReviewCenter.vue'
 import SessionDashboard from '~/features/session-dashboard/SessionDashboard.vue'
@@ -201,6 +202,24 @@ watch(
         @open-session="selectSurface('session')"
         @open-review="selectSurface('review')"
         @open-submission="selectSurface('submission')"
+      />
+
+      <PostLessonPack
+        v-else-if="activeSession && activeIsValid && surface === 'post-lesson'"
+        :session="activeSession"
+        :source="activeSource"
+        :can-open-hub="catalogIsValid"
+        :can-open-workspace="true"
+        :can-open-session="true"
+        :can-open-review="true"
+        :can-open-submission="true"
+        :can-open-cohort="true"
+        @open-hub="selectSurface('hub')"
+        @open-workspace="selectSurface('workspace')"
+        @open-session="selectSurface('session')"
+        @open-review="selectSurface('review')"
+        @open-submission="selectSurface('submission')"
+        @open-cohort="selectSurface('cohort')"
       />
 
       <SessionDashboard

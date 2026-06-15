@@ -9,6 +9,7 @@ export type PortalSurface =
   | 'review'
   | 'submission'
   | 'cohort'
+  | 'post-lesson'
 
 export type NavigationStatus = 'ready' | 'error'
 export type GlobalCommandKind = 'navigate' | 'copy'
@@ -72,10 +73,16 @@ const PORTAL_SURFACES: PortalSurface[] = [
   'session',
   'review',
   'submission',
-  'cohort'
+  'cohort',
+  'post-lesson'
 ]
 
-const SESSION_REQUIRED_SURFACES = new Set<PortalSurface>(['review', 'submission', 'cohort'])
+const SESSION_REQUIRED_SURFACES = new Set<PortalSurface>([
+  'review',
+  'submission',
+  'cohort',
+  'post-lesson'
+])
 const CATALOG_REQUIRED_SURFACES = new Set<PortalSurface>(['hub', 'release'])
 
 const SURFACE_COPY: Record<PortalSurface, Pick<GlobalNavigationItem, 'label' | 'description'>> = {
@@ -106,6 +113,10 @@ const SURFACE_COPY: Record<PortalSurface, Pick<GlobalNavigationItem, 'label' | '
   cohort: {
     label: 'Cohort Dashboard',
     description: 'Сводка по learners, gaps, submissions и heatmap.'
+  },
+  'post-lesson': {
+    label: 'Post-Lesson Pack',
+    description: 'Единый пакет после урока: review, ledger, homework, blockers и next lesson.'
   }
 }
 
