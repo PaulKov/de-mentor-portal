@@ -21,6 +21,7 @@ export default defineNuxtConfig({
     '~/assets/css/global-navigation.css',
     '~/assets/css/delivery-control-room.css',
     '~/assets/css/evidence-ledger.css',
+    '~/assets/css/assessment-center.css',
     '~/assets/css/post-lesson-pack.css'
   ],
   app: {

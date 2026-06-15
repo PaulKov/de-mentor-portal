@@ -271,6 +271,41 @@ test('builds a post-lesson pack from review, ledger and homework signals', async
   await expect(page.getByLabel('Post-lesson packet markdown')).toHaveValue(/Next lesson: Partitioning, statistics and incremental loads in MPP/)
 })
 
+test('builds a skill assessment and learning path from lesson evidence', async ({ page }) => {
+  await openCurrentSession(page)
+
+  await page.getByRole('checkbox', { name: /Partition pruning/ }).check()
+  await page.getByLabel('Заметка по этапу').fill('Ученик сам объяснил pruning и retention.')
+  const ledger = page.getByLabel('Lesson run evidence ledger')
+  await ledger.getByRole('button', { name: 'Set Partition pruning and retention done' }).click()
+  await ledger.getByLabel('Actual minutes for Partition pruning and retention').fill('18')
+  await ledger.getByRole('button', { name: 'Set Statistics after incremental load risk' }).click()
+  await ledger.getByLabel('Blocker for Statistics after incremental load').fill('Нет before/after EXPLAIN.')
+
+  await page.getByRole('button', { name: 'Открыть submissions' }).click()
+  await page.getByLabel('Evidence for Self-check commands').fill('doctor ok; release verify ok')
+  await page.getByLabel('Evidence for Partition pruning').fill('EXPLAIN shows selected partitions only')
+  await page.getByLabel('Evidence for Statistics after load').fill('ANALYZE executed; last_analyze is fresh')
+  await page.getByLabel('Evidence for Next lesson readiness').fill('Prepared questions for Lesson 02')
+  await page.getByRole('button', { name: 'Отправить submission' }).click()
+
+  await page.getByRole('button', { name: 'Skill Assessment Center' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Skill Assessment Center' })).toBeVisible()
+  await expect(page.getByLabel('Assessment metrics').getByText('75%', { exact: true })).toBeVisible()
+  await expect(page.getByText('can-apply')).toBeVisible()
+  await expect(page.getByText('can-repeat')).toBeVisible()
+  await expect(page.locator('.assessment-blocker').getByText('Нет before/after EXPLAIN.', { exact: true })).toBeVisible()
+  await expect(page.getByLabel('Learning path').getByText('Homework closure')).toBeVisible()
+  await expect(page.getByLabel('Learning path').getByText('Lesson 02')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Копировать Assessment' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Копировать JSON' })).toBeVisible()
+  await expect(page.getByLabel('Assessment report markdown')).toHaveValue(/# Skill Assessment/)
+  await expect(page.getByLabel('Assessment report markdown')).toHaveValue(/Mastery: 75%/)
+  await expect(page.getByLabel('Assessment report markdown')).toHaveValue(/Statistics after load: can-repeat/)
+  await expect(page.getByLabel('Assessment report markdown')).toHaveValue(/Next lesson: Partitioning, statistics and incremental loads in MPP/)
+})
+
 test('opens lesson release console and shows go no-go checks', async ({ page }) => {
   await page.goto('/')
 

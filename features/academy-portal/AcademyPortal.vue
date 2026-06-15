@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import type { AcademyCatalog } from '~/core/catalog/domain/academy-catalog'
 import type { ValidationIssue } from '~/core/session/application/session-contract'
 import type { AcademySession } from '~/core/session/domain/academy-session'
+import AssessmentCenter from '~/features/assessment-center/AssessmentCenter.vue'
 import CohortDashboard from '~/features/cohort-dashboard/CohortDashboard.vue'
 import GlobalNavigation from '~/features/global-navigation/GlobalNavigation.vue'
 import {
@@ -186,6 +187,26 @@ watch(
         @open-review="selectSurface('review')"
         @open-session="selectSurface('session')"
         @open-cohort="selectSurface('cohort')"
+      />
+
+      <AssessmentCenter
+        v-else-if="activeSession && activeIsValid && surface === 'assessment'"
+        :session="activeSession"
+        :source="activeSource"
+        :can-open-hub="catalogIsValid"
+        :can-open-workspace="true"
+        :can-open-session="true"
+        :can-open-review="true"
+        :can-open-submission="true"
+        :can-open-cohort="true"
+        :can-open-post-lesson="true"
+        @open-hub="selectSurface('hub')"
+        @open-workspace="selectSurface('workspace')"
+        @open-session="selectSurface('session')"
+        @open-review="selectSurface('review')"
+        @open-submission="selectSurface('submission')"
+        @open-cohort="selectSurface('cohort')"
+        @open-post-lesson="selectSurface('post-lesson')"
       />
 
       <CohortDashboard

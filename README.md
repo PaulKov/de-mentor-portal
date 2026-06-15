@@ -1,6 +1,6 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Post-Lesson Pack**, **Submission Inbox**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Lesson Run Evidence Ledger**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, сдача домашки и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Skill Assessment Center**, **Post-Lesson Pack**, **Submission Inbox**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Lesson Run Evidence Ledger**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, оценка skill mastery, сдача домашки и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs, `catalog.json` и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 4 + Vite.
 
@@ -14,6 +14,7 @@
 - [Lesson Release Console](#lesson-release-console)
 - [Cohort Progress Dashboard](#cohort-progress-dashboard)
 - [Mentor Review Center](#mentor-review-center)
+- [Skill Assessment Center](#skill-assessment-center)
 - [Post-Lesson Pack](#post-lesson-pack)
 - [Submission Inbox](#submission-inbox)
 - [Mentor Live Cockpit](#mentor-live-cockpit)
@@ -62,6 +63,7 @@ MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev
 - `Session Workspace`
 - `Mentor Live Cockpit`
 - `Mentor Review Center`
+- `Skill Assessment Center`
 - `Submission Inbox`
 - `Cohort Progress Dashboard`
 - `Post-Lesson Pack`
@@ -70,7 +72,7 @@ MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev
 
 Во время live-сессии `Command Center` также показывает stage-aware команды: команду текущего этапа, вопрос ученику из `control_plane.mentor_mode.stage_guides` и `Скопировать ledger report`. Ledger report строится из текущей session, отметок evidence, stage notes, stage statuses, actual time и blockers.
 
-Если session невалидна или не загружена, `Mentor Live Cockpit` остается доступным как экран диагностики, а `Review Center`, `Submission Inbox`, `Cohort Dashboard` и `Post-Lesson Pack` блокируются до появления валидной session. Это защищает ментора от пустых review/submission-экранов во время подготовки урока.
+Если session невалидна или не загружена, `Mentor Live Cockpit` остается доступным как экран диагностики, а `Review Center`, `Skill Assessment Center`, `Submission Inbox`, `Cohort Dashboard` и `Post-Lesson Pack` блокируются до появления валидной session. Это защищает ментора от пустых review/submission-экранов во время подготовки урока.
 
 ## Academy Lesson Hub
 
@@ -253,6 +255,40 @@ evidence-ledger:<contract_version>:<lab_name>:<student_name>:<created_at>
 3. Проверить score, ledger summary, risks и recommendations.
 4. Скопировать Markdown-отчет ученику или в рабочий журнал.
 5. Скопировать JSON, если нужен машинно-читаемый handoff для будущей автоматизации.
+
+## Skill Assessment Center
+
+`Skill Assessment Center` превращает разрозненные сигналы урока в оценку освоения навыков и learning path. Он не заменяет ревью ментора, а отвечает на практичный вопрос: что ученик уже может делать сам, что он только повторяет по образцу, и какой фокус дать на следующую встречу.
+
+Экран собирает три источника:
+
+- `Mentor Live Cockpit`: отмеченные skills и stage notes;
+- `Lesson Run Evidence Ledger`: status stage, фактическое время и blockers;
+- `Submission Inbox`: evidence из домашки и self-check.
+
+Для каждого элемента `skill_graph` портал рассчитывает уровень:
+
+- `not-started` — нет подтвержденного evidence;
+- `aware` — есть заметка или ledger-сигнал, но навык еще не подтвержден;
+- `can-repeat` — ученик повторил действие или принес homework evidence;
+- `can-explain` — есть mentor evidence и объяснение/успешный stage;
+- `can-apply` — есть mentor evidence, успешный ledger stage и homework evidence.
+
+Данные остаются browser-local и читаются из уже существующих ключей:
+
+```text
+mentor-cockpit:<contract_version>:<lab_name>:<student_name>:<created_at>
+evidence-ledger:<contract_version>:<lab_name>:<student_name>:<created_at>
+submission-inbox:<contract_version>:<lab_name>:<student_name>:<created_at>
+```
+
+Рекомендуемый workflow:
+
+1. Вести занятие в `Mentor Live Cockpit` и закрывать ledger statuses.
+2. Принять или проверить homework evidence в `Submission Inbox`.
+3. Открыть `Skill Assessment Center`.
+4. Проверить `mastery`, focus skills, blockers и recommended next actions.
+5. Скопировать `Assessment` в рабочий журнал или использовать его как основу для плана следующего урока.
 
 ## Post-Lesson Pack
 
@@ -463,6 +499,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `features/release-console` — pre-flight go/no-go, release checks, risks и copyable release report.
 - `features/cohort-dashboard` — browser-local cohort aggregation, learner cards, skill heatmap и mentor ops handoff.
 - `features/review-center` — evidence score, stage review, risks, recommendations и copyable handoff report.
+- `features/assessment-center` — skill mastery scoring, evidence sources, focus gaps, learning path и copyable assessment report.
 - `features/post-lesson-pack` — единый post-lesson packet: review, ledger, homework, blockers, next lesson и copyable Markdown/JSON.
 - `features/submission-inbox` — student homework submission, completeness scoring, mentor inbox и copyable submission report.
 - `features/session-dashboard` — композиция основного экрана.
