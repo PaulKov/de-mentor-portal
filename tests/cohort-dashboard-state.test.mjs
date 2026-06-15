@@ -38,6 +38,7 @@ test('buildCohortDashboardState aggregates sessions, evidence and submissions', 
     createCohortReportMarkdown
   } = await import('../features/cohort-dashboard/cohort-dashboard-state.ts')
   const { createMentorStorageKey } = await import('../features/mentor-cockpit/mentor-cockpit-state.ts')
+  const { createEvidenceLedgerStorageKey } = await import('../features/evidence-ledger/evidence-ledger-state.ts')
   const session = await loadSample()
   const secondSession = {
     ...session,
@@ -59,6 +60,20 @@ test('buildCohortDashboardState aggregates sessions, evidence and submissions', 
           flagsByStage: {}
         }
       },
+      ledgerStates: {
+        [createEvidenceLedgerStorageKey(session)]: {
+          stageStatuses: {
+            'partition-pruning': 'done',
+            statistics: 'risk'
+          },
+          actualMinutesByStage: {
+            'partition-pruning': 18
+          },
+          blockersByStage: {
+            statistics: 'Нет before/after EXPLAIN.'
+          }
+        }
+      },
       submissionStates: {
         [readySubmission.key]: readySubmission.value
       }
@@ -75,7 +90,12 @@ test('buildCohortDashboardState aggregates sessions, evidence and submissions', 
   assert.equal(demoCard?.evidencePercent, 50)
   assert.equal(demoCard?.submissionStatus, 'ready-for-review')
   assert.equal(demoCard?.nextLesson?.code, '02-greenplum-partitioning')
+  assert.equal(demoCard?.ledgerStatusLabel, '1 done · 1 risk · 0 skipped')
+  assert.equal(demoCard?.ledgerEvidenceLabel, '1/2 evidence')
+  assert.equal(demoCard?.ledgerTimeDeltaMinutes, 3)
   assert.ok(demoCard?.risks.some(item => item.includes('Statistics after load')))
+  assert.ok(demoCard?.risks.some(item => item.includes('Ledger risk: Statistics after incremental load')))
+  assert.ok(demoCard?.risks.some(item => item.includes('Ledger time overrun: +3 min')))
   assert.equal(annaCard?.learnerStatus, 'needs-attention')
   assert.equal(partitionSkill?.confirmedCount, 1)
   assert.equal(partitionSkill?.gapCount, 1)
@@ -83,6 +103,7 @@ test('buildCohortDashboardState aggregates sessions, evidence and submissions', 
   const markdown = createCohortReportMarkdown(state)
   assert.ok(markdown.includes('# Cohort Progress Dashboard'))
   assert.ok(markdown.includes('Demo Student · greenplum-partitioning'))
+  assert.ok(markdown.includes('Ledger: 1 done · 1 risk · 0 skipped; time +3 min; evidence 1/2'))
   assert.ok(markdown.includes('ready-for-review'))
   assert.ok(markdown.includes('Анна · greenplum-partitioning'))
 })

@@ -66,7 +66,7 @@ MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev
 
 `Command Center` открывается кнопкой в верхней панели или горячей клавишей `Cmd/Ctrl + K`. Внутри собраны переходы по порталу и copyable-команды из `control_plane.portal_actions`: запуск, открытие, export портала и release verification command для текущего урока.
 
-Во время live-сессии `Command Center` также показывает stage-aware команды: команду текущего этапа и вопрос ученику из `control_plane.mentor_mode.stage_guides`.
+Во время live-сессии `Command Center` также показывает stage-aware команды: команду текущего этапа, вопрос ученику из `control_plane.mentor_mode.stage_guides` и `Скопировать ledger report`. Ledger report строится из текущей session, отметок evidence, stage notes, stage statuses, actual time и blockers.
 
 Если session невалидна или не загружена, `Mentor Live Cockpit` остается доступным как экран диагностики, а `Review Center`, `Submission Inbox` и `Cohort Dashboard` блокируются до появления валидной session. Это защищает ментора от пустых review/submission-экранов во время подготовки урока.
 
@@ -197,14 +197,14 @@ Console проверяет:
 
 ## Cohort Progress Dashboard
 
-`Cohort Progress Dashboard` — операционный экран ментора по ученикам и recent runs. Он агрегирует current live session, imported sessions из `Session Workspace`, browser-local evidence из `Mentor Live Cockpit` и homework submissions из `Submission Inbox`.
+`Cohort Progress Dashboard` — операционный экран ментора по ученикам и recent runs. Он агрегирует current live session, imported sessions из `Session Workspace`, browser-local evidence из `Mentor Live Cockpit`, `Lesson Run Evidence Ledger` и homework submissions из `Submission Inbox`.
 
 Dashboard показывает:
 
 - количество learners и средний evidence score;
 - сколько submissions готовы к review;
 - учеников с открытыми risks/gaps;
-- learner cards с текущим stage, next lesson, submission status и evidence gaps;
+- learner cards с текущим stage, next lesson, submission status, evidence gaps, ledger risk/skipped stages, missing evidence и time overrun;
 - skill heatmap по `skill_graph`;
 - copyable Markdown для next actions.
 
@@ -213,40 +213,42 @@ Dashboard показывает:
 ```text
 session-workspace:academy-session/v1
 mentor-cockpit:<contract_version>:<lab_name>:<student_name>:<created_at>
+evidence-ledger:<contract_version>:<lab_name>:<student_name>:<created_at>
 submission-inbox:<contract_version>:<lab_name>:<student_name>:<created_at>
 ```
 
 Рекомендуемый workflow:
 
 1. Импортировать несколько `session.json` в `Session Workspace` или открыть текущую live-сессию.
-2. В cockpit отметить evidence и stage notes.
+2. В cockpit отметить evidence, stage notes и ledger status/actual time/blockers.
 3. В `Submission Inbox` принять homework evidence ученика.
 4. Открыть `Cohort Progress Dashboard` и отфильтровать learners с risks или ready submissions.
 5. Скопировать Markdown summary в рабочий журнал или план следующей встречи.
 
 ## Mentor Review Center
 
-`Mentor Review Center` — экран закрытия урока. Он берет выбранную session, читает browser-local заметки и отмеченные evidence items из `Mentor Live Cockpit`, затем собирает понятный handoff:
+`Mentor Review Center` — экран закрытия урока. Он берет выбранную session, читает browser-local заметки и отмеченные evidence items из `Mentor Live Cockpit`, добавляет `Lesson Run Evidence Ledger`, затем собирает понятный handoff:
 
 - evidence score по `skill_graph`;
-- stage review с вопросами, проверками и заметками ментора;
+- stage review с вопросами, проверками, заметками ментора, ledger status, planned/actual time delta и blockers;
 - сильные сигналы;
 - открытые риски;
 - рекомендации ученику;
 - следующий урок из `control_plane.next_lesson`;
 - copyable Markdown и JSON export.
 
-Данные review не уходят на backend. Портал читает тот же ключ, который использует cockpit:
+Данные review не уходят на backend. Портал читает те же browser-local ключи, которые использует cockpit и ledger:
 
 ```text
 mentor-cockpit:<contract_version>:<lab_name>:<student_name>:<created_at>
+evidence-ledger:<contract_version>:<lab_name>:<student_name>:<created_at>
 ```
 
 Рекомендуемый workflow после занятия:
 
-1. В cockpit отметить evidence и записать короткие stage notes.
+1. В cockpit отметить evidence, записать короткие stage notes и закрыть ledger statuses.
 2. Нажать `Открыть review`.
-3. Проверить score, risks и recommendations.
+3. Проверить score, ledger summary, risks и recommendations.
 4. Скопировать Markdown-отчет ученику или в рабочий журнал.
 5. Скопировать JSON, если нужен машинно-читаемый handoff для будущей автоматизации.
 
@@ -320,7 +322,7 @@ Ledger нужен для трех сценариев:
 
 - во время урока ментор отмечает `done`, `risk`, `skipped` или `pending` по каждому stage;
 - сразу после урока ментор получает copy-ready Markdown handoff без ручного сбора заметок;
-- later review/cohort surfaces могут опираться на те же browser-local decisions, а не на память ментора.
+- `Mentor Review Center`, `Cohort Progress Dashboard` и `Command Center` опираются на те же browser-local decisions, а не на память ментора.
 
 Ledger не дублирует заметки и evidence: он читает `checkedEvidence` и `notesByStage` из `Mentor Live Cockpit`, а отдельно хранит только status, actual minutes и blockers:
 
@@ -334,6 +336,7 @@ evidence-ledger:<contract_version>:<lab_name>:<student_name>:<created_at>
 2. В Ledger отметить статус stage и фактическое время.
 3. При риске заполнить короткий blocker.
 4. В конце урока скопировать `Lesson ledger markdown` в mentor review или handoff.
+5. Открыть `Mentor Review Center` или `Cohort Progress Dashboard`: ledger status, blockers и time delta подтянутся автоматически.
 
 ## Student Launchpad
 

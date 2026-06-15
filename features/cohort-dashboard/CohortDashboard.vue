@@ -44,6 +44,8 @@ const learnerLabel = () =>
 
 const learnerTone = (status: LearnerStatus) =>
   status === 'needs-attention' ? 'warning' : 'success'
+
+const formatDelta = (minutes: number) => minutes > 0 ? `+${minutes}` : String(minutes)
 </script>
 
 <template>
@@ -167,6 +169,14 @@ const learnerTone = (status: LearnerStatus) =>
             <div>
               <dt>Submission</dt>
               <dd>{{ card.submissionStatus }} · {{ card.submissionPercent }}%</dd>
+            </div>
+            <div>
+              <dt>Ledger</dt>
+              <dd>{{ card.ledgerStatusLabel }}</dd>
+            </div>
+            <div>
+              <dt>Ledger time</dt>
+              <dd>{{ formatDelta(card.ledgerTimeDeltaMinutes) }} min · {{ card.ledgerEvidenceLabel }}</dd>
             </div>
             <div>
               <dt>Current stage</dt>

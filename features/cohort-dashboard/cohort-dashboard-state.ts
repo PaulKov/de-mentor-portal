@@ -3,6 +3,12 @@ import type {
   SkillNode
 } from '../../core/session/domain/academy-session.ts'
 import type { NextLesson } from '../../core/session/domain/control-plane.ts'
+import {
+  createEvidenceLedgerStorageKey,
+  normalizeEvidenceLedgerLocalState,
+  type EvidenceLedgerLocalState,
+  type EvidenceLedgerSummary
+} from '../evidence-ledger/evidence-ledger-state.ts'
 import { createMentorStorageKey } from '../mentor-cockpit/mentor-cockpit-state.ts'
 import {
   buildReviewCenterState,
@@ -33,6 +39,7 @@ export interface CohortSessionSource {
 
 export interface CohortStorageSnapshots {
   mentorStates?: Record<string, Partial<ReviewLocalState> | unknown>
+  ledgerStates?: Record<string, Partial<EvidenceLedgerLocalState> | unknown>
   submissionStates?: Record<string, Partial<SubmissionLocalState> | unknown>
 }
 
@@ -62,6 +69,10 @@ export interface CohortLearnerCard {
   learnerStatus: LearnerStatus
   risks: string[]
   riskCount: number
+  ledgerStatusLabel: string
+  ledgerEvidenceLabel: string
+  ledgerTimeDeltaMinutes: number
+  ledgerRiskCount: number
   nextLesson?: NextLesson
   skillStatuses: CohortSkillStatus[]
 }
@@ -132,6 +143,7 @@ export const createCohortReportMarkdown = (
       `- ${card.studentName} · ${card.labName}`,
       `  - Evidence: ${card.evidenceScoreLabel}`,
       `  - Submission: ${card.submissionStatus} (${card.submissionPercent}%)`,
+      `  - Ledger: ${card.ledgerStatusLabel}; time ${formatDelta(card.ledgerTimeDeltaMinutes)} min; evidence ${ledgerEvidenceScore(card)}`,
       `  - Status: ${card.learnerStatus}`,
       `  - Next: ${card.nextLesson?.title ?? 'not planned'}`,
       `  - Risks: ${card.risks.length > 0 ? card.risks.join('; ') : 'none'}`
@@ -149,7 +161,13 @@ const createLearnerCard = (
   const mentorState = normalizeReviewLocalState(
     snapshots.mentorStates?.[createMentorStorageKey(source.session)]
   )
-  const review = buildReviewCenterState(source.session, mentorState)
+  const ledgerState = normalizeEvidenceLedgerLocalState(
+    snapshots.ledgerStates?.[createEvidenceLedgerStorageKey(source.session)]
+  )
+  const review = buildReviewCenterState(source.session, {
+    ...mentorState,
+    ...ledgerState
+  })
   const submission = buildSubmissionInboxState(
     source.session,
     normalizeSubmissionLocalState(
@@ -177,6 +195,10 @@ const createLearnerCard = (
     learnerStatus: learnerStatusFor(review.evidenceScore.percent, risks.length, submissionStatus),
     risks,
     riskCount: risks.length,
+    ledgerStatusLabel: createLedgerStatusLabel(review.ledgerSummary),
+    ledgerEvidenceLabel: `${review.ledgerSummary.evidenceChecked}/${review.ledgerSummary.evidenceTotal} evidence`,
+    ledgerTimeDeltaMinutes: review.ledgerSummary.deltaMinutes,
+    ledgerRiskCount: createLedgerRiskCount(review.ledgerSummary),
     nextLesson: review.nextLesson,
     skillStatuses: createSkillStatuses(source.session.skill_graph, mentorState)
   }
@@ -217,6 +239,17 @@ const submissionRisks = (
       : `Submission incomplete: ${percent}% complete.`
   ]
 }
+
+const createLedgerStatusLabel = (summary: EvidenceLedgerSummary) =>
+  `${summary.done} done · ${summary.risk} risk · ${summary.skipped} skipped`
+
+const createLedgerRiskCount = (summary: EvidenceLedgerSummary) =>
+  summary.risk + summary.skipped + (summary.deltaMinutes > 0 ? 1 : 0)
+
+const ledgerEvidenceScore = (card: CohortLearnerCard) =>
+  card.ledgerEvidenceLabel.replace(/ evidence$/, '')
+
+const formatDelta = (minutes: number) => (minutes > 0 ? `+${minutes}` : String(minutes))
 
 const learnerStatusFor = (
   evidencePercent: number,
