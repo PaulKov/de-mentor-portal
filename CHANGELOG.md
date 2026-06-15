@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.2.0 - 2026-06-15
+
+Навигационный релиз портала: теперь ментор видит единый верхний слой управления уроком и может быстро переходить между ключевыми поверхностями без поиска кнопок внутри экранов.
+
+### Добавлено
+
+- `Global Navigation`: постоянная верхняя навигация по `Academy Lesson Hub`, `Lesson Release Console`, `Session Workspace`, `Mentor Live Cockpit`, `Mentor Review Center`, `Submission Inbox` и `Cohort Progress Dashboard`.
+- `Command Center`: единая панель быстрых действий с переходами по порталу и copyable-командами из `control_plane.portal_actions`.
+- Route guards: `Review Center`, `Submission Inbox` и `Cohort Dashboard` блокируются без валидной `session`, а `Mentor Live Cockpit` остается доступен как диагностический экран.
+- Горячая клавиша `Cmd/Ctrl + K` для открытия Command Center.
+
+### Качество и UX
+
+- Добавлены unit/contract тесты для `features/global-navigation`.
+- Добавлены Playwright сценарии для desktop/mobile Command Center и проверки отсутствия horizontal overflow.
+- README расширен разделом `Global Navigation и Command Center`.
+- Browser QA выполнен на production preview: desktop и mobile, чистая консоль, корректный переход из Command Center в cockpit.
+
 ## v0.1.0 - 2026-06-15
 
 Первый публичный релиз `DE Mentor Portal`: self-service портал для проведения и сопровождения уроков `de-mentor`.
