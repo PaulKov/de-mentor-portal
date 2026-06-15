@@ -1,6 +1,6 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Submission Inbox**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, сдача домашки и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Submission Inbox**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Lesson Run Evidence Ledger**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, сдача домашки и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs, `catalog.json` и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 3 + Vite.
 
@@ -17,6 +17,7 @@
 - [Submission Inbox](#submission-inbox)
 - [Mentor Live Cockpit](#mentor-live-cockpit)
 - [Lesson Delivery Control Room](#lesson-delivery-control-room)
+- [Lesson Run Evidence Ledger](#lesson-run-evidence-ledger)
 - [Student Launchpad](#student-launchpad)
 - [Контракт каталога](#контракт-каталога)
 - [Контракт сессии](#контракт-сессии)
@@ -311,6 +312,29 @@ delivery-control-room:<contract_version>:<lab_name>:<student_name>:<created_at>
 
 Заметки и evidence не дублируются: Control Room пишет в тот же локальный state, который использует `Mentor Live Cockpit`, поэтому review/handoff видят эти данные без отдельного экспорта.
 
+## Lesson Run Evidence Ledger
+
+`Lesson Run Evidence Ledger` — операционный журнал урока внутри `Mentor Live Cockpit`. Он превращает live-проведение в проверяемый след: по каждому stage видно planned/actual time, статус, evidence, заметку и blocker.
+
+Ledger нужен для трех сценариев:
+
+- во время урока ментор отмечает `done`, `risk`, `skipped` или `pending` по каждому stage;
+- сразу после урока ментор получает copy-ready Markdown handoff без ручного сбора заметок;
+- later review/cohort surfaces могут опираться на те же browser-local decisions, а не на память ментора.
+
+Ledger не дублирует заметки и evidence: он читает `checkedEvidence` и `notesByStage` из `Mentor Live Cockpit`, а отдельно хранит только status, actual minutes и blockers:
+
+```text
+evidence-ledger:<contract_version>:<lab_name>:<student_name>:<created_at>
+```
+
+Рекомендуемый workflow:
+
+1. Вести stage через `Lesson Delivery Control Room`.
+2. В Ledger отметить статус stage и фактическое время.
+3. При риске заполнить короткий blocker.
+4. В конце урока скопировать `Lesson ledger markdown` в mentor review или handoff.
+
 ## Student Launchpad
 
 `Student Launchpad` — режим самообслуживания ученика в том же портале. Переключатель `Ментор` / `Ученик` находится в верхней части валидной сессии; выбранный режим сохраняется локально по ключу:
@@ -401,6 +425,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `features/academy-portal` — переключение между catalog-first поверхностью и текущей live-сессией.
 - `features/global-navigation` — постоянная навигация, Command Center и route guard для surface-переходов.
 - `features/delivery-control-room` — фокусный режим проведения stage: timer, stage script, quick evidence/note actions и panic mode.
+- `features/evidence-ledger` — журнал проведения урока: stage statuses, actual time, blockers, evidence summary и Markdown handoff.
 - `features/lesson-hub` — витрина направлений, уроков, role-aware команд и readiness.
 - `features/lesson-launcher` — генерация launch-пакета, route/platform preferences и copyable команды запуска.
 - `features/session-workspace` — browser-local импорт `session.json`, validation, recent runs и выбор session для cockpit.
