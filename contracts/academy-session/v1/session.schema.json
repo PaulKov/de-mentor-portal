@@ -76,7 +76,7 @@
       ],
       "properties": {
         "framework": {
-          "const": "Vue 3 + Nuxt 3 + Vite"
+          "const": "Vue 3 + Nuxt 4 + Vite"
         },
         "repository": {
           "const": "https://github.com/PaulKov/de-mentor-portal"

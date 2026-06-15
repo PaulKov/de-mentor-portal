@@ -1,6 +1,12 @@
 export default defineNuxtConfig({
   compatibilityDate: '2026-06-14',
   devtools: { enabled: false },
+  sourcemap: { server: false, client: false },
+  vite: {
+    build: {
+      modulePreload: { polyfill: false }
+    }
+  },
   css: [
     '~/assets/css/main.css',
     '~/assets/css/control-plane.css',
