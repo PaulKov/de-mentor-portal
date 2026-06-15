@@ -1,0 +1,143 @@
+.mission-topbar,
+.mission-next-action,
+.mission-signals,
+.mission-grid,
+.mission-export {
+  margin-bottom: 18px;
+}
+
+.mission-topbar-actions,
+.mission-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mission-next-action,
+.mission-signals article,
+.mission-panel,
+.mission-export {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.mission-next-action {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: 18px;
+}
+
+.mission-next-action h2,
+.mission-panel h2,
+.mission-export h2 {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.mission-next-action p,
+.mission-panel li,
+.mission-signals span {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.mission-signals {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.mission-signals article {
+  padding: 16px;
+}
+
+.mission-signals p {
+  margin: 0 0 8px;
+  color: var(--muted);
+}
+
+.mission-signals strong {
+  display: block;
+  color: var(--accent);
+  font-size: 26px;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.42fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.mission-checklist,
+.mission-side-rail {
+  display: grid;
+  gap: 12px;
+}
+
+.mission-panel,
+.mission-export {
+  padding: 16px;
+}
+
+.mission-panel ul {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding-left: 18px;
+}
+
+.mission-panel span {
+  display: block;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.mission-panel small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.mission-link-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.mission-export textarea {
+  width: 100%;
+  min-height: 300px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+  color: var(--text);
+  font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  padding: 14px;
+}
+
+@media (max-width: 1080px) {
+  .mission-signals {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mission-grid,
+  .mission-next-action {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .mission-signals,
+  .mission-topbar-actions,
+  .mission-panel-head {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}

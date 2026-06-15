@@ -13,6 +13,7 @@ import {
 } from '~/features/global-navigation/global-navigation-state'
 import { useGlobalNavigationState } from '~/features/global-navigation/useGlobalNavigationState'
 import LessonHub from '~/features/lesson-hub/LessonHub.vue'
+import MissionControl from '~/features/mission-control/MissionControl.vue'
 import PostLessonPack from '~/features/post-lesson-pack/PostLessonPack.vue'
 import ReleaseConsole from '~/features/release-console/ReleaseConsole.vue'
 import ReviewCenter from '~/features/review-center/ReviewCenter.vue'
@@ -143,6 +144,32 @@ watch(
         :can-open-session="Boolean(activeSession && activeIsValid)"
         @open-hub="selectSurface('hub')"
         @open-session="selectSurface('session')"
+      />
+
+      <MissionControl
+        v-else-if="activeSession && activeIsValid && surface === 'mission-control'"
+        :session="activeSession"
+        :source="activeSource"
+        :catalog-is-valid="catalogIsValid"
+        :session-is-valid="activeIsValid"
+        :can-open-hub="catalogIsValid"
+        :can-open-release="catalogIsValid"
+        :can-open-workspace="true"
+        :can-open-session="true"
+        :can-open-review="true"
+        :can-open-assessment="true"
+        :can-open-submission="true"
+        :can-open-cohort="true"
+        :can-open-post-lesson="true"
+        @open-hub="selectSurface('hub')"
+        @open-release="selectSurface('release')"
+        @open-workspace="selectSurface('workspace')"
+        @open-session="selectSurface('session')"
+        @open-review="selectSurface('review')"
+        @open-assessment="selectSurface('assessment')"
+        @open-submission="selectSurface('submission')"
+        @open-cohort="selectSurface('cohort')"
+        @open-post-lesson="selectSurface('post-lesson')"
       />
 
       <SessionWorkspace
