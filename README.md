@@ -1,6 +1,6 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Submission Inbox**, **Mentor Live Cockpit**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, сдача домашки и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Submission Inbox**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, сдача домашки и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs, `catalog.json` и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 3 + Vite.
 
@@ -16,6 +16,7 @@
 - [Mentor Review Center](#mentor-review-center)
 - [Submission Inbox](#submission-inbox)
 - [Mentor Live Cockpit](#mentor-live-cockpit)
+- [Lesson Delivery Control Room](#lesson-delivery-control-room)
 - [Student Launchpad](#student-launchpad)
 - [Контракт каталога](#контракт-каталога)
 - [Контракт сессии](#контракт-сессии)
@@ -63,6 +64,8 @@ MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev
 - `Cohort Progress Dashboard`
 
 `Command Center` открывается кнопкой в верхней панели или горячей клавишей `Cmd/Ctrl + K`. Внутри собраны переходы по порталу и copyable-команды из `control_plane.portal_actions`: запуск, открытие, export портала и release verification command для текущего урока.
+
+Во время live-сессии `Command Center` также показывает stage-aware команды: команду текущего этапа и вопрос ученику из `control_plane.mentor_mode.stage_guides`.
 
 Если session невалидна или не загружена, `Mentor Live Cockpit` остается доступным как экран диагностики, а `Review Center`, `Submission Inbox` и `Cohort Dashboard` блокируются до появления валидной session. Это защищает ментора от пустых review/submission-экранов во время подготовки урока.
 
@@ -290,6 +293,24 @@ mentor-cockpit:<contract_version>:<lab_name>:<student_name>:<created_at>
 
 Это удобно для живого занятия: перезагрузка страницы не сбрасывает ход урока, но данные не уходят на backend и не смешиваются между разными учениками или сессиями.
 
+## Lesson Delivery Control Room
+
+`Lesson Delivery Control Room` — фокусный слой внутри `Mentor Live Cockpit`. Он не заменяет подробные панели cockpit, а собирает самое нужное для текущего stage в одном месте:
+
+- stage timer, planned/remaining time и progress текущего этапа;
+- `Что сказать`, `Что показать`, `Что спросить`, `Как проверить` из stage guide;
+- быстрый `Mark evidence` по первому ключевому skill marker;
+- короткая заметка ментора, синхронизированная с заметкой текущего stage;
+- `Panic mode` для типовых сбоев: стенд не поднялся, SQL не работает, ученик отстал.
+
+Состояние таймера и panic mode хранится browser-local по ключу:
+
+```text
+delivery-control-room:<contract_version>:<lab_name>:<student_name>:<created_at>
+```
+
+Заметки и evidence не дублируются: Control Room пишет в тот же локальный state, который использует `Mentor Live Cockpit`, поэтому review/handoff видят эти данные без отдельного экспорта.
+
 ## Student Launchpad
 
 `Student Launchpad` — режим самообслуживания ученика в том же портале. Переключатель `Ментор` / `Ученик` находится в верхней части валидной сессии; выбранный режим сохраняется локально по ключу:
@@ -379,6 +400,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `composables/useCatalogState.ts` — тонкий Nuxt-фасад для состояния каталога.
 - `features/academy-portal` — переключение между catalog-first поверхностью и текущей live-сессией.
 - `features/global-navigation` — постоянная навигация, Command Center и route guard для surface-переходов.
+- `features/delivery-control-room` — фокусный режим проведения stage: timer, stage script, quick evidence/note actions и panic mode.
 - `features/lesson-hub` — витрина направлений, уроков, role-aware команд и readiness.
 - `features/lesson-launcher` — генерация launch-пакета, route/platform preferences и copyable команды запуска.
 - `features/session-workspace` — browser-local импорт `session.json`, validation, recent runs и выбор session для cockpit.

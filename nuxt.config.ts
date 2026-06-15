@@ -12,7 +12,8 @@ export default defineNuxtConfig({
     '~/assets/css/submission-inbox.css',
     '~/assets/css/cohort-dashboard.css',
     '~/assets/css/release-console.css',
-    '~/assets/css/global-navigation.css'
+    '~/assets/css/global-navigation.css',
+    '~/assets/css/delivery-control-room.css'
   ],
   app: {
     head: {

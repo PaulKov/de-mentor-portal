@@ -204,11 +204,16 @@ const createCommandGroups = (
 
 const createCopyCommands = (input: GlobalNavigationInput): GlobalNavigationCommand[] => {
   const portalActions = input.session?.control_plane?.portal_actions
+  const currentStageGuide = input.session?.control_plane?.mentor_mode.stage_guides.find(
+    guide => guide.stage_code === input.session?.current_stage.code
+  )
   const commands = [
     createCopyCommand('copy-portal-start', 'Скопировать запуск портала', portalActions?.start_command),
     createCopyCommand('copy-portal-open', 'Скопировать open-команду', portalActions?.open_command),
     createCopyCommand('copy-portal-export', 'Скопировать export-команду', portalActions?.export_command),
-    createCopyCommand('copy-release-verify', 'Скопировать release verify', findReleaseVerifyCommand(input.session))
+    createCopyCommand('copy-release-verify', 'Скопировать release verify', findReleaseVerifyCommand(input.session)),
+    createCopyCommand('copy-current-stage-command', 'Скопировать команду текущего этапа', input.session?.current_stage.command),
+    createCopyCommand('copy-current-stage-question', 'Скопировать вопрос текущего этапа', currentStageGuide?.question)
   ]
 
   return commands.filter((command): command is GlobalNavigationCommand => Boolean(command))
