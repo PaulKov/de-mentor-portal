@@ -15,6 +15,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'core/session/domain/academy-session.ts',
     'core/session/domain/control-plane.ts',
     'core/session/application/session-contract.ts',
+    'core/session/application/homework-review-contract.ts',
     'core/session/application/session-loader.ts',
     'core/session/infrastructure/http-session-source.ts',
     'core/catalog/domain/academy-catalog.ts',
@@ -39,6 +40,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'assets/css/evidence-ledger.css',
     'assets/css/assessment-center.css',
     'assets/css/post-lesson-pack.css',
+    'assets/css/homework-review.css',
     'features/academy-portal/AcademyPortal.vue',
     'features/global-navigation/GlobalNavigation.vue',
     'features/global-navigation/useGlobalNavigationState.ts',
@@ -86,6 +88,9 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'features/post-lesson-pack/PostLessonPack.vue',
     'features/post-lesson-pack/usePostLessonPackState.ts',
     'features/post-lesson-pack/post-lesson-pack-state.ts',
+    'features/homework-review/HomeworkReviewStudio.vue',
+    'features/homework-review/useHomeworkReviewState.ts',
+    'features/homework-review/homework-review-state.ts',
     'features/release-console/ReleaseConsole.vue',
     'features/release-console/useReleaseConsoleState.ts',
     'features/release-console/release-console-state.ts',
@@ -152,6 +157,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
   assert.ok(nuxtConfig.includes('~/assets/css/evidence-ledger.css'), 'Nuxt should load evidence ledger styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/assessment-center.css'), 'Nuxt should load assessment center styles explicitly')
   assert.ok(nuxtConfig.includes('~/assets/css/post-lesson-pack.css'), 'Nuxt should load post-lesson pack styles explicitly')
+  assert.ok(nuxtConfig.includes('~/assets/css/homework-review.css'), 'Nuxt should load homework review styles explicitly')
   assert.ok(dashboard.includes('@open-workspace'), 'SessionDashboard should keep workspace navigation reachable')
   assert.ok(dashboard.includes('@open-review'), 'SessionDashboard should keep review navigation reachable')
   assert.ok(dashboard.includes('@open-submission'), 'SessionDashboard should keep submission navigation reachable')
@@ -170,6 +176,7 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
   const cockpit = await readText('features/mentor-cockpit/MentorCockpit.vue')
   assert.ok(cockpit.includes('<DeliveryControlRoom'), 'MentorCockpit should render the Lesson Delivery Control Room')
   assert.ok(cockpit.includes('<EvidenceLedger'), 'MentorCockpit should render the Lesson Run Evidence Ledger')
+  assert.ok(cockpit.includes('<HomeworkReviewStudio'), 'MentorCockpit should render the Homework Review Studio when payload exists')
   assert.ok(app.includes(':session-issues'), 'app.vue should pass live session validation issues through the portal facade')
   assert.ok(lineCount(app) <= 35, 'app.vue should stay a thin Nuxt facade')
 
@@ -229,6 +236,9 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'features/post-lesson-pack/PostLessonPack.vue',
     'features/post-lesson-pack/usePostLessonPackState.ts',
     'features/post-lesson-pack/post-lesson-pack-state.ts',
+    'features/homework-review/HomeworkReviewStudio.vue',
+    'features/homework-review/useHomeworkReviewState.ts',
+    'features/homework-review/homework-review-state.ts',
     'features/release-console/ReleaseConsole.vue',
     'features/release-console/useReleaseConsoleState.ts',
     'features/release-console/release-console-state.ts',
@@ -267,7 +277,8 @@ test('portal keeps a clean feature-oriented architecture taxonomy', async () => 
     'assets/css/delivery-control-room.css',
     'assets/css/evidence-ledger.css',
     'assets/css/assessment-center.css',
-    'assets/css/post-lesson-pack.css'
+    'assets/css/post-lesson-pack.css',
+    'assets/css/homework-review.css'
   ]) {
     const source = await readText(path)
     assert.ok(lineCount(source) <= 400, `${path} should stay below the module SLOC guard`)
@@ -286,6 +297,7 @@ test('session core exposes typed contracts, validation and DI seams', async () =
     'export interface AcademyStage',
     'export interface SkillNode',
     'export interface SessionEvent',
+    'export interface HomeworkReview',
     'CONTRACT_VERSION',
     'PORTAL_FRAMEWORK',
     'PORTAL_REPOSITORY'
@@ -299,6 +311,9 @@ test('session core exposes typed contracts, validation and DI seams', async () =
   assert.ok(contract.includes('CONTRACT_VERSION'))
   assert.ok(contract.includes('validateControlPlane'))
   assert.ok(contract.includes('CONTROL_PLANE_VERSION'))
+  const homeworkReviewContract = await readText('core/session/application/homework-review-contract.ts')
+  assert.ok(homeworkReviewContract.includes('validateHomeworkReview'))
+  assert.ok(homeworkReviewContract.includes('homework_review.rubric_items'))
 
   for (const marker of [
     'export interface AcademyControlPlane',
@@ -351,6 +366,7 @@ test('developer experience documents validation and local sample workflow', asyn
   assert.ok(readme.includes('Command Center'))
   assert.ok(readme.includes('Lesson Delivery Control Room'))
   assert.ok(readme.includes('Lesson Run Evidence Ledger'))
+  assert.ok(readme.includes('Homework Review Studio'))
   assert.ok(readme.includes('Workspace Sync Center'))
   assert.ok(readme.includes('academy-workspace/v1'))
   assert.ok(readme.includes('browser-local'))
@@ -374,6 +390,7 @@ test('developer experience documents validation and local sample workflow', asyn
   assert.ok(readme.includes('features/delivery-control-room'))
   assert.ok(readme.includes('features/evidence-ledger'))
   assert.ok(readme.includes('features/workspace-sync'))
+  assert.ok(readme.includes('features/homework-review'))
   assert.ok(readme.includes('features/session-dashboard'))
   assert.ok(readme.includes('components/shared/ui'))
 

@@ -35,6 +35,13 @@ test('sample session follows academy-session/v1 contract markers', async () => {
   )
   assert.ok(runtimeSample.control_plane.portal_actions.export_command.includes('mentor-lab.py portal greenplum export'))
   assert.equal(runtimeSample.control_plane.next_lesson.code, '02-greenplum-partitioning')
+  assert.equal(runtimeSample.homework_review.lesson_code, 'lesson-01')
+  assert.equal(runtimeSample.homework_review.submission_status, 'not_submitted')
+  assert.equal(runtimeSample.homework_review.score, 0)
+  assert.equal(runtimeSample.homework_review.accepted, false)
+  assert.ok(runtimeSample.homework_review.rubric_items.length >= 4)
+  assert.ok(runtimeSample.homework_review.sql_snippets.some(snippet => snippet.command.includes('EXPLAIN')))
+  assert.ok(runtimeSample.homework_review.next_lesson_plan.title.includes('Partitioning'))
 
   const currentGuide = runtimeSample.control_plane.mentor_mode.stage_guides.find(
     guide => guide.stage_code === runtimeSample.current_stage.code
@@ -127,6 +134,33 @@ test('validation CLI rejects malformed optional control plane payloads', async (
     error => {
       assert.match(error.stderr, /control_plane\.mentor_mode\.stage_guides\[0\]\.mentor_script/)
       assert.match(error.stderr, /control_plane\.mentor_mode\.stage_guides\[0\]\.expected_answer/)
+      return true
+    }
+  )
+})
+
+test('validation CLI rejects malformed optional homework review payloads', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'academy-homework-review-'))
+  const brokenHomeworkReviewPath = join(tempDir, 'broken-homework-review-session.json')
+  const sample = await readJson('public/session.sample.json')
+  const broken = {
+    ...sample,
+    homework_review: {
+      ...sample.homework_review,
+      score: '100',
+      mentor_conclusion: {
+        summary: ''
+      }
+    }
+  }
+
+  await writeFile(brokenHomeworkReviewPath, JSON.stringify(broken, null, 2))
+
+  await assert.rejects(
+    execFileAsync('node', ['scripts/validate-session-contract.mjs', brokenHomeworkReviewPath]),
+    error => {
+      assert.match(error.stderr, /homework_review\.score/)
+      assert.match(error.stderr, /homework_review\.mentor_conclusion\.summary/)
       return true
     }
   )

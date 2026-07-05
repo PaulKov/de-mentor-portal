@@ -165,6 +165,51 @@ test('records lesson run evidence ledger during a mentor session', async ({ page
   await expect(page.getByLabel('Blocker for Statistics after incremental load')).toHaveValue('Нет before/after EXPLAIN.')
 })
 
+test('renders homework review studio for mentor-led Lesson 01 walkthrough', async ({ page }) => {
+  await openCurrentSession(page)
+
+  const studio = page.getByLabel('Homework Review Studio')
+  await expect(studio.getByRole('heading', { name: 'Разбор домашки' })).toBeVisible()
+  await expect(studio.getByText('Lesson 01 Homework Walkthrough')).toBeVisible()
+  await expect(studio.getByText('Не сдано')).toBeVisible()
+  await expect(studio.getByLabel('Homework review metrics').getByText('0/100', { exact: true })).toBeVisible()
+  await expect(studio.getByText('Нужен разбор')).toBeVisible()
+  await expect(studio.getByText('Rubric Lesson 01')).toBeVisible()
+  await expect(studio.getByText('SQL snippets')).toBeVisible()
+  await expect(studio.getByText('mentor-lab.py homework greenplum check')).toBeVisible()
+  await expect(studio.getByRole('button', { name: 'Отправить в план Lesson 02' })).toBeVisible()
+
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1
+      )
+    )
+    .toBe(true)
+})
+
+test('persists homework review checklist, notes and next lesson handoff locally', async ({ page }) => {
+  await openCurrentSession(page)
+
+  const studio = page.getByLabel('Homework Review Studio')
+  await studio.getByRole('checkbox', { name: /Fact\/dimension modeling/ }).check()
+  await studio.getByRole('button', { name: /Distribution design/ }).click()
+  await studio.getByLabel('Live notes').fill('Разобрали skew через gp_segment_id.')
+  await studio.getByLabel('Mentor conclusion').fill('Домашка не сдана, но ученик повторил команды на экране.')
+  await studio.getByRole('checkbox', { name: 'Готов к Lesson 02' }).check()
+  await studio.getByRole('button', { name: 'Отправить в план Lesson 02' }).click()
+  await expect(studio.getByText('План Lesson 02 отмечен')).toBeVisible()
+
+  await page.reload()
+
+  const restoredStudio = page.getByLabel('Homework Review Studio')
+  await expect(restoredStudio.getByRole('checkbox', { name: /Fact\/dimension modeling/ })).toBeChecked()
+  await expect(restoredStudio.getByLabel('Live notes')).toHaveValue('Разобрали skew через gp_segment_id.')
+  await expect(restoredStudio.getByLabel('Mentor conclusion')).toHaveValue('Домашка не сдана, но ученик повторил команды на экране.')
+  await expect(restoredStudio.getByRole('checkbox', { name: 'Готов к Lesson 02' })).toBeChecked()
+  await expect(restoredStudio.getByText('План Lesson 02 отмечен')).toBeVisible()
+})
+
 test('persists mentor evidence checks and stage notes locally', async ({ page }) => {
   await openCurrentSession(page)
 

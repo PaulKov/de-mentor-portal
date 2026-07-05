@@ -1,6 +1,6 @@
 # DE Mentor Portal
 
-Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Lesson Authoring Studio**, **Workspace Sync Center**, **Mentor Mission Control**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Skill Assessment Center**, **Post-Lesson Pack**, **Submission Inbox**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Lesson Run Evidence Ledger**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, оценка skill mastery, сдача домашки и handoff-отчет для уроков `de-mentor`.
+Портал самообслуживания для `Academy Experience v5`: **Global Navigation**, **Command Center**, **Lesson Authoring Studio**, **Workspace Sync Center**, **Mentor Mission Control**, **Academy Lesson Hub**, **Lesson Launcher**, **Session Workspace**, **Lesson Release Console**, **Cohort Progress Dashboard**, **Mentor Review Center**, **Skill Assessment Center**, **Post-Lesson Pack**, **Submission Inbox**, **Homework Review Studio**, **Mentor Live Cockpit**, **Lesson Delivery Control Room**, **Lesson Run Evidence Ledger**, **Student Launchpad**, текущий этап занятия, презентация, команды, evidence checklist, заметки ментора, оценка skill mastery, сдача домашки и handoff-отчет для уроков `de-mentor`.
 
 Портал отделен от core-репозитория намеренно: `de-mentor` генерирует учебные стенды, SQL, docs, `catalog.json` и `session.json`, а `de-mentor-portal` независимо развивается как frontend-сервис на Vue 3 + Nuxt 4 + Vite.
 
@@ -20,6 +20,7 @@
 - [Skill Assessment Center](#skill-assessment-center)
 - [Post-Lesson Pack](#post-lesson-pack)
 - [Submission Inbox](#submission-inbox)
+- [Homework Review Studio](#homework-review-studio)
 - [Mentor Live Cockpit](#mentor-live-cockpit)
 - [Lesson Delivery Control Room](#lesson-delivery-control-room)
 - [Lesson Run Evidence Ledger](#lesson-run-evidence-ledger)
@@ -71,6 +72,7 @@ MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev
 - `Mentor Review Center`
 - `Skill Assessment Center`
 - `Submission Inbox`
+- `Homework Review Studio`
 - `Cohort Progress Dashboard`
 - `Post-Lesson Pack`
 
@@ -130,6 +132,7 @@ delivery-control-room:
 evidence-ledger:
 student-launchpad:
 submission-inbox:
+homework-review:
 academy-dashboard-mode:
 ```
 
@@ -454,6 +457,51 @@ submission-inbox:<contract_version>:<lab_name>:<student_name>:<created_at>
 4. Ментор открывает `Submission Inbox`, сверяет completeness и копирует Markdown-отчет.
 5. Открытые gaps переносятся в `Mentor Review Center` и план следующего урока.
 
+## Homework Review Studio
+
+`Homework Review Studio` — dedicated surface внутри `Mentor Live Cockpit` для live-разбора домашки Lesson 01 через screen sharing. Экран появляется автоматически, если в `academy-session/v1` есть optional top-level блок `homework_review`.
+
+Экран рассчитан на кейс, когда ученик не подключается к порталу сам:
+
+- сверху видны статус сдачи, score и решение `accepted` / `needs walkthrough`;
+- слева находится rubric Lesson 01 с чекбоксами прохождения;
+- в центре выбранный rubric-пункт: expected evidence, mentor prompt, conclusion hint и live notes;
+- справа собраны SQL/CLI snippets с копированием;
+- снизу ментор фиксирует conclusion, follow-up flags и copy-ready план Lesson 02.
+
+Core CLI генерирует payload как guided walkthrough, даже если submission нет:
+
+```bash
+python3 mentor-lab.py session greenplum start \
+  --homework-review lesson-01 \
+  --student Иван \
+  --output artifacts/sessions/ivan-review
+```
+
+Если файл домашки есть, core использует `HomeworkReviewer` и кладет score, missing evidence и next actions в тот же контракт:
+
+```bash
+python3 mentor-lab.py session greenplum start \
+  --homework-review lesson-01 \
+  --submission submissions/homework.md \
+  --student Иван \
+  --output artifacts/sessions/ivan-review
+```
+
+Состояние Studio остается browser-local и изолируется по session identity:
+
+```text
+homework-review:<contract_version>:<lab_name>:<student_name>:<created_at>
+```
+
+Рекомендуемый workflow на уроке:
+
+1. Открыть текущую session в `Mentor Live Cockpit`.
+2. Пройти rubric сверху вниз, отмечая закрытые пункты и live checklist.
+3. Показывать SQL snippets в терминале Greenplum и просить ученика объяснять evidence.
+4. Записать mentor conclusion и отметить `Готов к Lesson 02` или `Нужен follow-up`.
+5. Нажать `Отправить в план Lesson 02`: портал скопирует план или оставит его на экране для ручного копирования.
+
 ## Mentor Live Cockpit
 
 `Mentor Live Cockpit` — экран для проведения конкретной live-сессии. Ментор открывает текущую сессию из хаба и сразу видит:
@@ -586,6 +634,7 @@ npm run validate:session -- /absolute/path/to/session.json
 
 ```bash
 python3 mentor-lab.py session greenplum start --student Иван --output artifacts/sessions/ivan
+python3 mentor-lab.py session greenplum start --homework-review lesson-01 --student Иван --output artifacts/sessions/ivan-review
 python3 mentor-lab.py session greenplum validate --session artifacts/sessions/ivan/session.json
 ```
 
@@ -594,7 +643,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 Портал разложен по слоям, чтобы не превращать `app.vue` в god module:
 
 - `core/session/domain` — типы `AcademySession`, `AcademyStage`, `SkillNode`, константы контракта.
-- `core/session/application` — `AcademySessionContractValidator` и `SessionLoader`.
+- `core/session/application` — `AcademySessionContractValidator`, `validateHomeworkReview` и `SessionLoader`.
 - `core/session/infrastructure` — адаптеры источников данных, например `HttpSessionSource`.
 - `core/catalog/domain` — типы `AcademyCatalog`, `AcademyTrack`, `CatalogLesson`, константы контракта.
 - `core/catalog/application` — `AcademyCatalogContractValidator` и `CatalogLoader`.
@@ -617,6 +666,7 @@ python3 mentor-lab.py session greenplum validate --session artifacts/sessions/iv
 - `features/assessment-center` — skill mastery scoring, evidence sources, focus gaps, learning path и copyable assessment report.
 - `features/post-lesson-pack` — единый post-lesson packet: review, ledger, homework, blockers, next lesson и copyable Markdown/JSON.
 - `features/submission-inbox` — student homework submission, completeness scoring, mentor inbox и copyable submission report.
+- `features/homework-review` — live-разбор Lesson 01 homework: rubric walkthrough, SQL snippets, mentor conclusion и Lesson 02 handoff.
 - `features/session-dashboard` — композиция основного экрана.
 - `features/mentor-cockpit` — live cockpit: stage player, slides/commands rail, evidence panel и local persistence facade.
 - `features/student-launchpad` — student self-service: readiness по платформам, материалы, команды запуска, self-check и handoff.
