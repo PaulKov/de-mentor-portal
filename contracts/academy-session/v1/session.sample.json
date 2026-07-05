@@ -91,5 +91,175 @@
     "app_path": "de-mentor-portal",
     "session_env": "MENTOR_LAB_SESSION",
     "dev_command": "MENTOR_LAB_SESSION=/absolute/path/to/session.json npm run dev"
+  },
+  "homework_review": {
+    "lesson_code": "lesson-01",
+    "title": "Lesson 01 Homework Walkthrough",
+    "submission_status": "not_submitted",
+    "submission_path": "",
+    "score": 0,
+    "accepted": false,
+    "rubric_items": [
+      {
+        "code": "fact-dimension-modeling",
+        "title": "Fact/dimension modeling",
+        "score": 0,
+        "passed": false,
+        "expected_evidence": "fact, dimension, grain",
+        "mentor_prompt": "зафиксировать facts, dimensions и grain до выбора ключей",
+        "conclusion_hint": "Fact/dimension modeling: нужно показать конкретный артефакт, а не только объяснение."
+      },
+      {
+        "code": "distribution-design",
+        "title": "Distribution design",
+        "score": 0,
+        "passed": false,
+        "expected_evidence": "distribution, distributed by, join pattern, cardinality",
+        "mentor_prompt": "обосновать distribution key через join pattern и cardinality",
+        "conclusion_hint": "Distribution design: нужно показать конкретный артефакт, а не только объяснение."
+      },
+      {
+        "code": "partitioning-design",
+        "title": "Partitioning design",
+        "score": 0,
+        "passed": false,
+        "expected_evidence": "partition, partition by, partition key, distribution key",
+        "mentor_prompt": "развести partition key и distribution key, показать pruning workload",
+        "conclusion_hint": "Partitioning design: нужно показать конкретный артефакт, а не только объяснение."
+      },
+      {
+        "code": "storage-design",
+        "title": "Storage design",
+        "score": 0,
+        "passed": false,
+        "expected_evidence": "storage, aoco, appendoptimized, orientation=column",
+        "mentor_prompt": "выбрать heap/AO/AOCO под workload и объяснить компромисс",
+        "conclusion_hint": "Storage design: нужно показать конкретный артефакт, а не только объяснение."
+      },
+      {
+        "code": "catalog-evidence",
+        "title": "Catalog evidence",
+        "score": 0,
+        "passed": false,
+        "expected_evidence": "pg_partition_tree, gp_toolkit.gp_partitions, leaf_partitions",
+        "mentor_prompt": "добавить catalog evidence по partitions",
+        "conclusion_hint": "Catalog evidence: нужно показать конкретный артефакт, а не только объяснение."
+      },
+      {
+        "code": "explain-gp_segment_id-evidence",
+        "title": "EXPLAIN/gp_segment_id evidence",
+        "score": 0,
+        "passed": false,
+        "expected_evidence": "explain, gp_segment_id, validation",
+        "mentor_prompt": "доказать дизайн через EXPLAIN, gp_segment_id и before/after validation",
+        "conclusion_hint": "EXPLAIN/gp_segment_id evidence: нужно показать конкретный артефакт, а не только объяснение."
+      },
+      {
+        "code": "risk-analysis",
+        "title": "Risk analysis",
+        "score": 0,
+        "passed": false,
+        "expected_evidence": "risk, stale statistics, broadcast motion, residual risk",
+        "mentor_prompt": "описать риски: stale stats, Broadcast Motion, skew и coordinator path",
+        "conclusion_hint": "Risk analysis: нужно показать конкретный артефакт, а не только объяснение."
+      },
+      {
+        "code": "lesson-02-readiness",
+        "title": "Lesson 02 readiness",
+        "score": 0,
+        "passed": false,
+        "expected_evidence": "lesson 02, partition pruning, statistics, incremental loads",
+        "mentor_prompt": "принести вопросы по partition pruning, statistics и incremental loads",
+        "conclusion_hint": "Lesson 02 readiness: нужно показать конкретный артефакт, а не только объяснение."
+      }
+    ],
+    "missing_evidence": [
+      "Fact/dimension modeling",
+      "Distribution design",
+      "Partitioning design",
+      "Storage design",
+      "Catalog evidence",
+      "EXPLAIN/gp_segment_id evidence",
+      "Risk analysis",
+      "Lesson 02 readiness"
+    ],
+    "next_actions": [
+      "зафиксировать facts, dimensions и grain до выбора ключей",
+      "обосновать distribution key через join pattern и cardinality",
+      "развести partition key и distribution key, показать pruning workload",
+      "выбрать heap/AO/AOCO под workload и объяснить компромисс",
+      "добавить catalog evidence по partitions",
+      "доказать дизайн через EXPLAIN, gp_segment_id и before/after validation",
+      "описать риски: stale stats, Broadcast Motion, skew и coordinator path",
+      "принести вопросы по partition pruning, statistics и incremental loads"
+    ],
+    "live_checklist": [
+      {
+        "code": "context",
+        "label": "Понять, что ученик пытался спроектировать.",
+        "done": false
+      },
+      {
+        "code": "rubric",
+        "label": "Пройти rubric по одному пункту, не прыгая сразу к оценке.",
+        "done": false
+      },
+      {
+        "code": "evidence",
+        "label": "Попросить evidence: DDL, EXPLAIN, gp_segment_id, catalog checks.",
+        "done": false
+      },
+      {
+        "code": "repair",
+        "label": "Показать, как закрыть самый важный gap прямо на уроке.",
+        "done": false
+      },
+      {
+        "code": "handoff",
+        "label": "Сформулировать понятный план до Lesson 02.",
+        "done": false
+      }
+    ],
+    "sql_snippets": [
+      {
+        "title": "Проверить домашку CLI",
+        "command": "python3 mentor-lab.py homework greenplum check --submission submissions/homework.md",
+        "explanation": "Показывает score, missing evidence и Lesson 02 readiness."
+      },
+      {
+        "title": "Сегментный skew",
+        "command": "SELECT gp_segment_id, count(*) FROM lesson01.fact_sales_good GROUP BY gp_segment_id ORDER BY gp_segment_id;",
+        "explanation": "Объясняет, почему evidence через gp_segment_id обязателен для MPP."
+      },
+      {
+        "title": "EXPLAIN для Motion",
+        "command": "EXPLAIN SELECT customer_id, sum(amount) FROM lesson01.fact_sales_good GROUP BY customer_id;",
+        "explanation": "Фиксирует привычку доказывать физический план, а не только писать DDL."
+      },
+      {
+        "title": "Storage demo",
+        "command": "\\i /mentor-lab/examples/storage-and-partitioning.sql",
+        "explanation": "Возвращает ученика к heap/AO/AOCO и catalog checks."
+      }
+    ],
+    "mentor_conclusion": {
+      "decision": "needs_guided_walkthrough",
+      "summary": "Домашка не была сдана: разбор проводим как guided walkthrough.",
+      "recommendation": "Закрыть ключевые evidence gaps вместе и выдать короткий план до Lesson 02."
+    },
+    "next_lesson_plan": {
+      "lesson_code": "lesson-02",
+      "title": "Partitioning, statistics and incremental loads in MPP",
+      "focus": "Partition pruning, statistics after load, incremental loads and late-arriving facts.",
+      "action_items": [
+        "Повторить difference: partition key != distribution key.",
+        "Принести EXPLAIN/catalog evidence по исправленной домашке.",
+        "Подготовить вопросы про ANALYZE и bounded reload window."
+      ],
+      "commands": [
+        "python3 mentor-lab.py runbook greenplum-partitioning simple",
+        "python3 mentor-lab.py student greenplum-partitioning homework"
+      ]
+    }
   }
 }

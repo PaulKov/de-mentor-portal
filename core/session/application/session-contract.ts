@@ -7,6 +7,7 @@ import {
   type AcademySession
 } from '../domain/academy-session'
 import { CONTROL_PLANE_VERSION } from '../domain/control-plane'
+import { validateHomeworkReview } from './homework-review-contract'
 
 export interface ValidationIssue {
   path: string
@@ -61,6 +62,7 @@ export class AcademySessionContractValidator {
     this.validateCommands(payload, issues)
     this.validateEvents(payload, issues)
     this.validateControlPlane(payload, issues)
+    validateHomeworkReview(payload.homework_review, issues)
     this.validatePortal(payload, issues)
 
     return {

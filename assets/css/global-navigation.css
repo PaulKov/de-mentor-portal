@@ -1,5 +1,6 @@
 .portal-frame {
   min-height: 100vh;
+  overflow-x: clip;
 }
 
 .portal-frame__surface {
@@ -10,6 +11,7 @@
   position: sticky;
   top: 0;
   z-index: 20;
+  overflow-x: clip;
   border-bottom: 1px solid var(--line);
   background: rgba(251, 251, 250, 0.96);
   backdrop-filter: blur(14px);

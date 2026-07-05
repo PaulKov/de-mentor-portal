@@ -28,6 +28,60 @@ export interface SessionEvent {
   created_at: string
 }
 
+export type HomeworkSubmissionStatus = 'submitted' | 'not_submitted'
+
+export interface HomeworkRubricItem {
+  code: string
+  title: string
+  score: number
+  passed: boolean
+  expected_evidence: string
+  mentor_prompt: string
+  conclusion_hint: string
+}
+
+export interface HomeworkChecklistItem {
+  code: string
+  label: string
+  done: boolean
+}
+
+export interface HomeworkSqlSnippet {
+  title: string
+  command: string
+  explanation: string
+}
+
+export interface HomeworkMentorConclusion {
+  decision: string
+  summary: string
+  recommendation: string
+}
+
+export interface HomeworkNextLessonPlan {
+  lesson_code: string
+  title: string
+  focus: string
+  action_items: string[]
+  commands: string[]
+}
+
+export interface HomeworkReview {
+  lesson_code: string
+  title: string
+  submission_status: HomeworkSubmissionStatus
+  submission_path: string
+  score: number
+  accepted: boolean
+  rubric_items: HomeworkRubricItem[]
+  missing_evidence: string[]
+  next_actions: string[]
+  live_checklist: HomeworkChecklistItem[]
+  sql_snippets: HomeworkSqlSnippet[]
+  mentor_conclusion: HomeworkMentorConclusion
+  next_lesson_plan: HomeworkNextLessonPlan
+}
+
 export interface PortalMetadata {
   framework: typeof PORTAL_FRAMEWORK
   repository: typeof PORTAL_REPOSITORY
@@ -48,6 +102,6 @@ export interface AcademySession {
   commands: string[]
   events: SessionEvent[]
   control_plane?: AcademyControlPlane
+  homework_review?: HomeworkReview
   portal: PortalMetadata
-  control_plane?: AcademyControlPlane
 }

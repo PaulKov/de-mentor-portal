@@ -9,12 +9,7 @@ const PORTAL_APP_PATH = 'de-mentor-portal'
 const PORTAL_SESSION_ENV = 'MENTOR_LAB_SESSION'
 const CONTROL_PLANE_VERSION = 'academy-control-plane/v1'
 
-const sessionStringFields = [
-  'academy_version',
-  'lab_name',
-  'student_name',
-  'created_at'
-]
+const sessionStringFields = ['academy_version', 'lab_name', 'student_name', 'created_at']
 
 const stageStringFields = [
   'code',
@@ -37,6 +32,12 @@ const stageGuideStringFields = [
   'workbook_ref',
   'homework_ref'
 ]
+const homeworkReviewStringFields = ['lesson_code', 'title']
+const homeworkRubricStringFields = ['code', 'title', 'expected_evidence', 'mentor_prompt', 'conclusion_hint']
+const homeworkChecklistStringFields = ['code', 'label']
+const homeworkSqlSnippetStringFields = ['title', 'command', 'explanation']
+const homeworkConclusionStringFields = ['decision', 'summary', 'recommendation']
+const homeworkNextLessonStringFields = ['lesson_code', 'title', 'focus']
 
 const isRecord = value =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -44,6 +45,12 @@ const isRecord = value =>
 const requireString = (value, path, issues) => {
   if (typeof value !== 'string' || value.length === 0) {
     issues.push({ path, message: `${path} should be a non-empty string` })
+  }
+}
+
+const requireStringValue = (value, path, issues) => {
+  if (typeof value !== 'string') {
+    issues.push({ path, message: `${path} should be a string` })
   }
 }
 
@@ -173,6 +180,110 @@ const validateControlPlane = (value, issues) => {
   validateNextLesson(value.next_lesson, issues)
 }
 
+const requireNumber = (value, path, issues) => {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    issues.push({ path, message: `${path} should be a number` })
+  }
+}
+
+const requireBoolean = (value, path, issues) => {
+  if (typeof value !== 'boolean') {
+    issues.push({ path, message: `${path} should be a boolean` })
+  }
+}
+
+const validateObjectArray = (value, path, issues, validateItem) => {
+  if (!Array.isArray(value)) {
+    issues.push({ path, message: `${path} should be an array` })
+    return
+  }
+
+  value.forEach((item, index) => {
+    const itemPath = `${path}[${index}]`
+    if (!isRecord(item)) {
+      issues.push({ path: itemPath, message: `${itemPath} should be an object` })
+      return
+    }
+    validateItem(item, itemPath)
+  })
+}
+
+const validateHomeworkReview = (value, issues) => {
+  if (value === undefined) {
+    return
+  }
+
+  if (!isRecord(value)) {
+    issues.push({ path: 'homework_review', message: 'homework_review should be an object' })
+    return
+  }
+
+  for (const field of homeworkReviewStringFields) {
+    requireString(value[field], `homework_review.${field}`, issues)
+  }
+  requireStringValue(value.submission_path, 'homework_review.submission_path', issues)
+  if (value.submission_status !== 'submitted' && value.submission_status !== 'not_submitted') {
+    issues.push({
+      path: 'homework_review.submission_status',
+      message: 'homework_review.submission_status should be submitted or not_submitted'
+    })
+  }
+  requireNumber(value.score, 'homework_review.score', issues)
+  requireBoolean(value.accepted, 'homework_review.accepted', issues)
+  validateObjectArray(value.rubric_items, 'homework_review.rubric_items', issues, (item, path) => {
+    for (const field of homeworkRubricStringFields) {
+      requireString(item[field], `${path}.${field}`, issues)
+    }
+    requireNumber(item.score, `${path}.score`, issues)
+    requireBoolean(item.passed, `${path}.passed`, issues)
+  })
+  validateStringArray(value.missing_evidence, 'homework_review.missing_evidence', issues)
+  validateStringArray(value.next_actions, 'homework_review.next_actions', issues)
+  validateObjectArray(value.live_checklist, 'homework_review.live_checklist', issues, (item, path) => {
+    for (const field of homeworkChecklistStringFields) {
+      requireString(item[field], `${path}.${field}`, issues)
+    }
+    requireBoolean(item.done, `${path}.done`, issues)
+  })
+  validateObjectArray(value.sql_snippets, 'homework_review.sql_snippets', issues, (item, path) => {
+    for (const field of homeworkSqlSnippetStringFields) {
+      requireString(item[field], `${path}.${field}`, issues)
+    }
+  })
+  validateHomeworkConclusion(value.mentor_conclusion, issues)
+  validateHomeworkNextLessonPlan(value.next_lesson_plan, issues)
+}
+
+const validateHomeworkConclusion = (value, issues) => {
+  if (!isRecord(value)) {
+    issues.push({
+      path: 'homework_review.mentor_conclusion',
+      message: 'homework_review.mentor_conclusion should be an object'
+    })
+    return
+  }
+
+  for (const field of homeworkConclusionStringFields) {
+    requireString(value[field], `homework_review.mentor_conclusion.${field}`, issues)
+  }
+}
+
+const validateHomeworkNextLessonPlan = (value, issues) => {
+  if (!isRecord(value)) {
+    issues.push({
+      path: 'homework_review.next_lesson_plan',
+      message: 'homework_review.next_lesson_plan should be an object'
+    })
+    return
+  }
+
+  for (const field of homeworkNextLessonStringFields) {
+    requireString(value[field], `homework_review.next_lesson_plan.${field}`, issues)
+  }
+  validateStringArray(value.action_items, 'homework_review.next_lesson_plan.action_items', issues)
+  validateStringArray(value.commands, 'homework_review.next_lesson_plan.commands', issues)
+}
+
 const validateSession = payload => {
   const issues = []
 
@@ -250,6 +361,7 @@ const validateSession = payload => {
   }
 
   validateControlPlane(payload.control_plane, issues)
+  validateHomeworkReview(payload.homework_review, issues)
 
   if (!isRecord(payload.portal)) {
     issues.push({ path: 'portal', message: 'portal should be an object' })

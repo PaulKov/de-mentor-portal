@@ -5,6 +5,7 @@ import type { AcademySession } from '~/core/session/domain/academy-session'
 import AppShell from '~/components/shared/ui/AppShell.vue'
 import DeliveryControlRoom from '~/features/delivery-control-room/DeliveryControlRoom.vue'
 import EvidenceLedger from '~/features/evidence-ledger/EvidenceLedger.vue'
+import HomeworkReviewStudio from '~/features/homework-review/HomeworkReviewStudio.vue'
 import DashboardModeSwitch from '~/features/session-dashboard/DashboardModeSwitch.vue'
 import type { DashboardMode } from '~/features/session-dashboard/session-dashboard-mode'
 import SessionStatusBanner from '~/features/session-status/SessionStatusBanner.vue'
@@ -116,6 +117,11 @@ const {
     </header>
 
     <ReleaseStatusStrip :status="cockpitState.releaseStatus" />
+
+    <HomeworkReviewStudio
+      v-if="session.homework_review"
+      :session="session"
+    />
 
     <DeliveryControlRoom
       :session="session"
